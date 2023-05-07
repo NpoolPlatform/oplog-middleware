@@ -2,7 +2,6 @@ package oplog
 
 import (
 	"context"
-	"fmt"
 
 	npool "github.com/NpoolPlatform/message/npool/oplog/mw/v1/oplog"
 	oplogcrud "github.com/NpoolPlatform/oplog-middleware/pkg/crud/oplog"
@@ -36,8 +35,4 @@ func (h *Handler) CreateOpLog(ctx context.Context) (*npool.OpLog, error) {
 		return nil, err
 	}
 	return h.GetOpLog(ctx)
-}
-
-func (h *Handler) CreateOpLogs(ctx context.Context) ([]*npool.OpLog, error) {
-	return nil, fmt.Errorf("NOT IMPLEMENTED")
 }

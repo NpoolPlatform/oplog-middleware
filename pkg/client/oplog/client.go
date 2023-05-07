@@ -50,50 +50,18 @@ func CreateOpLog(ctx context.Context, in *npool.OpLogReq) (*npool.OpLog, error) 
 	return info.(*npool.OpLog), nil
 }
 
-func CreateOpLogs(ctx context.Context, in []*npool.OpLogReq) ([]*npool.OpLog, error) {
-	infos, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.CreateOpLogs(ctx, &npool.CreateOpLogsRequest{
-			Infos: in,
-		})
-		if err != nil {
-			return nil, fmt.Errorf("fail create oplogs: %v", err)
-		}
-		return resp.GetInfos(), nil
-	})
-	if err != nil {
-		return nil, fmt.Errorf("fail create oplogs: %v", err)
-	}
-	return infos.([]*npool.OpLog), nil
-}
-
-func GetOpLog(ctx context.Context, id string) (*npool.OpLog, error) {
+func UpdateOpLog(ctx context.Context, in *npool.OpLogReq) (*npool.OpLog, error) {
 	info, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.GetOpLog(ctx, &npool.GetOpLogRequest{
-			ID: id,
+		resp, err := cli.UpdateOpLog(ctx, &npool.UpdateOpLogRequest{
+			Info: in,
 		})
 		if err != nil {
-			return nil, fmt.Errorf("fail get oplog: %v", err)
+			return nil, fmt.Errorf("fail create oplog: %v", err)
 		}
 		return resp.GetInfo(), nil
 	})
 	if err != nil {
-		return nil, fmt.Errorf("fail get oplog: %v", err)
-	}
-	return info.(*npool.OpLog), nil
-}
-
-func GetOpLogOnly(ctx context.Context, conds *npool.Conds) (*npool.OpLog, error) {
-	info, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.GetOpLogOnly(ctx, &npool.GetOpLogOnlyRequest{
-			Conds: conds,
-		})
-		if err != nil {
-			return nil, fmt.Errorf("fail get oplog: %v", err)
-		}
-		return resp.GetInfo(), nil
-	})
-	if err != nil {
-		return nil, fmt.Errorf("fail get oplog: %v", err)
+		return nil, fmt.Errorf("fail create oplog: %v", err)
 	}
 	return info.(*npool.OpLog), nil
 }
@@ -116,52 +84,4 @@ func GetOpLogs(ctx context.Context, conds *npool.Conds, limit, offset int32) ([]
 		return nil, 0, fmt.Errorf("fail get oplogs: %v", err)
 	}
 	return infos.([]*npool.OpLog), total, nil
-}
-
-func ExistOpLog(ctx context.Context, id string) (bool, error) {
-	infos, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.ExistOpLog(ctx, &npool.ExistOpLogRequest{
-			ID: id,
-		})
-		if err != nil {
-			return nil, fmt.Errorf("fail get oplog: %v", err)
-		}
-		return resp.GetInfo(), nil
-	})
-	if err != nil {
-		return false, fmt.Errorf("fail get oplog: %v", err)
-	}
-	return infos.(bool), nil
-}
-
-func ExistOpLogConds(ctx context.Context, conds *npool.Conds) (bool, error) {
-	infos, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.ExistOpLogConds(ctx, &npool.ExistOpLogCondsRequest{
-			Conds: conds,
-		})
-		if err != nil {
-			return nil, fmt.Errorf("fail get oplog: %v", err)
-		}
-		return resp.GetInfo(), nil
-	})
-	if err != nil {
-		return false, fmt.Errorf("fail get oplog: %v", err)
-	}
-	return infos.(bool), nil
-}
-
-func CountOpLogs(ctx context.Context, conds *npool.Conds) (uint32, error) {
-	infos, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.CountOpLogs(ctx, &npool.CountOpLogsRequest{
-			Conds: conds,
-		})
-		if err != nil {
-			return nil, fmt.Errorf("fail count oplog: %v", err)
-		}
-		return resp.GetInfo(), nil
-	})
-	if err != nil {
-		return 0, fmt.Errorf("fail count oplog: %v", err)
-	}
-	return infos.(uint32), nil
 }
