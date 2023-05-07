@@ -45,6 +45,7 @@ type OpLogMutation struct {
 	addauto_id           *int32
 	app_id               *uuid.UUID
 	user_id              *uuid.UUID
+	_path                *string
 	method               *string
 	arguments            *string
 	cur_value            *string
@@ -485,6 +486,55 @@ func (m *OpLogMutation) ResetUserID() {
 	delete(m.clearedFields, oplog.FieldUserID)
 }
 
+// SetPath sets the "path" field.
+func (m *OpLogMutation) SetPath(s string) {
+	m._path = &s
+}
+
+// Path returns the value of the "path" field in the mutation.
+func (m *OpLogMutation) Path() (r string, exists bool) {
+	v := m._path
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPath returns the old "path" field's value of the OpLog entity.
+// If the OpLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OpLogMutation) OldPath(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPath is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPath requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPath: %w", err)
+	}
+	return oldValue.Path, nil
+}
+
+// ClearPath clears the value of the "path" field.
+func (m *OpLogMutation) ClearPath() {
+	m._path = nil
+	m.clearedFields[oplog.FieldPath] = struct{}{}
+}
+
+// PathCleared returns if the "path" field was cleared in this mutation.
+func (m *OpLogMutation) PathCleared() bool {
+	_, ok := m.clearedFields[oplog.FieldPath]
+	return ok
+}
+
+// ResetPath resets all changes to the "path" field.
+func (m *OpLogMutation) ResetPath() {
+	m._path = nil
+	delete(m.clearedFields, oplog.FieldPath)
+}
+
 // SetMethod sets the "method" field.
 func (m *OpLogMutation) SetMethod(s string) {
 	m.method = &s
@@ -868,7 +918,7 @@ func (m *OpLogMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *OpLogMutation) Fields() []string {
-	fields := make([]string, 0, 13)
+	fields := make([]string, 0, 14)
 	if m.created_at != nil {
 		fields = append(fields, oplog.FieldCreatedAt)
 	}
@@ -886,6 +936,9 @@ func (m *OpLogMutation) Fields() []string {
 	}
 	if m.user_id != nil {
 		fields = append(fields, oplog.FieldUserID)
+	}
+	if m._path != nil {
+		fields = append(fields, oplog.FieldPath)
 	}
 	if m.method != nil {
 		fields = append(fields, oplog.FieldMethod)
@@ -928,6 +981,8 @@ func (m *OpLogMutation) Field(name string) (ent.Value, bool) {
 		return m.AppID()
 	case oplog.FieldUserID:
 		return m.UserID()
+	case oplog.FieldPath:
+		return m.Path()
 	case oplog.FieldMethod:
 		return m.Method()
 	case oplog.FieldArguments:
@@ -963,6 +1018,8 @@ func (m *OpLogMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldAppID(ctx)
 	case oplog.FieldUserID:
 		return m.OldUserID(ctx)
+	case oplog.FieldPath:
+		return m.OldPath(ctx)
 	case oplog.FieldMethod:
 		return m.OldMethod(ctx)
 	case oplog.FieldArguments:
@@ -1027,6 +1084,13 @@ func (m *OpLogMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUserID(v)
+		return nil
+	case oplog.FieldPath:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPath(v)
 		return nil
 	case oplog.FieldMethod:
 		v, ok := value.(string)
@@ -1176,6 +1240,9 @@ func (m *OpLogMutation) ClearedFields() []string {
 	if m.FieldCleared(oplog.FieldUserID) {
 		fields = append(fields, oplog.FieldUserID)
 	}
+	if m.FieldCleared(oplog.FieldPath) {
+		fields = append(fields, oplog.FieldPath)
+	}
 	if m.FieldCleared(oplog.FieldMethod) {
 		fields = append(fields, oplog.FieldMethod)
 	}
@@ -1216,6 +1283,9 @@ func (m *OpLogMutation) ClearField(name string) error {
 		return nil
 	case oplog.FieldUserID:
 		m.ClearUserID()
+		return nil
+	case oplog.FieldPath:
+		m.ClearPath()
 		return nil
 	case oplog.FieldMethod:
 		m.ClearMethod()
@@ -1263,6 +1333,9 @@ func (m *OpLogMutation) ResetField(name string) error {
 		return nil
 	case oplog.FieldUserID:
 		m.ResetUserID()
+		return nil
+	case oplog.FieldPath:
+		m.ResetPath()
 		return nil
 	case oplog.FieldMethod:
 		m.ResetMethod()

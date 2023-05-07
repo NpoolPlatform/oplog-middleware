@@ -14,6 +14,7 @@ type Req struct {
 	AutoID           *uint32
 	AppID            *uuid.UUID
 	UserID           *uuid.UUID
+	Path             *string
 	Method           *basetypes.HTTPMethod
 	Arguments        *string
 	CurValue         *string
@@ -29,6 +30,9 @@ func CreateSet(c *ent.OpLogCreate, req *Req) *ent.OpLogCreate {
 	}
 	if req.UserID != nil {
 		c.SetUserID(*req.UserID)
+	}
+	if req.Path != nil {
+		c.SetPath(*req.Path)
 	}
 	if req.Method != nil {
 		c.SetMethod(req.Method.String())

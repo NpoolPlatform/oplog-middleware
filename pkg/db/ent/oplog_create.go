@@ -99,6 +99,20 @@ func (olc *OpLogCreate) SetNillableUserID(u *uuid.UUID) *OpLogCreate {
 	return olc
 }
 
+// SetPath sets the "path" field.
+func (olc *OpLogCreate) SetPath(s string) *OpLogCreate {
+	olc.mutation.SetPath(s)
+	return olc
+}
+
+// SetNillablePath sets the "path" field if the given value is not nil.
+func (olc *OpLogCreate) SetNillablePath(s *string) *OpLogCreate {
+	if s != nil {
+		olc.SetPath(*s)
+	}
+	return olc
+}
+
 // SetMethod sets the "method" field.
 func (olc *OpLogCreate) SetMethod(s string) *OpLogCreate {
 	olc.mutation.SetMethod(s)
@@ -325,6 +339,10 @@ func (olc *OpLogCreate) defaults() error {
 		v := oplog.DefaultUserID()
 		olc.mutation.SetUserID(v)
 	}
+	if _, ok := olc.mutation.Path(); !ok {
+		v := oplog.DefaultPath
+		olc.mutation.SetPath(v)
+	}
 	if _, ok := olc.mutation.Method(); !ok {
 		v := oplog.DefaultMethod
 		olc.mutation.SetMethod(v)
@@ -461,6 +479,14 @@ func (olc *OpLogCreate) createSpec() (*OpLog, *sqlgraph.CreateSpec) {
 			Column: oplog.FieldUserID,
 		})
 		_node.UserID = value
+	}
+	if value, ok := olc.mutation.Path(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: oplog.FieldPath,
+		})
+		_node.Path = value
 	}
 	if value, ok := olc.mutation.Method(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -677,6 +703,24 @@ func (u *OpLogUpsert) UpdateUserID() *OpLogUpsert {
 // ClearUserID clears the value of the "user_id" field.
 func (u *OpLogUpsert) ClearUserID() *OpLogUpsert {
 	u.SetNull(oplog.FieldUserID)
+	return u
+}
+
+// SetPath sets the "path" field.
+func (u *OpLogUpsert) SetPath(v string) *OpLogUpsert {
+	u.Set(oplog.FieldPath, v)
+	return u
+}
+
+// UpdatePath sets the "path" field to the value that was provided on create.
+func (u *OpLogUpsert) UpdatePath() *OpLogUpsert {
+	u.SetExcluded(oplog.FieldPath)
+	return u
+}
+
+// ClearPath clears the value of the "path" field.
+func (u *OpLogUpsert) ClearPath() *OpLogUpsert {
+	u.SetNull(oplog.FieldPath)
 	return u
 }
 
@@ -985,6 +1029,27 @@ func (u *OpLogUpsertOne) UpdateUserID() *OpLogUpsertOne {
 func (u *OpLogUpsertOne) ClearUserID() *OpLogUpsertOne {
 	return u.Update(func(s *OpLogUpsert) {
 		s.ClearUserID()
+	})
+}
+
+// SetPath sets the "path" field.
+func (u *OpLogUpsertOne) SetPath(v string) *OpLogUpsertOne {
+	return u.Update(func(s *OpLogUpsert) {
+		s.SetPath(v)
+	})
+}
+
+// UpdatePath sets the "path" field to the value that was provided on create.
+func (u *OpLogUpsertOne) UpdatePath() *OpLogUpsertOne {
+	return u.Update(func(s *OpLogUpsert) {
+		s.UpdatePath()
+	})
+}
+
+// ClearPath clears the value of the "path" field.
+func (u *OpLogUpsertOne) ClearPath() *OpLogUpsertOne {
+	return u.Update(func(s *OpLogUpsert) {
+		s.ClearPath()
 	})
 }
 
@@ -1481,6 +1546,27 @@ func (u *OpLogUpsertBulk) UpdateUserID() *OpLogUpsertBulk {
 func (u *OpLogUpsertBulk) ClearUserID() *OpLogUpsertBulk {
 	return u.Update(func(s *OpLogUpsert) {
 		s.ClearUserID()
+	})
+}
+
+// SetPath sets the "path" field.
+func (u *OpLogUpsertBulk) SetPath(v string) *OpLogUpsertBulk {
+	return u.Update(func(s *OpLogUpsert) {
+		s.SetPath(v)
+	})
+}
+
+// UpdatePath sets the "path" field to the value that was provided on create.
+func (u *OpLogUpsertBulk) UpdatePath() *OpLogUpsertBulk {
+	return u.Update(func(s *OpLogUpsert) {
+		s.UpdatePath()
+	})
+}
+
+// ClearPath clears the value of the "path" field.
+func (u *OpLogUpsertBulk) ClearPath() *OpLogUpsertBulk {
+	return u.Update(func(s *OpLogUpsert) {
+		s.ClearPath()
 	})
 }
 

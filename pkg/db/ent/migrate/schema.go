@@ -17,6 +17,7 @@ var (
 		{Name: "auto_id", Type: field.TypeUint32, Unique: true},
 		{Name: "app_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "path", Type: field.TypeString, Nullable: true, Default: ""},
 		{Name: "method", Type: field.TypeString, Nullable: true, Default: "DefaultMethod"},
 		{Name: "arguments", Type: field.TypeString, Nullable: true, Default: ""},
 		{Name: "cur_value", Type: field.TypeString, Nullable: true, Default: ""},

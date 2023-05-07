@@ -37,6 +37,10 @@ func (OpLog) Fields() []ent.Field {
 				return uuid.UUID{}
 			}),
 		field.
+			String("path").
+			Optional().
+			Default(""),
+		field.
 			String("method").
 			Optional().
 			Default(basetypes.HTTPMethod_DefaultMethod.String()),

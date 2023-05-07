@@ -24,6 +24,8 @@ const (
 	FieldAppID = "app_id"
 	// FieldUserID holds the string denoting the user_id field in the database.
 	FieldUserID = "user_id"
+	// FieldPath holds the string denoting the path field in the database.
+	FieldPath = "path"
 	// FieldMethod holds the string denoting the method field in the database.
 	FieldMethod = "method"
 	// FieldArguments holds the string denoting the arguments field in the database.
@@ -51,6 +53,7 @@ var Columns = []string{
 	FieldAutoID,
 	FieldAppID,
 	FieldUserID,
+	FieldPath,
 	FieldMethod,
 	FieldArguments,
 	FieldCurValue,
@@ -91,6 +94,8 @@ var (
 	DefaultAppID func() uuid.UUID
 	// DefaultUserID holds the default value on creation for the "user_id" field.
 	DefaultUserID func() uuid.UUID
+	// DefaultPath holds the default value on creation for the "path" field.
+	DefaultPath string
 	// DefaultMethod holds the default value on creation for the "method" field.
 	DefaultMethod string
 	// DefaultArguments holds the default value on creation for the "arguments" field.

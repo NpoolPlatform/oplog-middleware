@@ -28,6 +28,8 @@ type OpLog struct {
 	AppID uuid.UUID `json:"app_id,omitempty"`
 	// UserID holds the value of the "user_id" field.
 	UserID uuid.UUID `json:"user_id,omitempty"`
+	// Path holds the value of the "path" field.
+	Path string `json:"path,omitempty"`
 	// Method holds the value of the "method" field.
 	Method string `json:"method,omitempty"`
 	// Arguments holds the value of the "arguments" field.
@@ -51,7 +53,7 @@ func (*OpLog) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case oplog.FieldCreatedAt, oplog.FieldUpdatedAt, oplog.FieldDeletedAt, oplog.FieldAutoID, oplog.FieldElapsedMillisecs:
 			values[i] = new(sql.NullInt64)
-		case oplog.FieldMethod, oplog.FieldArguments, oplog.FieldCurValue, oplog.FieldHumanReadable, oplog.FieldResult, oplog.FieldFailReason:
+		case oplog.FieldPath, oplog.FieldMethod, oplog.FieldArguments, oplog.FieldCurValue, oplog.FieldHumanReadable, oplog.FieldResult, oplog.FieldFailReason:
 			values[i] = new(sql.NullString)
 		case oplog.FieldID, oplog.FieldAppID, oplog.FieldUserID:
 			values[i] = new(uuid.UUID)
@@ -111,6 +113,12 @@ func (ol *OpLog) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
 			} else if value != nil {
 				ol.UserID = *value
+			}
+		case oplog.FieldPath:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field path", values[i])
+			} else if value.Valid {
+				ol.Path = value.String
 			}
 		case oplog.FieldMethod:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -199,6 +207,9 @@ func (ol *OpLog) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("user_id=")
 	builder.WriteString(fmt.Sprintf("%v", ol.UserID))
+	builder.WriteString(", ")
+	builder.WriteString("path=")
+	builder.WriteString(ol.Path)
 	builder.WriteString(", ")
 	builder.WriteString("method=")
 	builder.WriteString(ol.Method)

@@ -121,6 +121,13 @@ func UserID(v uuid.UUID) predicate.OpLog {
 	})
 }
 
+// Path applies equality check predicate on the "path" field. It's identical to PathEQ.
+func Path(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPath), v))
+	})
+}
+
 // Method applies equality check predicate on the "method" field. It's identical to MethodEQ.
 func Method(v string) predicate.OpLog {
 	return predicate.OpLog(func(s *sql.Selector) {
@@ -579,6 +586,119 @@ func UserIDIsNil() predicate.OpLog {
 func UserIDNotNil() predicate.OpLog {
 	return predicate.OpLog(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldUserID)))
+	})
+}
+
+// PathEQ applies the EQ predicate on the "path" field.
+func PathEQ(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPath), v))
+	})
+}
+
+// PathNEQ applies the NEQ predicate on the "path" field.
+func PathNEQ(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldPath), v))
+	})
+}
+
+// PathIn applies the In predicate on the "path" field.
+func PathIn(vs ...string) predicate.OpLog {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldPath), v...))
+	})
+}
+
+// PathNotIn applies the NotIn predicate on the "path" field.
+func PathNotIn(vs ...string) predicate.OpLog {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldPath), v...))
+	})
+}
+
+// PathGT applies the GT predicate on the "path" field.
+func PathGT(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldPath), v))
+	})
+}
+
+// PathGTE applies the GTE predicate on the "path" field.
+func PathGTE(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldPath), v))
+	})
+}
+
+// PathLT applies the LT predicate on the "path" field.
+func PathLT(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldPath), v))
+	})
+}
+
+// PathLTE applies the LTE predicate on the "path" field.
+func PathLTE(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldPath), v))
+	})
+}
+
+// PathContains applies the Contains predicate on the "path" field.
+func PathContains(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldPath), v))
+	})
+}
+
+// PathHasPrefix applies the HasPrefix predicate on the "path" field.
+func PathHasPrefix(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldPath), v))
+	})
+}
+
+// PathHasSuffix applies the HasSuffix predicate on the "path" field.
+func PathHasSuffix(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldPath), v))
+	})
+}
+
+// PathIsNil applies the IsNil predicate on the "path" field.
+func PathIsNil() predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldPath)))
+	})
+}
+
+// PathNotNil applies the NotNil predicate on the "path" field.
+func PathNotNil() predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldPath)))
+	})
+}
+
+// PathEqualFold applies the EqualFold predicate on the "path" field.
+func PathEqualFold(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldPath), v))
+	})
+}
+
+// PathContainsFold applies the ContainsFold predicate on the "path" field.
+func PathContainsFold(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldPath), v))
 	})
 }
 

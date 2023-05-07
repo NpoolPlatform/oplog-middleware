@@ -56,32 +56,36 @@ func init() {
 	oplogDescUserID := oplogFields[1].Descriptor()
 	// oplog.DefaultUserID holds the default value on creation for the user_id field.
 	oplog.DefaultUserID = oplogDescUserID.Default.(func() uuid.UUID)
+	// oplogDescPath is the schema descriptor for path field.
+	oplogDescPath := oplogFields[2].Descriptor()
+	// oplog.DefaultPath holds the default value on creation for the path field.
+	oplog.DefaultPath = oplogDescPath.Default.(string)
 	// oplogDescMethod is the schema descriptor for method field.
-	oplogDescMethod := oplogFields[2].Descriptor()
+	oplogDescMethod := oplogFields[3].Descriptor()
 	// oplog.DefaultMethod holds the default value on creation for the method field.
 	oplog.DefaultMethod = oplogDescMethod.Default.(string)
 	// oplogDescArguments is the schema descriptor for arguments field.
-	oplogDescArguments := oplogFields[3].Descriptor()
+	oplogDescArguments := oplogFields[4].Descriptor()
 	// oplog.DefaultArguments holds the default value on creation for the arguments field.
 	oplog.DefaultArguments = oplogDescArguments.Default.(string)
 	// oplogDescCurValue is the schema descriptor for cur_value field.
-	oplogDescCurValue := oplogFields[4].Descriptor()
+	oplogDescCurValue := oplogFields[5].Descriptor()
 	// oplog.DefaultCurValue holds the default value on creation for the cur_value field.
 	oplog.DefaultCurValue = oplogDescCurValue.Default.(string)
 	// oplogDescHumanReadable is the schema descriptor for human_readable field.
-	oplogDescHumanReadable := oplogFields[5].Descriptor()
+	oplogDescHumanReadable := oplogFields[6].Descriptor()
 	// oplog.DefaultHumanReadable holds the default value on creation for the human_readable field.
 	oplog.DefaultHumanReadable = oplogDescHumanReadable.Default.(string)
 	// oplogDescResult is the schema descriptor for result field.
-	oplogDescResult := oplogFields[6].Descriptor()
+	oplogDescResult := oplogFields[7].Descriptor()
 	// oplog.DefaultResult holds the default value on creation for the result field.
 	oplog.DefaultResult = oplogDescResult.Default.(string)
 	// oplogDescFailReason is the schema descriptor for fail_reason field.
-	oplogDescFailReason := oplogFields[7].Descriptor()
+	oplogDescFailReason := oplogFields[8].Descriptor()
 	// oplog.DefaultFailReason holds the default value on creation for the fail_reason field.
 	oplog.DefaultFailReason = oplogDescFailReason.Default.(string)
 	// oplogDescElapsedMillisecs is the schema descriptor for elapsed_millisecs field.
-	oplogDescElapsedMillisecs := oplogFields[8].Descriptor()
+	oplogDescElapsedMillisecs := oplogFields[9].Descriptor()
 	// oplog.DefaultElapsedMillisecs holds the default value on creation for the elapsed_millisecs field.
 	oplog.DefaultElapsedMillisecs = oplogDescElapsedMillisecs.Default.(uint32)
 	// oplogDescID is the schema descriptor for id field.

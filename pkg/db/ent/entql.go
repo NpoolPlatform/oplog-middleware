@@ -32,6 +32,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			oplog.FieldAutoID:           {Type: field.TypeUint32, Column: oplog.FieldAutoID},
 			oplog.FieldAppID:            {Type: field.TypeUUID, Column: oplog.FieldAppID},
 			oplog.FieldUserID:           {Type: field.TypeUUID, Column: oplog.FieldUserID},
+			oplog.FieldPath:             {Type: field.TypeString, Column: oplog.FieldPath},
 			oplog.FieldMethod:           {Type: field.TypeString, Column: oplog.FieldMethod},
 			oplog.FieldArguments:        {Type: field.TypeString, Column: oplog.FieldArguments},
 			oplog.FieldCurValue:         {Type: field.TypeString, Column: oplog.FieldCurValue},
@@ -140,6 +141,11 @@ func (f *OpLogFilter) WhereAppID(p entql.ValueP) {
 // WhereUserID applies the entql [16]byte predicate on the user_id field.
 func (f *OpLogFilter) WhereUserID(p entql.ValueP) {
 	f.Where(p.Field(oplog.FieldUserID))
+}
+
+// WherePath applies the entql string predicate on the path field.
+func (f *OpLogFilter) WherePath(p entql.StringP) {
+	f.Where(p.Field(oplog.FieldPath))
 }
 
 // WhereMethod applies the entql string predicate on the method field.

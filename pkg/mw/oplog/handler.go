@@ -15,6 +15,7 @@ import (
 )
 
 type Handler struct {
+	AutoID        *uint32
 	AppID         *uuid.UUID
 	UserID        *uuid.UUID
 	Path          *string

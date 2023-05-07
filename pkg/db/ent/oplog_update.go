@@ -137,6 +137,26 @@ func (olu *OpLogUpdate) ClearUserID() *OpLogUpdate {
 	return olu
 }
 
+// SetPath sets the "path" field.
+func (olu *OpLogUpdate) SetPath(s string) *OpLogUpdate {
+	olu.mutation.SetPath(s)
+	return olu
+}
+
+// SetNillablePath sets the "path" field if the given value is not nil.
+func (olu *OpLogUpdate) SetNillablePath(s *string) *OpLogUpdate {
+	if s != nil {
+		olu.SetPath(*s)
+	}
+	return olu
+}
+
+// ClearPath clears the value of the "path" field.
+func (olu *OpLogUpdate) ClearPath() *OpLogUpdate {
+	olu.mutation.ClearPath()
+	return olu
+}
+
 // SetMethod sets the "method" field.
 func (olu *OpLogUpdate) SetMethod(s string) *OpLogUpdate {
 	olu.mutation.SetMethod(s)
@@ -464,6 +484,19 @@ func (olu *OpLogUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: oplog.FieldUserID,
 		})
 	}
+	if value, ok := olu.mutation.Path(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: oplog.FieldPath,
+		})
+	}
+	if olu.mutation.PathCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: oplog.FieldPath,
+		})
+	}
 	if value, ok := olu.mutation.Method(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -688,6 +721,26 @@ func (oluo *OpLogUpdateOne) SetNillableUserID(u *uuid.UUID) *OpLogUpdateOne {
 // ClearUserID clears the value of the "user_id" field.
 func (oluo *OpLogUpdateOne) ClearUserID() *OpLogUpdateOne {
 	oluo.mutation.ClearUserID()
+	return oluo
+}
+
+// SetPath sets the "path" field.
+func (oluo *OpLogUpdateOne) SetPath(s string) *OpLogUpdateOne {
+	oluo.mutation.SetPath(s)
+	return oluo
+}
+
+// SetNillablePath sets the "path" field if the given value is not nil.
+func (oluo *OpLogUpdateOne) SetNillablePath(s *string) *OpLogUpdateOne {
+	if s != nil {
+		oluo.SetPath(*s)
+	}
+	return oluo
+}
+
+// ClearPath clears the value of the "path" field.
+func (oluo *OpLogUpdateOne) ClearPath() *OpLogUpdateOne {
+	oluo.mutation.ClearPath()
 	return oluo
 }
 
@@ -1046,6 +1099,19 @@ func (oluo *OpLogUpdateOne) sqlSave(ctx context.Context) (_node *OpLog, err erro
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeUUID,
 			Column: oplog.FieldUserID,
+		})
+	}
+	if value, ok := oluo.mutation.Path(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: oplog.FieldPath,
+		})
+	}
+	if oluo.mutation.PathCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: oplog.FieldPath,
 		})
 	}
 	if value, ok := oluo.mutation.Method(); ok {
