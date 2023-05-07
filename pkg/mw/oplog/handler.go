@@ -2,6 +2,7 @@ package oplog
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
@@ -97,6 +98,13 @@ func WithMethod(ctx context.Context, method *basetypes.HTTPMethod) func(context.
 
 func WithArguments(ctx context.Context, args *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
+		if args == nil {
+			return nil
+		}
+		var _args map[string]interface{}
+		if err := json.Unmarshal([]byte(*args), &_args); err != nil {
+			return err
+		}
 		h.Arguments = args
 		return nil
 	}
@@ -104,6 +112,13 @@ func WithArguments(ctx context.Context, args *string) func(context.Context, *Han
 
 func WithCurValue(ctx context.Context, value *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
+		if value == nil {
+			return nil
+		}
+		var _args map[string]interface{}
+		if err := json.Unmarshal([]byte(*value), &_args); err != nil {
+			return err
+		}
 		h.CurValue = value
 		return nil
 	}
