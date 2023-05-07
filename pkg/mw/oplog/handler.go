@@ -41,6 +41,13 @@ func NewHandler(ctx context.Context, options ...func(context.Context, *Handler) 
 	return handler, nil
 }
 
+func WithAutoID(ctx context.Context, autoID uint32) func(context.Context, *Handler) error {
+	return func(ctx context.Context, h *Handler) error {
+		h.AutoID = &autoID
+		return nil
+	}
+}
+
 func WithAppID(ctx context.Context, id string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		_id, err := uuid.Parse(id)
