@@ -14,6 +14,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/NpoolPlatform/oplog-middleware/pkg/db/ent/oplog"
 	"github.com/NpoolPlatform/oplog-middleware/pkg/db/ent/predicate"
+	"github.com/google/uuid"
 )
 
 // OpLogQuery is the builder for querying OpLog entities.
@@ -86,8 +87,8 @@ func (olq *OpLogQuery) FirstX(ctx context.Context) *OpLog {
 
 // FirstID returns the first OpLog ID from the query.
 // Returns a *NotFoundError when no OpLog ID was found.
-func (olq *OpLogQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (olq *OpLogQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = olq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -99,7 +100,7 @@ func (olq *OpLogQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (olq *OpLogQuery) FirstIDX(ctx context.Context) int {
+func (olq *OpLogQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	id, err := olq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -137,8 +138,8 @@ func (olq *OpLogQuery) OnlyX(ctx context.Context) *OpLog {
 // OnlyID is like Only, but returns the only OpLog ID in the query.
 // Returns a *NotSingularError when more than one OpLog ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (olq *OpLogQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (olq *OpLogQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = olq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -154,7 +155,7 @@ func (olq *OpLogQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (olq *OpLogQuery) OnlyIDX(ctx context.Context) int {
+func (olq *OpLogQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 	id, err := olq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -180,8 +181,8 @@ func (olq *OpLogQuery) AllX(ctx context.Context) []*OpLog {
 }
 
 // IDs executes the query and returns a list of OpLog IDs.
-func (olq *OpLogQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
+func (olq *OpLogQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	var ids []uuid.UUID
 	if err := olq.Select(oplog.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -189,7 +190,7 @@ func (olq *OpLogQuery) IDs(ctx context.Context) ([]int, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (olq *OpLogQuery) IDsX(ctx context.Context) []int {
+func (olq *OpLogQuery) IDsX(ctx context.Context) []uuid.UUID {
 	ids, err := olq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -376,7 +377,7 @@ func (olq *OpLogQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   oplog.Table,
 			Columns: oplog.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: oplog.FieldID,
 			},
 		},

@@ -34,7 +34,7 @@ type OpLogMutation struct {
 	config
 	op                   Op
 	typ                  string
-	id                   *int
+	id                   *uuid.UUID
 	created_at           *uint32
 	addcreated_at        *int32
 	updated_at           *uint32
@@ -47,6 +47,7 @@ type OpLogMutation struct {
 	user_id              *uuid.UUID
 	method               *string
 	arguments            *string
+	cur_value            *string
 	human_readable       *string
 	result               *string
 	fail_reason          *string
@@ -78,7 +79,7 @@ func newOpLogMutation(c config, op Op, opts ...oplogOption) *OpLogMutation {
 }
 
 // withOpLogID sets the ID field of the mutation.
-func withOpLogID(id int) oplogOption {
+func withOpLogID(id uuid.UUID) oplogOption {
 	return func(m *OpLogMutation) {
 		var (
 			err   error
@@ -128,9 +129,15 @@ func (m OpLogMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of OpLog entities.
+func (m *OpLogMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *OpLogMutation) ID() (id int, exists bool) {
+func (m *OpLogMutation) ID() (id uuid.UUID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -141,12 +148,12 @@ func (m *OpLogMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *OpLogMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *OpLogMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []uuid.UUID{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -576,6 +583,55 @@ func (m *OpLogMutation) ResetArguments() {
 	delete(m.clearedFields, oplog.FieldArguments)
 }
 
+// SetCurValue sets the "cur_value" field.
+func (m *OpLogMutation) SetCurValue(s string) {
+	m.cur_value = &s
+}
+
+// CurValue returns the value of the "cur_value" field in the mutation.
+func (m *OpLogMutation) CurValue() (r string, exists bool) {
+	v := m.cur_value
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCurValue returns the old "cur_value" field's value of the OpLog entity.
+// If the OpLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OpLogMutation) OldCurValue(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCurValue is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCurValue requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCurValue: %w", err)
+	}
+	return oldValue.CurValue, nil
+}
+
+// ClearCurValue clears the value of the "cur_value" field.
+func (m *OpLogMutation) ClearCurValue() {
+	m.cur_value = nil
+	m.clearedFields[oplog.FieldCurValue] = struct{}{}
+}
+
+// CurValueCleared returns if the "cur_value" field was cleared in this mutation.
+func (m *OpLogMutation) CurValueCleared() bool {
+	_, ok := m.clearedFields[oplog.FieldCurValue]
+	return ok
+}
+
+// ResetCurValue resets all changes to the "cur_value" field.
+func (m *OpLogMutation) ResetCurValue() {
+	m.cur_value = nil
+	delete(m.clearedFields, oplog.FieldCurValue)
+}
+
 // SetHumanReadable sets the "human_readable" field.
 func (m *OpLogMutation) SetHumanReadable(s string) {
 	m.human_readable = &s
@@ -812,7 +868,7 @@ func (m *OpLogMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *OpLogMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 13)
 	if m.created_at != nil {
 		fields = append(fields, oplog.FieldCreatedAt)
 	}
@@ -836,6 +892,9 @@ func (m *OpLogMutation) Fields() []string {
 	}
 	if m.arguments != nil {
 		fields = append(fields, oplog.FieldArguments)
+	}
+	if m.cur_value != nil {
+		fields = append(fields, oplog.FieldCurValue)
 	}
 	if m.human_readable != nil {
 		fields = append(fields, oplog.FieldHumanReadable)
@@ -873,6 +932,8 @@ func (m *OpLogMutation) Field(name string) (ent.Value, bool) {
 		return m.Method()
 	case oplog.FieldArguments:
 		return m.Arguments()
+	case oplog.FieldCurValue:
+		return m.CurValue()
 	case oplog.FieldHumanReadable:
 		return m.HumanReadable()
 	case oplog.FieldResult:
@@ -906,6 +967,8 @@ func (m *OpLogMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldMethod(ctx)
 	case oplog.FieldArguments:
 		return m.OldArguments(ctx)
+	case oplog.FieldCurValue:
+		return m.OldCurValue(ctx)
 	case oplog.FieldHumanReadable:
 		return m.OldHumanReadable(ctx)
 	case oplog.FieldResult:
@@ -978,6 +1041,13 @@ func (m *OpLogMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetArguments(v)
+		return nil
+	case oplog.FieldCurValue:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCurValue(v)
 		return nil
 	case oplog.FieldHumanReadable:
 		v, ok := value.(string)
@@ -1112,6 +1182,9 @@ func (m *OpLogMutation) ClearedFields() []string {
 	if m.FieldCleared(oplog.FieldArguments) {
 		fields = append(fields, oplog.FieldArguments)
 	}
+	if m.FieldCleared(oplog.FieldCurValue) {
+		fields = append(fields, oplog.FieldCurValue)
+	}
 	if m.FieldCleared(oplog.FieldHumanReadable) {
 		fields = append(fields, oplog.FieldHumanReadable)
 	}
@@ -1149,6 +1222,9 @@ func (m *OpLogMutation) ClearField(name string) error {
 		return nil
 	case oplog.FieldArguments:
 		m.ClearArguments()
+		return nil
+	case oplog.FieldCurValue:
+		m.ClearCurValue()
 		return nil
 	case oplog.FieldHumanReadable:
 		m.ClearHumanReadable()
@@ -1193,6 +1269,9 @@ func (m *OpLogMutation) ResetField(name string) error {
 		return nil
 	case oplog.FieldArguments:
 		m.ResetArguments()
+		return nil
+	case oplog.FieldCurValue:
+		m.ResetCurValue()
 		return nil
 	case oplog.FieldHumanReadable:
 		m.ResetHumanReadable()

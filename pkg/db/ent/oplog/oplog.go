@@ -28,6 +28,8 @@ const (
 	FieldMethod = "method"
 	// FieldArguments holds the string denoting the arguments field in the database.
 	FieldArguments = "arguments"
+	// FieldCurValue holds the string denoting the cur_value field in the database.
+	FieldCurValue = "cur_value"
 	// FieldHumanReadable holds the string denoting the human_readable field in the database.
 	FieldHumanReadable = "human_readable"
 	// FieldResult holds the string denoting the result field in the database.
@@ -51,6 +53,7 @@ var Columns = []string{
 	FieldUserID,
 	FieldMethod,
 	FieldArguments,
+	FieldCurValue,
 	FieldHumanReadable,
 	FieldResult,
 	FieldFailReason,
@@ -92,6 +95,8 @@ var (
 	DefaultMethod string
 	// DefaultArguments holds the default value on creation for the "arguments" field.
 	DefaultArguments string
+	// DefaultCurValue holds the default value on creation for the "cur_value" field.
+	DefaultCurValue string
 	// DefaultHumanReadable holds the default value on creation for the "human_readable" field.
 	DefaultHumanReadable string
 	// DefaultResult holds the default value on creation for the "result" field.
@@ -100,4 +105,6 @@ var (
 	DefaultFailReason string
 	// DefaultElapsedMillisecs holds the default value on creation for the "elapsed_millisecs" field.
 	DefaultElapsedMillisecs uint32
+	// DefaultID holds the default value on creation for the "id" field.
+	DefaultID func() uuid.UUID
 )

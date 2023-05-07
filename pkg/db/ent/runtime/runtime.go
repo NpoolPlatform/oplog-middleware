@@ -30,6 +30,8 @@ func init() {
 	}
 	oplogMixinFields0 := oplogMixin[0].Fields()
 	_ = oplogMixinFields0
+	oplogMixinFields1 := oplogMixin[1].Fields()
+	_ = oplogMixinFields1
 	oplogFields := schema.OpLog{}.Fields()
 	_ = oplogFields
 	// oplogDescCreatedAt is the schema descriptor for created_at field.
@@ -62,22 +64,30 @@ func init() {
 	oplogDescArguments := oplogFields[3].Descriptor()
 	// oplog.DefaultArguments holds the default value on creation for the arguments field.
 	oplog.DefaultArguments = oplogDescArguments.Default.(string)
+	// oplogDescCurValue is the schema descriptor for cur_value field.
+	oplogDescCurValue := oplogFields[4].Descriptor()
+	// oplog.DefaultCurValue holds the default value on creation for the cur_value field.
+	oplog.DefaultCurValue = oplogDescCurValue.Default.(string)
 	// oplogDescHumanReadable is the schema descriptor for human_readable field.
-	oplogDescHumanReadable := oplogFields[4].Descriptor()
+	oplogDescHumanReadable := oplogFields[5].Descriptor()
 	// oplog.DefaultHumanReadable holds the default value on creation for the human_readable field.
 	oplog.DefaultHumanReadable = oplogDescHumanReadable.Default.(string)
 	// oplogDescResult is the schema descriptor for result field.
-	oplogDescResult := oplogFields[5].Descriptor()
+	oplogDescResult := oplogFields[6].Descriptor()
 	// oplog.DefaultResult holds the default value on creation for the result field.
 	oplog.DefaultResult = oplogDescResult.Default.(string)
 	// oplogDescFailReason is the schema descriptor for fail_reason field.
-	oplogDescFailReason := oplogFields[6].Descriptor()
+	oplogDescFailReason := oplogFields[7].Descriptor()
 	// oplog.DefaultFailReason holds the default value on creation for the fail_reason field.
 	oplog.DefaultFailReason = oplogDescFailReason.Default.(string)
 	// oplogDescElapsedMillisecs is the schema descriptor for elapsed_millisecs field.
-	oplogDescElapsedMillisecs := oplogFields[7].Descriptor()
+	oplogDescElapsedMillisecs := oplogFields[8].Descriptor()
 	// oplog.DefaultElapsedMillisecs holds the default value on creation for the elapsed_millisecs field.
 	oplog.DefaultElapsedMillisecs = oplogDescElapsedMillisecs.Default.(uint32)
+	// oplogDescID is the schema descriptor for id field.
+	oplogDescID := oplogMixinFields1[0].Descriptor()
+	// oplog.DefaultID holds the default value on creation for the id field.
+	oplog.DefaultID = oplogDescID.Default.(func() uuid.UUID)
 	pubsubmessageMixin := schema.PubsubMessage{}.Mixin()
 	pubsubmessage.Policy = privacy.NewPolicies(pubsubmessageMixin[0], schema.PubsubMessage{})
 	pubsubmessage.Hooks[0] = func(next ent.Mutator) ent.Mutator {
@@ -90,6 +100,8 @@ func init() {
 	}
 	pubsubmessageMixinFields0 := pubsubmessageMixin[0].Fields()
 	_ = pubsubmessageMixinFields0
+	pubsubmessageMixinFields1 := pubsubmessageMixin[1].Fields()
+	_ = pubsubmessageMixinFields1
 	pubsubmessageFields := schema.PubsubMessage{}.Fields()
 	_ = pubsubmessageFields
 	// pubsubmessageDescCreatedAt is the schema descriptor for created_at field.
@@ -107,25 +119,29 @@ func init() {
 	// pubsubmessage.DefaultDeletedAt holds the default value on creation for the deleted_at field.
 	pubsubmessage.DefaultDeletedAt = pubsubmessageDescDeletedAt.Default.(func() uint32)
 	// pubsubmessageDescMessageID is the schema descriptor for message_id field.
-	pubsubmessageDescMessageID := pubsubmessageFields[1].Descriptor()
+	pubsubmessageDescMessageID := pubsubmessageFields[0].Descriptor()
 	// pubsubmessage.DefaultMessageID holds the default value on creation for the message_id field.
 	pubsubmessage.DefaultMessageID = pubsubmessageDescMessageID.Default.(string)
 	// pubsubmessageDescState is the schema descriptor for state field.
-	pubsubmessageDescState := pubsubmessageFields[2].Descriptor()
+	pubsubmessageDescState := pubsubmessageFields[1].Descriptor()
 	// pubsubmessage.DefaultState holds the default value on creation for the state field.
 	pubsubmessage.DefaultState = pubsubmessageDescState.Default.(string)
 	// pubsubmessageDescRespToID is the schema descriptor for resp_to_id field.
-	pubsubmessageDescRespToID := pubsubmessageFields[3].Descriptor()
+	pubsubmessageDescRespToID := pubsubmessageFields[2].Descriptor()
 	// pubsubmessage.DefaultRespToID holds the default value on creation for the resp_to_id field.
 	pubsubmessage.DefaultRespToID = pubsubmessageDescRespToID.Default.(func() uuid.UUID)
 	// pubsubmessageDescUndoID is the schema descriptor for undo_id field.
-	pubsubmessageDescUndoID := pubsubmessageFields[4].Descriptor()
+	pubsubmessageDescUndoID := pubsubmessageFields[3].Descriptor()
 	// pubsubmessage.DefaultUndoID holds the default value on creation for the undo_id field.
 	pubsubmessage.DefaultUndoID = pubsubmessageDescUndoID.Default.(func() uuid.UUID)
 	// pubsubmessageDescArguments is the schema descriptor for arguments field.
-	pubsubmessageDescArguments := pubsubmessageFields[5].Descriptor()
+	pubsubmessageDescArguments := pubsubmessageFields[4].Descriptor()
 	// pubsubmessage.DefaultArguments holds the default value on creation for the arguments field.
 	pubsubmessage.DefaultArguments = pubsubmessageDescArguments.Default.(string)
+	// pubsubmessageDescID is the schema descriptor for id field.
+	pubsubmessageDescID := pubsubmessageMixinFields1[0].Descriptor()
+	// pubsubmessage.DefaultID holds the default value on creation for the id field.
+	pubsubmessage.DefaultID = pubsubmessageDescID.Default.(func() uuid.UUID)
 }
 
 const (

@@ -20,7 +20,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   oplog.Table,
 			Columns: oplog.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: oplog.FieldID,
 			},
 		},
@@ -34,6 +34,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			oplog.FieldUserID:           {Type: field.TypeUUID, Column: oplog.FieldUserID},
 			oplog.FieldMethod:           {Type: field.TypeString, Column: oplog.FieldMethod},
 			oplog.FieldArguments:        {Type: field.TypeString, Column: oplog.FieldArguments},
+			oplog.FieldCurValue:         {Type: field.TypeString, Column: oplog.FieldCurValue},
 			oplog.FieldHumanReadable:    {Type: field.TypeString, Column: oplog.FieldHumanReadable},
 			oplog.FieldResult:           {Type: field.TypeString, Column: oplog.FieldResult},
 			oplog.FieldFailReason:       {Type: field.TypeString, Column: oplog.FieldFailReason},
@@ -106,8 +107,8 @@ func (f *OpLogFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql int predicate on the id field.
-func (f *OpLogFilter) WhereID(p entql.IntP) {
+// WhereID applies the entql [16]byte predicate on the id field.
+func (f *OpLogFilter) WhereID(p entql.ValueP) {
 	f.Where(p.Field(oplog.FieldID))
 }
 
@@ -149,6 +150,11 @@ func (f *OpLogFilter) WhereMethod(p entql.StringP) {
 // WhereArguments applies the entql string predicate on the arguments field.
 func (f *OpLogFilter) WhereArguments(p entql.StringP) {
 	f.Where(p.Field(oplog.FieldArguments))
+}
+
+// WhereCurValue applies the entql string predicate on the cur_value field.
+func (f *OpLogFilter) WhereCurValue(p entql.StringP) {
+	f.Where(p.Field(oplog.FieldCurValue))
 }
 
 // WhereHumanReadable applies the entql string predicate on the human_readable field.

@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -126,6 +127,20 @@ func (olc *OpLogCreate) SetNillableArguments(s *string) *OpLogCreate {
 	return olc
 }
 
+// SetCurValue sets the "cur_value" field.
+func (olc *OpLogCreate) SetCurValue(s string) *OpLogCreate {
+	olc.mutation.SetCurValue(s)
+	return olc
+}
+
+// SetNillableCurValue sets the "cur_value" field if the given value is not nil.
+func (olc *OpLogCreate) SetNillableCurValue(s *string) *OpLogCreate {
+	if s != nil {
+		olc.SetCurValue(*s)
+	}
+	return olc
+}
+
 // SetHumanReadable sets the "human_readable" field.
 func (olc *OpLogCreate) SetHumanReadable(s string) *OpLogCreate {
 	olc.mutation.SetHumanReadable(s)
@@ -178,6 +193,20 @@ func (olc *OpLogCreate) SetElapsedMillisecs(u uint32) *OpLogCreate {
 func (olc *OpLogCreate) SetNillableElapsedMillisecs(u *uint32) *OpLogCreate {
 	if u != nil {
 		olc.SetElapsedMillisecs(*u)
+	}
+	return olc
+}
+
+// SetID sets the "id" field.
+func (olc *OpLogCreate) SetID(u uuid.UUID) *OpLogCreate {
+	olc.mutation.SetID(u)
+	return olc
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (olc *OpLogCreate) SetNillableID(u *uuid.UUID) *OpLogCreate {
+	if u != nil {
+		olc.SetID(*u)
 	}
 	return olc
 }
@@ -304,6 +333,10 @@ func (olc *OpLogCreate) defaults() error {
 		v := oplog.DefaultArguments
 		olc.mutation.SetArguments(v)
 	}
+	if _, ok := olc.mutation.CurValue(); !ok {
+		v := oplog.DefaultCurValue
+		olc.mutation.SetCurValue(v)
+	}
 	if _, ok := olc.mutation.HumanReadable(); !ok {
 		v := oplog.DefaultHumanReadable
 		olc.mutation.SetHumanReadable(v)
@@ -319,6 +352,13 @@ func (olc *OpLogCreate) defaults() error {
 	if _, ok := olc.mutation.ElapsedMillisecs(); !ok {
 		v := oplog.DefaultElapsedMillisecs
 		olc.mutation.SetElapsedMillisecs(v)
+	}
+	if _, ok := olc.mutation.ID(); !ok {
+		if oplog.DefaultID == nil {
+			return fmt.Errorf("ent: uninitialized oplog.DefaultID (forgotten import ent/runtime?)")
+		}
+		v := oplog.DefaultID()
+		olc.mutation.SetID(v)
 	}
 	return nil
 }
@@ -348,8 +388,13 @@ func (olc *OpLogCreate) sqlSave(ctx context.Context) (*OpLog, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
+	}
 	return _node, nil
 }
 
@@ -359,12 +404,16 @@ func (olc *OpLogCreate) createSpec() (*OpLog, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: oplog.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: oplog.FieldID,
 			},
 		}
 	)
 	_spec.OnConflict = olc.conflict
+	if id, ok := olc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = &id
+	}
 	if value, ok := olc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeUint32,
@@ -428,6 +477,14 @@ func (olc *OpLogCreate) createSpec() (*OpLog, *sqlgraph.CreateSpec) {
 			Column: oplog.FieldArguments,
 		})
 		_node.Arguments = value
+	}
+	if value, ok := olc.mutation.CurValue(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: oplog.FieldCurValue,
+		})
+		_node.CurValue = value
 	}
 	if value, ok := olc.mutation.HumanReadable(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -659,6 +716,24 @@ func (u *OpLogUpsert) ClearArguments() *OpLogUpsert {
 	return u
 }
 
+// SetCurValue sets the "cur_value" field.
+func (u *OpLogUpsert) SetCurValue(v string) *OpLogUpsert {
+	u.Set(oplog.FieldCurValue, v)
+	return u
+}
+
+// UpdateCurValue sets the "cur_value" field to the value that was provided on create.
+func (u *OpLogUpsert) UpdateCurValue() *OpLogUpsert {
+	u.SetExcluded(oplog.FieldCurValue)
+	return u
+}
+
+// ClearCurValue clears the value of the "cur_value" field.
+func (u *OpLogUpsert) ClearCurValue() *OpLogUpsert {
+	u.SetNull(oplog.FieldCurValue)
+	return u
+}
+
 // SetHumanReadable sets the "human_readable" field.
 func (u *OpLogUpsert) SetHumanReadable(v string) *OpLogUpsert {
 	u.Set(oplog.FieldHumanReadable, v)
@@ -737,17 +812,25 @@ func (u *OpLogUpsert) ClearElapsedMillisecs() *OpLogUpsert {
 	return u
 }
 
-// UpdateNewValues updates the mutable fields using the new values that were set on create.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.OpLog.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(oplog.FieldID)
+//			}),
 //		).
 //		Exec(ctx)
 //
 func (u *OpLogUpsertOne) UpdateNewValues() *OpLogUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(oplog.FieldID)
+		}
+	}))
 	return u
 }
 
@@ -947,6 +1030,27 @@ func (u *OpLogUpsertOne) ClearArguments() *OpLogUpsertOne {
 	})
 }
 
+// SetCurValue sets the "cur_value" field.
+func (u *OpLogUpsertOne) SetCurValue(v string) *OpLogUpsertOne {
+	return u.Update(func(s *OpLogUpsert) {
+		s.SetCurValue(v)
+	})
+}
+
+// UpdateCurValue sets the "cur_value" field to the value that was provided on create.
+func (u *OpLogUpsertOne) UpdateCurValue() *OpLogUpsertOne {
+	return u.Update(func(s *OpLogUpsert) {
+		s.UpdateCurValue()
+	})
+}
+
+// ClearCurValue clears the value of the "cur_value" field.
+func (u *OpLogUpsertOne) ClearCurValue() *OpLogUpsertOne {
+	return u.Update(func(s *OpLogUpsert) {
+		s.ClearCurValue()
+	})
+}
+
 // SetHumanReadable sets the "human_readable" field.
 func (u *OpLogUpsertOne) SetHumanReadable(v string) *OpLogUpsertOne {
 	return u.Update(func(s *OpLogUpsert) {
@@ -1054,7 +1158,12 @@ func (u *OpLogUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *OpLogUpsertOne) ID(ctx context.Context) (id int, err error) {
+func (u *OpLogUpsertOne) ID(ctx context.Context) (id uuid.UUID, err error) {
+	if u.create.driver.Dialect() == dialect.MySQL {
+		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
+		// fields from the database since MySQL does not support the RETURNING clause.
+		return id, errors.New("ent: OpLogUpsertOne.ID is not supported by MySQL driver. Use OpLogUpsertOne.Exec instead")
+	}
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -1063,7 +1172,7 @@ func (u *OpLogUpsertOne) ID(ctx context.Context) (id int, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *OpLogUpsertOne) IDX(ctx context.Context) int {
+func (u *OpLogUpsertOne) IDX(ctx context.Context) uuid.UUID {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1114,10 +1223,6 @@ func (olcb *OpLogCreateBulk) Save(ctx context.Context) ([]*OpLog, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				mutation.done = true
 				return nodes[i], nil
 			})
@@ -1206,11 +1311,22 @@ type OpLogUpsertBulk struct {
 //	client.OpLog.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(oplog.FieldID)
+//			}),
 //		).
 //		Exec(ctx)
 //
 func (u *OpLogUpsertBulk) UpdateNewValues() *OpLogUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(oplog.FieldID)
+				return
+			}
+		}
+	}))
 	return u
 }
 
@@ -1407,6 +1523,27 @@ func (u *OpLogUpsertBulk) UpdateArguments() *OpLogUpsertBulk {
 func (u *OpLogUpsertBulk) ClearArguments() *OpLogUpsertBulk {
 	return u.Update(func(s *OpLogUpsert) {
 		s.ClearArguments()
+	})
+}
+
+// SetCurValue sets the "cur_value" field.
+func (u *OpLogUpsertBulk) SetCurValue(v string) *OpLogUpsertBulk {
+	return u.Update(func(s *OpLogUpsert) {
+		s.SetCurValue(v)
+	})
+}
+
+// UpdateCurValue sets the "cur_value" field to the value that was provided on create.
+func (u *OpLogUpsertBulk) UpdateCurValue() *OpLogUpsertBulk {
+	return u.Update(func(s *OpLogUpsert) {
+		s.UpdateCurValue()
+	})
+}
+
+// ClearCurValue clears the value of the "cur_value" field.
+func (u *OpLogUpsertBulk) ClearCurValue() *OpLogUpsertBulk {
+	return u.Update(func(s *OpLogUpsert) {
+		s.ClearCurValue()
 	})
 }
 

@@ -10,7 +10,7 @@ import (
 var (
 	// OpLogsColumns holds the columns for the "op_logs" table.
 	OpLogsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "id", Type: field.TypeUUID, Unique: true},
 		{Name: "created_at", Type: field.TypeUint32},
 		{Name: "updated_at", Type: field.TypeUint32},
 		{Name: "deleted_at", Type: field.TypeUint32},
@@ -19,6 +19,7 @@ var (
 		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "method", Type: field.TypeString, Nullable: true, Default: "DefaultMethod"},
 		{Name: "arguments", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "cur_value", Type: field.TypeString, Nullable: true, Default: ""},
 		{Name: "human_readable", Type: field.TypeString, Nullable: true, Default: ""},
 		{Name: "result", Type: field.TypeString, Nullable: true, Default: "DefaultResult"},
 		{Name: "fail_reason", Type: field.TypeString, Nullable: true, Default: ""},

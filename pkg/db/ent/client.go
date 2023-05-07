@@ -171,7 +171,7 @@ func (c *OpLogClient) UpdateOne(ol *OpLog) *OpLogUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *OpLogClient) UpdateOneID(id int) *OpLogUpdateOne {
+func (c *OpLogClient) UpdateOneID(id uuid.UUID) *OpLogUpdateOne {
 	mutation := newOpLogMutation(c.config, OpUpdateOne, withOpLogID(id))
 	return &OpLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -188,7 +188,7 @@ func (c *OpLogClient) DeleteOne(ol *OpLog) *OpLogDeleteOne {
 }
 
 // DeleteOne returns a builder for deleting the given entity by its id.
-func (c *OpLogClient) DeleteOneID(id int) *OpLogDeleteOne {
+func (c *OpLogClient) DeleteOneID(id uuid.UUID) *OpLogDeleteOne {
 	builder := c.Delete().Where(oplog.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -203,12 +203,12 @@ func (c *OpLogClient) Query() *OpLogQuery {
 }
 
 // Get returns a OpLog entity by its id.
-func (c *OpLogClient) Get(ctx context.Context, id int) (*OpLog, error) {
+func (c *OpLogClient) Get(ctx context.Context, id uuid.UUID) (*OpLog, error) {
 	return c.Query().Where(oplog.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *OpLogClient) GetX(ctx context.Context, id int) *OpLog {
+func (c *OpLogClient) GetX(ctx context.Context, id uuid.UUID) *OpLog {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)

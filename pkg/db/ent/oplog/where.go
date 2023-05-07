@@ -9,28 +9,28 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id int) predicate.OpLog {
+func ID(id uuid.UUID) predicate.OpLog {
 	return predicate.OpLog(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldID), id))
 	})
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id int) predicate.OpLog {
+func IDEQ(id uuid.UUID) predicate.OpLog {
 	return predicate.OpLog(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldID), id))
 	})
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id int) predicate.OpLog {
+func IDNEQ(id uuid.UUID) predicate.OpLog {
 	return predicate.OpLog(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldID), id))
 	})
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...int) predicate.OpLog {
+func IDIn(ids ...uuid.UUID) predicate.OpLog {
 	return predicate.OpLog(func(s *sql.Selector) {
 		v := make([]interface{}, len(ids))
 		for i := range v {
@@ -41,7 +41,7 @@ func IDIn(ids ...int) predicate.OpLog {
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...int) predicate.OpLog {
+func IDNotIn(ids ...uuid.UUID) predicate.OpLog {
 	return predicate.OpLog(func(s *sql.Selector) {
 		v := make([]interface{}, len(ids))
 		for i := range v {
@@ -52,28 +52,28 @@ func IDNotIn(ids ...int) predicate.OpLog {
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id int) predicate.OpLog {
+func IDGT(id uuid.UUID) predicate.OpLog {
 	return predicate.OpLog(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldID), id))
 	})
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id int) predicate.OpLog {
+func IDGTE(id uuid.UUID) predicate.OpLog {
 	return predicate.OpLog(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldID), id))
 	})
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id int) predicate.OpLog {
+func IDLT(id uuid.UUID) predicate.OpLog {
 	return predicate.OpLog(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldID), id))
 	})
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id int) predicate.OpLog {
+func IDLTE(id uuid.UUID) predicate.OpLog {
 	return predicate.OpLog(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldID), id))
 	})
@@ -132,6 +132,13 @@ func Method(v string) predicate.OpLog {
 func Arguments(v string) predicate.OpLog {
 	return predicate.OpLog(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldArguments), v))
+	})
+}
+
+// CurValue applies equality check predicate on the "cur_value" field. It's identical to CurValueEQ.
+func CurValue(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldCurValue), v))
 	})
 }
 
@@ -798,6 +805,119 @@ func ArgumentsEqualFold(v string) predicate.OpLog {
 func ArgumentsContainsFold(v string) predicate.OpLog {
 	return predicate.OpLog(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldArguments), v))
+	})
+}
+
+// CurValueEQ applies the EQ predicate on the "cur_value" field.
+func CurValueEQ(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldCurValue), v))
+	})
+}
+
+// CurValueNEQ applies the NEQ predicate on the "cur_value" field.
+func CurValueNEQ(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldCurValue), v))
+	})
+}
+
+// CurValueIn applies the In predicate on the "cur_value" field.
+func CurValueIn(vs ...string) predicate.OpLog {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldCurValue), v...))
+	})
+}
+
+// CurValueNotIn applies the NotIn predicate on the "cur_value" field.
+func CurValueNotIn(vs ...string) predicate.OpLog {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldCurValue), v...))
+	})
+}
+
+// CurValueGT applies the GT predicate on the "cur_value" field.
+func CurValueGT(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldCurValue), v))
+	})
+}
+
+// CurValueGTE applies the GTE predicate on the "cur_value" field.
+func CurValueGTE(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldCurValue), v))
+	})
+}
+
+// CurValueLT applies the LT predicate on the "cur_value" field.
+func CurValueLT(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldCurValue), v))
+	})
+}
+
+// CurValueLTE applies the LTE predicate on the "cur_value" field.
+func CurValueLTE(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldCurValue), v))
+	})
+}
+
+// CurValueContains applies the Contains predicate on the "cur_value" field.
+func CurValueContains(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldCurValue), v))
+	})
+}
+
+// CurValueHasPrefix applies the HasPrefix predicate on the "cur_value" field.
+func CurValueHasPrefix(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldCurValue), v))
+	})
+}
+
+// CurValueHasSuffix applies the HasSuffix predicate on the "cur_value" field.
+func CurValueHasSuffix(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldCurValue), v))
+	})
+}
+
+// CurValueIsNil applies the IsNil predicate on the "cur_value" field.
+func CurValueIsNil() predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldCurValue)))
+	})
+}
+
+// CurValueNotNil applies the NotNil predicate on the "cur_value" field.
+func CurValueNotNil() predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldCurValue)))
+	})
+}
+
+// CurValueEqualFold applies the EqualFold predicate on the "cur_value" field.
+func CurValueEqualFold(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldCurValue), v))
+	})
+}
+
+// CurValueContainsFold applies the ContainsFold predicate on the "cur_value" field.
+func CurValueContainsFold(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldCurValue), v))
 	})
 }
 

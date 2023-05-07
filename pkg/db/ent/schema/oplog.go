@@ -45,6 +45,10 @@ func (OpLog) Fields() []ent.Field {
 			Optional().
 			Default(""),
 		field.
+			String("cur_value").
+			Optional().
+			Default(""),
+		field.
 			String("human_readable").
 			Optional().
 			Default(""),

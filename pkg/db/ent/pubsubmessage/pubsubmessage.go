@@ -85,4 +85,6 @@ var (
 	DefaultUndoID func() uuid.UUID
 	// DefaultArguments holds the default value on creation for the "arguments" field.
 	DefaultArguments string
+	// DefaultID holds the default value on creation for the "id" field.
+	DefaultID func() uuid.UUID
 )

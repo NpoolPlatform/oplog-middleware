@@ -177,6 +177,26 @@ func (olu *OpLogUpdate) ClearArguments() *OpLogUpdate {
 	return olu
 }
 
+// SetCurValue sets the "cur_value" field.
+func (olu *OpLogUpdate) SetCurValue(s string) *OpLogUpdate {
+	olu.mutation.SetCurValue(s)
+	return olu
+}
+
+// SetNillableCurValue sets the "cur_value" field if the given value is not nil.
+func (olu *OpLogUpdate) SetNillableCurValue(s *string) *OpLogUpdate {
+	if s != nil {
+		olu.SetCurValue(*s)
+	}
+	return olu
+}
+
+// ClearCurValue clears the value of the "cur_value" field.
+func (olu *OpLogUpdate) ClearCurValue() *OpLogUpdate {
+	olu.mutation.ClearCurValue()
+	return olu
+}
+
 // SetHumanReadable sets the "human_readable" field.
 func (olu *OpLogUpdate) SetHumanReadable(s string) *OpLogUpdate {
 	olu.mutation.SetHumanReadable(s)
@@ -350,7 +370,7 @@ func (olu *OpLogUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   oplog.Table,
 			Columns: oplog.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: oplog.FieldID,
 			},
 		},
@@ -468,6 +488,19 @@ func (olu *OpLogUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: oplog.FieldArguments,
+		})
+	}
+	if value, ok := olu.mutation.CurValue(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: oplog.FieldCurValue,
+		})
+	}
+	if olu.mutation.CurValueCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: oplog.FieldCurValue,
 		})
 	}
 	if value, ok := olu.mutation.HumanReadable(); ok {
@@ -698,6 +731,26 @@ func (oluo *OpLogUpdateOne) ClearArguments() *OpLogUpdateOne {
 	return oluo
 }
 
+// SetCurValue sets the "cur_value" field.
+func (oluo *OpLogUpdateOne) SetCurValue(s string) *OpLogUpdateOne {
+	oluo.mutation.SetCurValue(s)
+	return oluo
+}
+
+// SetNillableCurValue sets the "cur_value" field if the given value is not nil.
+func (oluo *OpLogUpdateOne) SetNillableCurValue(s *string) *OpLogUpdateOne {
+	if s != nil {
+		oluo.SetCurValue(*s)
+	}
+	return oluo
+}
+
+// ClearCurValue clears the value of the "cur_value" field.
+func (oluo *OpLogUpdateOne) ClearCurValue() *OpLogUpdateOne {
+	oluo.mutation.ClearCurValue()
+	return oluo
+}
+
 // SetHumanReadable sets the "human_readable" field.
 func (oluo *OpLogUpdateOne) SetHumanReadable(s string) *OpLogUpdateOne {
 	oluo.mutation.SetHumanReadable(s)
@@ -884,7 +937,7 @@ func (oluo *OpLogUpdateOne) sqlSave(ctx context.Context) (_node *OpLog, err erro
 			Table:   oplog.Table,
 			Columns: oplog.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: oplog.FieldID,
 			},
 		},
@@ -1019,6 +1072,19 @@ func (oluo *OpLogUpdateOne) sqlSave(ctx context.Context) (_node *OpLog, err erro
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: oplog.FieldArguments,
+		})
+	}
+	if value, ok := oluo.mutation.CurValue(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: oplog.FieldCurValue,
+		})
+	}
+	if oluo.mutation.CurValueCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: oplog.FieldCurValue,
 		})
 	}
 	if value, ok := oluo.mutation.HumanReadable(); ok {
