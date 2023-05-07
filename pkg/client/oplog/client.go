@@ -56,12 +56,12 @@ func UpdateOpLog(ctx context.Context, in *npool.OpLogReq) (*npool.OpLog, error) 
 			Info: in,
 		})
 		if err != nil {
-			return nil, fmt.Errorf("fail create oplog: %v", err)
+			return nil, fmt.Errorf("fail update oplog: %v", err)
 		}
 		return resp.GetInfo(), nil
 	})
 	if err != nil {
-		return nil, fmt.Errorf("fail create oplog: %v", err)
+		return nil, fmt.Errorf("fail update oplog: %v", err)
 	}
 	return info.(*npool.OpLog), nil
 }

@@ -15,6 +15,7 @@ func (s *Server) UpdateOpLog(ctx context.Context, in *npool.UpdateOpLogRequest) 
 	req := in.GetInfo()
 	handler, err := oplog1.NewHandler(
 		ctx,
+		oplog1.WithEntID(ctx, req.EntID),
 		oplog1.WithCurValue(ctx, req.CurValue),
 		oplog1.WithHumanReadable(ctx, req.HumanReadable),
 		oplog1.WithResult(ctx, req.Result),

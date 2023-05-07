@@ -4,11 +4,12 @@ go 1.17
 
 require (
 	ariga.io/atlas v0.10.0
+	bou.ke/monkey v1.0.2
 	entgo.io/ent v0.12.0
 	github.com/NpoolPlatform/basal-middleware v0.0.0-20230421085555-165e4722a9ba
 	github.com/NpoolPlatform/go-service-framework v0.0.0-20230507024845-c15be37b4e7a
 	github.com/NpoolPlatform/libent-cruder v0.0.0-20230507074148-02539caf4422
-	github.com/NpoolPlatform/message v0.0.0-20230507074655-a87b3e51726e
+	github.com/NpoolPlatform/message v0.0.0-20230507081335-ac805b7e8fe3
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/google/uuid v1.3.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.11.3

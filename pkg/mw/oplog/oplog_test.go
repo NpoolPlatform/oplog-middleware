@@ -118,7 +118,7 @@ func getConds(t *testing.T) {
 	}
 }
 
-func TestAPI(t *testing.T) {
+func TestOpLog(t *testing.T) {
 	if runByGithubAction, err := strconv.ParseBool(os.Getenv("RUN_BY_GITHUB_ACTION")); err == nil && runByGithubAction {
 		return
 	}
