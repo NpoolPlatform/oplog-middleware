@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/NpoolPlatform/service-template/pkg/db/ent"
+	"github.com/NpoolPlatform/oplog-middleware/pkg/db/ent"
 
 	"entgo.io/ent/entql"
 	"entgo.io/ent/privacy"
@@ -150,28 +150,28 @@ func DenyMutationOperationRule(op ent.Op) MutationRule {
 	return OnMutationOperation(rule, op)
 }
 
-// The DetailQueryRuleFunc type is an adapter to allow the use of ordinary
+// The OpLogQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
-type DetailQueryRuleFunc func(context.Context, *ent.DetailQuery) error
+type OpLogQueryRuleFunc func(context.Context, *ent.OpLogQuery) error
 
 // EvalQuery return f(ctx, q).
-func (f DetailQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
-	if q, ok := q.(*ent.DetailQuery); ok {
+func (f OpLogQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.OpLogQuery); ok {
 		return f(ctx, q)
 	}
-	return Denyf("ent/privacy: unexpected query type %T, expect *ent.DetailQuery", q)
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.OpLogQuery", q)
 }
 
-// The DetailMutationRuleFunc type is an adapter to allow the use of ordinary
+// The OpLogMutationRuleFunc type is an adapter to allow the use of ordinary
 // functions as a mutation rule.
-type DetailMutationRuleFunc func(context.Context, *ent.DetailMutation) error
+type OpLogMutationRuleFunc func(context.Context, *ent.OpLogMutation) error
 
 // EvalMutation calls f(ctx, m).
-func (f DetailMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
-	if m, ok := m.(*ent.DetailMutation); ok {
+func (f OpLogMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.OpLogMutation); ok {
 		return f(ctx, m)
 	}
-	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.DetailMutation", m)
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.OpLogMutation", m)
 }
 
 // The PubsubMessageQueryRuleFunc type is an adapter to allow the use of ordinary
@@ -233,7 +233,7 @@ var _ QueryMutationRule = FilterFunc(nil)
 
 func queryFilter(q ent.Query) (Filter, error) {
 	switch q := q.(type) {
-	case *ent.DetailQuery:
+	case *ent.OpLogQuery:
 		return q.Filter(), nil
 	case *ent.PubsubMessageQuery:
 		return q.Filter(), nil
@@ -244,7 +244,7 @@ func queryFilter(q ent.Query) (Filter, error) {
 
 func mutationFilter(m ent.Mutation) (Filter, error) {
 	switch m := m.(type) {
-	case *ent.DetailMutation:
+	case *ent.OpLogMutation:
 		return m.Filter(), nil
 	case *ent.PubsubMessageMutation:
 		return m.Filter(), nil

@@ -8,11 +8,11 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/NpoolPlatform/service-template/pkg/db/ent/migrate"
+	"github.com/NpoolPlatform/oplog-middleware/pkg/db/ent/migrate"
 	"github.com/google/uuid"
 
-	"github.com/NpoolPlatform/service-template/pkg/db/ent/detail"
-	"github.com/NpoolPlatform/service-template/pkg/db/ent/pubsubmessage"
+	"github.com/NpoolPlatform/oplog-middleware/pkg/db/ent/oplog"
+	"github.com/NpoolPlatform/oplog-middleware/pkg/db/ent/pubsubmessage"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
@@ -23,8 +23,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
-	// Detail is the client for interacting with the Detail builders.
-	Detail *DetailClient
+	// OpLog is the client for interacting with the OpLog builders.
+	OpLog *OpLogClient
 	// PubsubMessage is the client for interacting with the PubsubMessage builders.
 	PubsubMessage *PubsubMessageClient
 }
@@ -40,7 +40,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
-	c.Detail = NewDetailClient(c.config)
+	c.OpLog = NewOpLogClient(c.config)
 	c.PubsubMessage = NewPubsubMessageClient(c.config)
 }
 
@@ -75,7 +75,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	return &Tx{
 		ctx:           ctx,
 		config:        cfg,
-		Detail:        NewDetailClient(cfg),
+		OpLog:         NewOpLogClient(cfg),
 		PubsubMessage: NewPubsubMessageClient(cfg),
 	}, nil
 }
@@ -96,7 +96,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		ctx:           ctx,
 		config:        cfg,
-		Detail:        NewDetailClient(cfg),
+		OpLog:         NewOpLogClient(cfg),
 		PubsubMessage: NewPubsubMessageClient(cfg),
 	}, nil
 }
@@ -104,7 +104,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Detail.
+//		OpLog.
 //		Query().
 //		Count(ctx)
 //
@@ -127,88 +127,88 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.Detail.Use(hooks...)
+	c.OpLog.Use(hooks...)
 	c.PubsubMessage.Use(hooks...)
 }
 
-// DetailClient is a client for the Detail schema.
-type DetailClient struct {
+// OpLogClient is a client for the OpLog schema.
+type OpLogClient struct {
 	config
 }
 
-// NewDetailClient returns a client for the Detail from the given config.
-func NewDetailClient(c config) *DetailClient {
-	return &DetailClient{config: c}
+// NewOpLogClient returns a client for the OpLog from the given config.
+func NewOpLogClient(c config) *OpLogClient {
+	return &OpLogClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `detail.Hooks(f(g(h())))`.
-func (c *DetailClient) Use(hooks ...Hook) {
-	c.hooks.Detail = append(c.hooks.Detail, hooks...)
+// A call to `Use(f, g, h)` equals to `oplog.Hooks(f(g(h())))`.
+func (c *OpLogClient) Use(hooks ...Hook) {
+	c.hooks.OpLog = append(c.hooks.OpLog, hooks...)
 }
 
-// Create returns a builder for creating a Detail entity.
-func (c *DetailClient) Create() *DetailCreate {
-	mutation := newDetailMutation(c.config, OpCreate)
-	return &DetailCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a builder for creating a OpLog entity.
+func (c *OpLogClient) Create() *OpLogCreate {
+	mutation := newOpLogMutation(c.config, OpCreate)
+	return &OpLogCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of Detail entities.
-func (c *DetailClient) CreateBulk(builders ...*DetailCreate) *DetailCreateBulk {
-	return &DetailCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of OpLog entities.
+func (c *OpLogClient) CreateBulk(builders ...*OpLogCreate) *OpLogCreateBulk {
+	return &OpLogCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for Detail.
-func (c *DetailClient) Update() *DetailUpdate {
-	mutation := newDetailMutation(c.config, OpUpdate)
-	return &DetailUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for OpLog.
+func (c *OpLogClient) Update() *OpLogUpdate {
+	mutation := newOpLogMutation(c.config, OpUpdate)
+	return &OpLogUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *DetailClient) UpdateOne(d *Detail) *DetailUpdateOne {
-	mutation := newDetailMutation(c.config, OpUpdateOne, withDetail(d))
-	return &DetailUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *OpLogClient) UpdateOne(ol *OpLog) *OpLogUpdateOne {
+	mutation := newOpLogMutation(c.config, OpUpdateOne, withOpLog(ol))
+	return &OpLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *DetailClient) UpdateOneID(id uuid.UUID) *DetailUpdateOne {
-	mutation := newDetailMutation(c.config, OpUpdateOne, withDetailID(id))
-	return &DetailUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *OpLogClient) UpdateOneID(id int) *OpLogUpdateOne {
+	mutation := newOpLogMutation(c.config, OpUpdateOne, withOpLogID(id))
+	return &OpLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for Detail.
-func (c *DetailClient) Delete() *DetailDelete {
-	mutation := newDetailMutation(c.config, OpDelete)
-	return &DetailDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for OpLog.
+func (c *OpLogClient) Delete() *OpLogDelete {
+	mutation := newOpLogMutation(c.config, OpDelete)
+	return &OpLogDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *DetailClient) DeleteOne(d *Detail) *DetailDeleteOne {
-	return c.DeleteOneID(d.ID)
+func (c *OpLogClient) DeleteOne(ol *OpLog) *OpLogDeleteOne {
+	return c.DeleteOneID(ol.ID)
 }
 
 // DeleteOne returns a builder for deleting the given entity by its id.
-func (c *DetailClient) DeleteOneID(id uuid.UUID) *DetailDeleteOne {
-	builder := c.Delete().Where(detail.ID(id))
+func (c *OpLogClient) DeleteOneID(id int) *OpLogDeleteOne {
+	builder := c.Delete().Where(oplog.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &DetailDeleteOne{builder}
+	return &OpLogDeleteOne{builder}
 }
 
-// Query returns a query builder for Detail.
-func (c *DetailClient) Query() *DetailQuery {
-	return &DetailQuery{
+// Query returns a query builder for OpLog.
+func (c *OpLogClient) Query() *OpLogQuery {
+	return &OpLogQuery{
 		config: c.config,
 	}
 }
 
-// Get returns a Detail entity by its id.
-func (c *DetailClient) Get(ctx context.Context, id uuid.UUID) (*Detail, error) {
-	return c.Query().Where(detail.ID(id)).Only(ctx)
+// Get returns a OpLog entity by its id.
+func (c *OpLogClient) Get(ctx context.Context, id int) (*OpLog, error) {
+	return c.Query().Where(oplog.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *DetailClient) GetX(ctx context.Context, id uuid.UUID) *Detail {
+func (c *OpLogClient) GetX(ctx context.Context, id int) *OpLog {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -217,9 +217,9 @@ func (c *DetailClient) GetX(ctx context.Context, id uuid.UUID) *Detail {
 }
 
 // Hooks returns the client hooks.
-func (c *DetailClient) Hooks() []Hook {
-	hooks := c.hooks.Detail
-	return append(hooks[:len(hooks):len(hooks)], detail.Hooks[:]...)
+func (c *OpLogClient) Hooks() []Hook {
+	hooks := c.hooks.OpLog
+	return append(hooks[:len(hooks):len(hooks)], oplog.Hooks[:]...)
 }
 
 // PubsubMessageClient is a client for the PubsubMessage schema.

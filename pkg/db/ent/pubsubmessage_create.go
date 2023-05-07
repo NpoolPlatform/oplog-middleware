@@ -11,7 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/NpoolPlatform/service-template/pkg/db/ent/pubsubmessage"
+	"github.com/NpoolPlatform/oplog-middleware/pkg/db/ent/pubsubmessage"
 	"github.com/google/uuid"
 )
 

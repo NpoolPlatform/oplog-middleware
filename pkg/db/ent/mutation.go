@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/NpoolPlatform/service-template/pkg/db/ent/detail"
-	"github.com/NpoolPlatform/service-template/pkg/db/ent/predicate"
-	"github.com/NpoolPlatform/service-template/pkg/db/ent/pubsubmessage"
+	"github.com/NpoolPlatform/oplog-middleware/pkg/db/ent/oplog"
+	"github.com/NpoolPlatform/oplog-middleware/pkg/db/ent/predicate"
+	"github.com/NpoolPlatform/oplog-middleware/pkg/db/ent/pubsubmessage"
 	"github.com/google/uuid"
 
 	"entgo.io/ent"
@@ -25,42 +25,50 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeDetail        = "Detail"
+	TypeOpLog         = "OpLog"
 	TypePubsubMessage = "PubsubMessage"
 )
 
-// DetailMutation represents an operation that mutates the Detail nodes in the graph.
-type DetailMutation struct {
+// OpLogMutation represents an operation that mutates the OpLog nodes in the graph.
+type OpLogMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *uuid.UUID
-	created_at    *uint32
-	addcreated_at *int32
-	updated_at    *uint32
-	addupdated_at *int32
-	deleted_at    *uint32
-	adddeleted_at *int32
-	auto_id       *uint32
-	addauto_id    *int32
-	sample_col    *string
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*Detail, error)
-	predicates    []predicate.Detail
+	op                   Op
+	typ                  string
+	id                   *int
+	created_at           *uint32
+	addcreated_at        *int32
+	updated_at           *uint32
+	addupdated_at        *int32
+	deleted_at           *uint32
+	adddeleted_at        *int32
+	auto_id              *uint32
+	addauto_id           *int32
+	app_id               *uuid.UUID
+	user_id              *uuid.UUID
+	method               *string
+	arguments            *string
+	human_readable       *string
+	result               *string
+	fail_reason          *string
+	elapsed_millisecs    *uint32
+	addelapsed_millisecs *int32
+	clearedFields        map[string]struct{}
+	done                 bool
+	oldValue             func(context.Context) (*OpLog, error)
+	predicates           []predicate.OpLog
 }
 
-var _ ent.Mutation = (*DetailMutation)(nil)
+var _ ent.Mutation = (*OpLogMutation)(nil)
 
-// detailOption allows management of the mutation configuration using functional options.
-type detailOption func(*DetailMutation)
+// oplogOption allows management of the mutation configuration using functional options.
+type oplogOption func(*OpLogMutation)
 
-// newDetailMutation creates new mutation for the Detail entity.
-func newDetailMutation(c config, op Op, opts ...detailOption) *DetailMutation {
-	m := &DetailMutation{
+// newOpLogMutation creates new mutation for the OpLog entity.
+func newOpLogMutation(c config, op Op, opts ...oplogOption) *OpLogMutation {
+	m := &OpLogMutation{
 		config:        c,
 		op:            op,
-		typ:           TypeDetail,
+		typ:           TypeOpLog,
 		clearedFields: make(map[string]struct{}),
 	}
 	for _, opt := range opts {
@@ -69,20 +77,20 @@ func newDetailMutation(c config, op Op, opts ...detailOption) *DetailMutation {
 	return m
 }
 
-// withDetailID sets the ID field of the mutation.
-func withDetailID(id uuid.UUID) detailOption {
-	return func(m *DetailMutation) {
+// withOpLogID sets the ID field of the mutation.
+func withOpLogID(id int) oplogOption {
+	return func(m *OpLogMutation) {
 		var (
 			err   error
 			once  sync.Once
-			value *Detail
+			value *OpLog
 		)
-		m.oldValue = func(ctx context.Context) (*Detail, error) {
+		m.oldValue = func(ctx context.Context) (*OpLog, error) {
 			once.Do(func() {
 				if m.done {
 					err = errors.New("querying old values post mutation is not allowed")
 				} else {
-					value, err = m.Client().Detail.Get(ctx, id)
+					value, err = m.Client().OpLog.Get(ctx, id)
 				}
 			})
 			return value, err
@@ -91,10 +99,10 @@ func withDetailID(id uuid.UUID) detailOption {
 	}
 }
 
-// withDetail sets the old Detail of the mutation.
-func withDetail(node *Detail) detailOption {
-	return func(m *DetailMutation) {
-		m.oldValue = func(context.Context) (*Detail, error) {
+// withOpLog sets the old OpLog of the mutation.
+func withOpLog(node *OpLog) oplogOption {
+	return func(m *OpLogMutation) {
+		m.oldValue = func(context.Context) (*OpLog, error) {
 			return node, nil
 		}
 		m.id = &node.ID
@@ -103,7 +111,7 @@ func withDetail(node *Detail) detailOption {
 
 // Client returns a new `ent.Client` from the mutation. If the mutation was
 // executed in a transaction (ent.Tx), a transactional client is returned.
-func (m DetailMutation) Client() *Client {
+func (m OpLogMutation) Client() *Client {
 	client := &Client{config: m.config}
 	client.init()
 	return client
@@ -111,7 +119,7 @@ func (m DetailMutation) Client() *Client {
 
 // Tx returns an `ent.Tx` for mutations that were executed in transactions;
 // it returns an error otherwise.
-func (m DetailMutation) Tx() (*Tx, error) {
+func (m OpLogMutation) Tx() (*Tx, error) {
 	if _, ok := m.driver.(*txDriver); !ok {
 		return nil, errors.New("ent: mutation is not running in a transaction")
 	}
@@ -120,15 +128,9 @@ func (m DetailMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
-// SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of Detail entities.
-func (m *DetailMutation) SetID(id uuid.UUID) {
-	m.id = &id
-}
-
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *DetailMutation) ID() (id uuid.UUID, exists bool) {
+func (m *OpLogMutation) ID() (id int, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -139,29 +141,29 @@ func (m *DetailMutation) ID() (id uuid.UUID, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *DetailMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+func (m *OpLogMutation) IDs(ctx context.Context) ([]int, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []uuid.UUID{id}, nil
+			return []int{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().Detail.Query().Where(m.predicates...).IDs(ctx)
+		return m.Client().OpLog.Query().Where(m.predicates...).IDs(ctx)
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (m *DetailMutation) SetCreatedAt(u uint32) {
+func (m *OpLogMutation) SetCreatedAt(u uint32) {
 	m.created_at = &u
 	m.addcreated_at = nil
 }
 
 // CreatedAt returns the value of the "created_at" field in the mutation.
-func (m *DetailMutation) CreatedAt() (r uint32, exists bool) {
+func (m *OpLogMutation) CreatedAt() (r uint32, exists bool) {
 	v := m.created_at
 	if v == nil {
 		return
@@ -169,10 +171,10 @@ func (m *DetailMutation) CreatedAt() (r uint32, exists bool) {
 	return *v, true
 }
 
-// OldCreatedAt returns the old "created_at" field's value of the Detail entity.
-// If the Detail object wasn't provided to the builder, the object is fetched from the database.
+// OldCreatedAt returns the old "created_at" field's value of the OpLog entity.
+// If the OpLog object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DetailMutation) OldCreatedAt(ctx context.Context) (v uint32, err error) {
+func (m *OpLogMutation) OldCreatedAt(ctx context.Context) (v uint32, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
 	}
@@ -187,7 +189,7 @@ func (m *DetailMutation) OldCreatedAt(ctx context.Context) (v uint32, err error)
 }
 
 // AddCreatedAt adds u to the "created_at" field.
-func (m *DetailMutation) AddCreatedAt(u int32) {
+func (m *OpLogMutation) AddCreatedAt(u int32) {
 	if m.addcreated_at != nil {
 		*m.addcreated_at += u
 	} else {
@@ -196,7 +198,7 @@ func (m *DetailMutation) AddCreatedAt(u int32) {
 }
 
 // AddedCreatedAt returns the value that was added to the "created_at" field in this mutation.
-func (m *DetailMutation) AddedCreatedAt() (r int32, exists bool) {
+func (m *OpLogMutation) AddedCreatedAt() (r int32, exists bool) {
 	v := m.addcreated_at
 	if v == nil {
 		return
@@ -205,19 +207,19 @@ func (m *DetailMutation) AddedCreatedAt() (r int32, exists bool) {
 }
 
 // ResetCreatedAt resets all changes to the "created_at" field.
-func (m *DetailMutation) ResetCreatedAt() {
+func (m *OpLogMutation) ResetCreatedAt() {
 	m.created_at = nil
 	m.addcreated_at = nil
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (m *DetailMutation) SetUpdatedAt(u uint32) {
+func (m *OpLogMutation) SetUpdatedAt(u uint32) {
 	m.updated_at = &u
 	m.addupdated_at = nil
 }
 
 // UpdatedAt returns the value of the "updated_at" field in the mutation.
-func (m *DetailMutation) UpdatedAt() (r uint32, exists bool) {
+func (m *OpLogMutation) UpdatedAt() (r uint32, exists bool) {
 	v := m.updated_at
 	if v == nil {
 		return
@@ -225,10 +227,10 @@ func (m *DetailMutation) UpdatedAt() (r uint32, exists bool) {
 	return *v, true
 }
 
-// OldUpdatedAt returns the old "updated_at" field's value of the Detail entity.
-// If the Detail object wasn't provided to the builder, the object is fetched from the database.
+// OldUpdatedAt returns the old "updated_at" field's value of the OpLog entity.
+// If the OpLog object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DetailMutation) OldUpdatedAt(ctx context.Context) (v uint32, err error) {
+func (m *OpLogMutation) OldUpdatedAt(ctx context.Context) (v uint32, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
 	}
@@ -243,7 +245,7 @@ func (m *DetailMutation) OldUpdatedAt(ctx context.Context) (v uint32, err error)
 }
 
 // AddUpdatedAt adds u to the "updated_at" field.
-func (m *DetailMutation) AddUpdatedAt(u int32) {
+func (m *OpLogMutation) AddUpdatedAt(u int32) {
 	if m.addupdated_at != nil {
 		*m.addupdated_at += u
 	} else {
@@ -252,7 +254,7 @@ func (m *DetailMutation) AddUpdatedAt(u int32) {
 }
 
 // AddedUpdatedAt returns the value that was added to the "updated_at" field in this mutation.
-func (m *DetailMutation) AddedUpdatedAt() (r int32, exists bool) {
+func (m *OpLogMutation) AddedUpdatedAt() (r int32, exists bool) {
 	v := m.addupdated_at
 	if v == nil {
 		return
@@ -261,19 +263,19 @@ func (m *DetailMutation) AddedUpdatedAt() (r int32, exists bool) {
 }
 
 // ResetUpdatedAt resets all changes to the "updated_at" field.
-func (m *DetailMutation) ResetUpdatedAt() {
+func (m *OpLogMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 	m.addupdated_at = nil
 }
 
 // SetDeletedAt sets the "deleted_at" field.
-func (m *DetailMutation) SetDeletedAt(u uint32) {
+func (m *OpLogMutation) SetDeletedAt(u uint32) {
 	m.deleted_at = &u
 	m.adddeleted_at = nil
 }
 
 // DeletedAt returns the value of the "deleted_at" field in the mutation.
-func (m *DetailMutation) DeletedAt() (r uint32, exists bool) {
+func (m *OpLogMutation) DeletedAt() (r uint32, exists bool) {
 	v := m.deleted_at
 	if v == nil {
 		return
@@ -281,10 +283,10 @@ func (m *DetailMutation) DeletedAt() (r uint32, exists bool) {
 	return *v, true
 }
 
-// OldDeletedAt returns the old "deleted_at" field's value of the Detail entity.
-// If the Detail object wasn't provided to the builder, the object is fetched from the database.
+// OldDeletedAt returns the old "deleted_at" field's value of the OpLog entity.
+// If the OpLog object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DetailMutation) OldDeletedAt(ctx context.Context) (v uint32, err error) {
+func (m *OpLogMutation) OldDeletedAt(ctx context.Context) (v uint32, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
 	}
@@ -299,7 +301,7 @@ func (m *DetailMutation) OldDeletedAt(ctx context.Context) (v uint32, err error)
 }
 
 // AddDeletedAt adds u to the "deleted_at" field.
-func (m *DetailMutation) AddDeletedAt(u int32) {
+func (m *OpLogMutation) AddDeletedAt(u int32) {
 	if m.adddeleted_at != nil {
 		*m.adddeleted_at += u
 	} else {
@@ -308,7 +310,7 @@ func (m *DetailMutation) AddDeletedAt(u int32) {
 }
 
 // AddedDeletedAt returns the value that was added to the "deleted_at" field in this mutation.
-func (m *DetailMutation) AddedDeletedAt() (r int32, exists bool) {
+func (m *OpLogMutation) AddedDeletedAt() (r int32, exists bool) {
 	v := m.adddeleted_at
 	if v == nil {
 		return
@@ -317,19 +319,19 @@ func (m *DetailMutation) AddedDeletedAt() (r int32, exists bool) {
 }
 
 // ResetDeletedAt resets all changes to the "deleted_at" field.
-func (m *DetailMutation) ResetDeletedAt() {
+func (m *OpLogMutation) ResetDeletedAt() {
 	m.deleted_at = nil
 	m.adddeleted_at = nil
 }
 
 // SetAutoID sets the "auto_id" field.
-func (m *DetailMutation) SetAutoID(u uint32) {
+func (m *OpLogMutation) SetAutoID(u uint32) {
 	m.auto_id = &u
 	m.addauto_id = nil
 }
 
 // AutoID returns the value of the "auto_id" field in the mutation.
-func (m *DetailMutation) AutoID() (r uint32, exists bool) {
+func (m *OpLogMutation) AutoID() (r uint32, exists bool) {
 	v := m.auto_id
 	if v == nil {
 		return
@@ -337,10 +339,10 @@ func (m *DetailMutation) AutoID() (r uint32, exists bool) {
 	return *v, true
 }
 
-// OldAutoID returns the old "auto_id" field's value of the Detail entity.
-// If the Detail object wasn't provided to the builder, the object is fetched from the database.
+// OldAutoID returns the old "auto_id" field's value of the OpLog entity.
+// If the OpLog object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DetailMutation) OldAutoID(ctx context.Context) (v uint32, err error) {
+func (m *OpLogMutation) OldAutoID(ctx context.Context) (v uint32, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldAutoID is only allowed on UpdateOne operations")
 	}
@@ -355,7 +357,7 @@ func (m *DetailMutation) OldAutoID(ctx context.Context) (v uint32, err error) {
 }
 
 // AddAutoID adds u to the "auto_id" field.
-func (m *DetailMutation) AddAutoID(u int32) {
+func (m *OpLogMutation) AddAutoID(u int32) {
 	if m.addauto_id != nil {
 		*m.addauto_id += u
 	} else {
@@ -364,7 +366,7 @@ func (m *DetailMutation) AddAutoID(u int32) {
 }
 
 // AddedAutoID returns the value that was added to the "auto_id" field in this mutation.
-func (m *DetailMutation) AddedAutoID() (r int32, exists bool) {
+func (m *OpLogMutation) AddedAutoID() (r int32, exists bool) {
 	v := m.addauto_id
 	if v == nil {
 		return
@@ -373,94 +375,479 @@ func (m *DetailMutation) AddedAutoID() (r int32, exists bool) {
 }
 
 // ResetAutoID resets all changes to the "auto_id" field.
-func (m *DetailMutation) ResetAutoID() {
+func (m *OpLogMutation) ResetAutoID() {
 	m.auto_id = nil
 	m.addauto_id = nil
 }
 
-// SetSampleCol sets the "sample_col" field.
-func (m *DetailMutation) SetSampleCol(s string) {
-	m.sample_col = &s
+// SetAppID sets the "app_id" field.
+func (m *OpLogMutation) SetAppID(u uuid.UUID) {
+	m.app_id = &u
 }
 
-// SampleCol returns the value of the "sample_col" field in the mutation.
-func (m *DetailMutation) SampleCol() (r string, exists bool) {
-	v := m.sample_col
+// AppID returns the value of the "app_id" field in the mutation.
+func (m *OpLogMutation) AppID() (r uuid.UUID, exists bool) {
+	v := m.app_id
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldSampleCol returns the old "sample_col" field's value of the Detail entity.
-// If the Detail object wasn't provided to the builder, the object is fetched from the database.
+// OldAppID returns the old "app_id" field's value of the OpLog entity.
+// If the OpLog object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DetailMutation) OldSampleCol(ctx context.Context) (v string, err error) {
+func (m *OpLogMutation) OldAppID(ctx context.Context) (v uuid.UUID, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldSampleCol is only allowed on UpdateOne operations")
+		return v, errors.New("OldAppID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldSampleCol requires an ID field in the mutation")
+		return v, errors.New("OldAppID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSampleCol: %w", err)
+		return v, fmt.Errorf("querying old value for OldAppID: %w", err)
 	}
-	return oldValue.SampleCol, nil
+	return oldValue.AppID, nil
 }
 
-// ClearSampleCol clears the value of the "sample_col" field.
-func (m *DetailMutation) ClearSampleCol() {
-	m.sample_col = nil
-	m.clearedFields[detail.FieldSampleCol] = struct{}{}
+// ClearAppID clears the value of the "app_id" field.
+func (m *OpLogMutation) ClearAppID() {
+	m.app_id = nil
+	m.clearedFields[oplog.FieldAppID] = struct{}{}
 }
 
-// SampleColCleared returns if the "sample_col" field was cleared in this mutation.
-func (m *DetailMutation) SampleColCleared() bool {
-	_, ok := m.clearedFields[detail.FieldSampleCol]
+// AppIDCleared returns if the "app_id" field was cleared in this mutation.
+func (m *OpLogMutation) AppIDCleared() bool {
+	_, ok := m.clearedFields[oplog.FieldAppID]
 	return ok
 }
 
-// ResetSampleCol resets all changes to the "sample_col" field.
-func (m *DetailMutation) ResetSampleCol() {
-	m.sample_col = nil
-	delete(m.clearedFields, detail.FieldSampleCol)
+// ResetAppID resets all changes to the "app_id" field.
+func (m *OpLogMutation) ResetAppID() {
+	m.app_id = nil
+	delete(m.clearedFields, oplog.FieldAppID)
 }
 
-// Where appends a list predicates to the DetailMutation builder.
-func (m *DetailMutation) Where(ps ...predicate.Detail) {
+// SetUserID sets the "user_id" field.
+func (m *OpLogMutation) SetUserID(u uuid.UUID) {
+	m.user_id = &u
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *OpLogMutation) UserID() (r uuid.UUID, exists bool) {
+	v := m.user_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the OpLog entity.
+// If the OpLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OpLogMutation) OldUserID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (m *OpLogMutation) ClearUserID() {
+	m.user_id = nil
+	m.clearedFields[oplog.FieldUserID] = struct{}{}
+}
+
+// UserIDCleared returns if the "user_id" field was cleared in this mutation.
+func (m *OpLogMutation) UserIDCleared() bool {
+	_, ok := m.clearedFields[oplog.FieldUserID]
+	return ok
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *OpLogMutation) ResetUserID() {
+	m.user_id = nil
+	delete(m.clearedFields, oplog.FieldUserID)
+}
+
+// SetMethod sets the "method" field.
+func (m *OpLogMutation) SetMethod(s string) {
+	m.method = &s
+}
+
+// Method returns the value of the "method" field in the mutation.
+func (m *OpLogMutation) Method() (r string, exists bool) {
+	v := m.method
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMethod returns the old "method" field's value of the OpLog entity.
+// If the OpLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OpLogMutation) OldMethod(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMethod is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMethod requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMethod: %w", err)
+	}
+	return oldValue.Method, nil
+}
+
+// ClearMethod clears the value of the "method" field.
+func (m *OpLogMutation) ClearMethod() {
+	m.method = nil
+	m.clearedFields[oplog.FieldMethod] = struct{}{}
+}
+
+// MethodCleared returns if the "method" field was cleared in this mutation.
+func (m *OpLogMutation) MethodCleared() bool {
+	_, ok := m.clearedFields[oplog.FieldMethod]
+	return ok
+}
+
+// ResetMethod resets all changes to the "method" field.
+func (m *OpLogMutation) ResetMethod() {
+	m.method = nil
+	delete(m.clearedFields, oplog.FieldMethod)
+}
+
+// SetArguments sets the "arguments" field.
+func (m *OpLogMutation) SetArguments(s string) {
+	m.arguments = &s
+}
+
+// Arguments returns the value of the "arguments" field in the mutation.
+func (m *OpLogMutation) Arguments() (r string, exists bool) {
+	v := m.arguments
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldArguments returns the old "arguments" field's value of the OpLog entity.
+// If the OpLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OpLogMutation) OldArguments(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldArguments is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldArguments requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldArguments: %w", err)
+	}
+	return oldValue.Arguments, nil
+}
+
+// ClearArguments clears the value of the "arguments" field.
+func (m *OpLogMutation) ClearArguments() {
+	m.arguments = nil
+	m.clearedFields[oplog.FieldArguments] = struct{}{}
+}
+
+// ArgumentsCleared returns if the "arguments" field was cleared in this mutation.
+func (m *OpLogMutation) ArgumentsCleared() bool {
+	_, ok := m.clearedFields[oplog.FieldArguments]
+	return ok
+}
+
+// ResetArguments resets all changes to the "arguments" field.
+func (m *OpLogMutation) ResetArguments() {
+	m.arguments = nil
+	delete(m.clearedFields, oplog.FieldArguments)
+}
+
+// SetHumanReadable sets the "human_readable" field.
+func (m *OpLogMutation) SetHumanReadable(s string) {
+	m.human_readable = &s
+}
+
+// HumanReadable returns the value of the "human_readable" field in the mutation.
+func (m *OpLogMutation) HumanReadable() (r string, exists bool) {
+	v := m.human_readable
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHumanReadable returns the old "human_readable" field's value of the OpLog entity.
+// If the OpLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OpLogMutation) OldHumanReadable(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldHumanReadable is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldHumanReadable requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHumanReadable: %w", err)
+	}
+	return oldValue.HumanReadable, nil
+}
+
+// ClearHumanReadable clears the value of the "human_readable" field.
+func (m *OpLogMutation) ClearHumanReadable() {
+	m.human_readable = nil
+	m.clearedFields[oplog.FieldHumanReadable] = struct{}{}
+}
+
+// HumanReadableCleared returns if the "human_readable" field was cleared in this mutation.
+func (m *OpLogMutation) HumanReadableCleared() bool {
+	_, ok := m.clearedFields[oplog.FieldHumanReadable]
+	return ok
+}
+
+// ResetHumanReadable resets all changes to the "human_readable" field.
+func (m *OpLogMutation) ResetHumanReadable() {
+	m.human_readable = nil
+	delete(m.clearedFields, oplog.FieldHumanReadable)
+}
+
+// SetResult sets the "result" field.
+func (m *OpLogMutation) SetResult(s string) {
+	m.result = &s
+}
+
+// Result returns the value of the "result" field in the mutation.
+func (m *OpLogMutation) Result() (r string, exists bool) {
+	v := m.result
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldResult returns the old "result" field's value of the OpLog entity.
+// If the OpLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OpLogMutation) OldResult(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldResult is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldResult requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldResult: %w", err)
+	}
+	return oldValue.Result, nil
+}
+
+// ClearResult clears the value of the "result" field.
+func (m *OpLogMutation) ClearResult() {
+	m.result = nil
+	m.clearedFields[oplog.FieldResult] = struct{}{}
+}
+
+// ResultCleared returns if the "result" field was cleared in this mutation.
+func (m *OpLogMutation) ResultCleared() bool {
+	_, ok := m.clearedFields[oplog.FieldResult]
+	return ok
+}
+
+// ResetResult resets all changes to the "result" field.
+func (m *OpLogMutation) ResetResult() {
+	m.result = nil
+	delete(m.clearedFields, oplog.FieldResult)
+}
+
+// SetFailReason sets the "fail_reason" field.
+func (m *OpLogMutation) SetFailReason(s string) {
+	m.fail_reason = &s
+}
+
+// FailReason returns the value of the "fail_reason" field in the mutation.
+func (m *OpLogMutation) FailReason() (r string, exists bool) {
+	v := m.fail_reason
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFailReason returns the old "fail_reason" field's value of the OpLog entity.
+// If the OpLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OpLogMutation) OldFailReason(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFailReason is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFailReason requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFailReason: %w", err)
+	}
+	return oldValue.FailReason, nil
+}
+
+// ClearFailReason clears the value of the "fail_reason" field.
+func (m *OpLogMutation) ClearFailReason() {
+	m.fail_reason = nil
+	m.clearedFields[oplog.FieldFailReason] = struct{}{}
+}
+
+// FailReasonCleared returns if the "fail_reason" field was cleared in this mutation.
+func (m *OpLogMutation) FailReasonCleared() bool {
+	_, ok := m.clearedFields[oplog.FieldFailReason]
+	return ok
+}
+
+// ResetFailReason resets all changes to the "fail_reason" field.
+func (m *OpLogMutation) ResetFailReason() {
+	m.fail_reason = nil
+	delete(m.clearedFields, oplog.FieldFailReason)
+}
+
+// SetElapsedMillisecs sets the "elapsed_millisecs" field.
+func (m *OpLogMutation) SetElapsedMillisecs(u uint32) {
+	m.elapsed_millisecs = &u
+	m.addelapsed_millisecs = nil
+}
+
+// ElapsedMillisecs returns the value of the "elapsed_millisecs" field in the mutation.
+func (m *OpLogMutation) ElapsedMillisecs() (r uint32, exists bool) {
+	v := m.elapsed_millisecs
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldElapsedMillisecs returns the old "elapsed_millisecs" field's value of the OpLog entity.
+// If the OpLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OpLogMutation) OldElapsedMillisecs(ctx context.Context) (v uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldElapsedMillisecs is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldElapsedMillisecs requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldElapsedMillisecs: %w", err)
+	}
+	return oldValue.ElapsedMillisecs, nil
+}
+
+// AddElapsedMillisecs adds u to the "elapsed_millisecs" field.
+func (m *OpLogMutation) AddElapsedMillisecs(u int32) {
+	if m.addelapsed_millisecs != nil {
+		*m.addelapsed_millisecs += u
+	} else {
+		m.addelapsed_millisecs = &u
+	}
+}
+
+// AddedElapsedMillisecs returns the value that was added to the "elapsed_millisecs" field in this mutation.
+func (m *OpLogMutation) AddedElapsedMillisecs() (r int32, exists bool) {
+	v := m.addelapsed_millisecs
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearElapsedMillisecs clears the value of the "elapsed_millisecs" field.
+func (m *OpLogMutation) ClearElapsedMillisecs() {
+	m.elapsed_millisecs = nil
+	m.addelapsed_millisecs = nil
+	m.clearedFields[oplog.FieldElapsedMillisecs] = struct{}{}
+}
+
+// ElapsedMillisecsCleared returns if the "elapsed_millisecs" field was cleared in this mutation.
+func (m *OpLogMutation) ElapsedMillisecsCleared() bool {
+	_, ok := m.clearedFields[oplog.FieldElapsedMillisecs]
+	return ok
+}
+
+// ResetElapsedMillisecs resets all changes to the "elapsed_millisecs" field.
+func (m *OpLogMutation) ResetElapsedMillisecs() {
+	m.elapsed_millisecs = nil
+	m.addelapsed_millisecs = nil
+	delete(m.clearedFields, oplog.FieldElapsedMillisecs)
+}
+
+// Where appends a list predicates to the OpLogMutation builder.
+func (m *OpLogMutation) Where(ps ...predicate.OpLog) {
 	m.predicates = append(m.predicates, ps...)
 }
 
 // Op returns the operation name.
-func (m *DetailMutation) Op() Op {
+func (m *OpLogMutation) Op() Op {
 	return m.op
 }
 
-// Type returns the node type of this mutation (Detail).
-func (m *DetailMutation) Type() string {
+// Type returns the node type of this mutation (OpLog).
+func (m *OpLogMutation) Type() string {
 	return m.typ
 }
 
 // Fields returns all fields that were changed during this mutation. Note that in
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
-func (m *DetailMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+func (m *OpLogMutation) Fields() []string {
+	fields := make([]string, 0, 12)
 	if m.created_at != nil {
-		fields = append(fields, detail.FieldCreatedAt)
+		fields = append(fields, oplog.FieldCreatedAt)
 	}
 	if m.updated_at != nil {
-		fields = append(fields, detail.FieldUpdatedAt)
+		fields = append(fields, oplog.FieldUpdatedAt)
 	}
 	if m.deleted_at != nil {
-		fields = append(fields, detail.FieldDeletedAt)
+		fields = append(fields, oplog.FieldDeletedAt)
 	}
 	if m.auto_id != nil {
-		fields = append(fields, detail.FieldAutoID)
+		fields = append(fields, oplog.FieldAutoID)
 	}
-	if m.sample_col != nil {
-		fields = append(fields, detail.FieldSampleCol)
+	if m.app_id != nil {
+		fields = append(fields, oplog.FieldAppID)
+	}
+	if m.user_id != nil {
+		fields = append(fields, oplog.FieldUserID)
+	}
+	if m.method != nil {
+		fields = append(fields, oplog.FieldMethod)
+	}
+	if m.arguments != nil {
+		fields = append(fields, oplog.FieldArguments)
+	}
+	if m.human_readable != nil {
+		fields = append(fields, oplog.FieldHumanReadable)
+	}
+	if m.result != nil {
+		fields = append(fields, oplog.FieldResult)
+	}
+	if m.fail_reason != nil {
+		fields = append(fields, oplog.FieldFailReason)
+	}
+	if m.elapsed_millisecs != nil {
+		fields = append(fields, oplog.FieldElapsedMillisecs)
 	}
 	return fields
 }
@@ -468,18 +855,32 @@ func (m *DetailMutation) Fields() []string {
 // Field returns the value of a field with the given name. The second boolean
 // return value indicates that this field was not set, or was not defined in the
 // schema.
-func (m *DetailMutation) Field(name string) (ent.Value, bool) {
+func (m *OpLogMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case detail.FieldCreatedAt:
+	case oplog.FieldCreatedAt:
 		return m.CreatedAt()
-	case detail.FieldUpdatedAt:
+	case oplog.FieldUpdatedAt:
 		return m.UpdatedAt()
-	case detail.FieldDeletedAt:
+	case oplog.FieldDeletedAt:
 		return m.DeletedAt()
-	case detail.FieldAutoID:
+	case oplog.FieldAutoID:
 		return m.AutoID()
-	case detail.FieldSampleCol:
-		return m.SampleCol()
+	case oplog.FieldAppID:
+		return m.AppID()
+	case oplog.FieldUserID:
+		return m.UserID()
+	case oplog.FieldMethod:
+		return m.Method()
+	case oplog.FieldArguments:
+		return m.Arguments()
+	case oplog.FieldHumanReadable:
+		return m.HumanReadable()
+	case oplog.FieldResult:
+		return m.Result()
+	case oplog.FieldFailReason:
+		return m.FailReason()
+	case oplog.FieldElapsedMillisecs:
+		return m.ElapsedMillisecs()
 	}
 	return nil, false
 }
@@ -487,81 +888,147 @@ func (m *DetailMutation) Field(name string) (ent.Value, bool) {
 // OldField returns the old value of the field from the database. An error is
 // returned if the mutation operation is not UpdateOne, or the query to the
 // database failed.
-func (m *DetailMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+func (m *OpLogMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case detail.FieldCreatedAt:
+	case oplog.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
-	case detail.FieldUpdatedAt:
+	case oplog.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
-	case detail.FieldDeletedAt:
+	case oplog.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
-	case detail.FieldAutoID:
+	case oplog.FieldAutoID:
 		return m.OldAutoID(ctx)
-	case detail.FieldSampleCol:
-		return m.OldSampleCol(ctx)
+	case oplog.FieldAppID:
+		return m.OldAppID(ctx)
+	case oplog.FieldUserID:
+		return m.OldUserID(ctx)
+	case oplog.FieldMethod:
+		return m.OldMethod(ctx)
+	case oplog.FieldArguments:
+		return m.OldArguments(ctx)
+	case oplog.FieldHumanReadable:
+		return m.OldHumanReadable(ctx)
+	case oplog.FieldResult:
+		return m.OldResult(ctx)
+	case oplog.FieldFailReason:
+		return m.OldFailReason(ctx)
+	case oplog.FieldElapsedMillisecs:
+		return m.OldElapsedMillisecs(ctx)
 	}
-	return nil, fmt.Errorf("unknown Detail field %s", name)
+	return nil, fmt.Errorf("unknown OpLog field %s", name)
 }
 
 // SetField sets the value of a field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *DetailMutation) SetField(name string, value ent.Value) error {
+func (m *OpLogMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case detail.FieldCreatedAt:
+	case oplog.FieldCreatedAt:
 		v, ok := value.(uint32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreatedAt(v)
 		return nil
-	case detail.FieldUpdatedAt:
+	case oplog.FieldUpdatedAt:
 		v, ok := value.(uint32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdatedAt(v)
 		return nil
-	case detail.FieldDeletedAt:
+	case oplog.FieldDeletedAt:
 		v, ok := value.(uint32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDeletedAt(v)
 		return nil
-	case detail.FieldAutoID:
+	case oplog.FieldAutoID:
 		v, ok := value.(uint32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAutoID(v)
 		return nil
-	case detail.FieldSampleCol:
+	case oplog.FieldAppID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAppID(v)
+		return nil
+	case oplog.FieldUserID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
+		return nil
+	case oplog.FieldMethod:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetSampleCol(v)
+		m.SetMethod(v)
+		return nil
+	case oplog.FieldArguments:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetArguments(v)
+		return nil
+	case oplog.FieldHumanReadable:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHumanReadable(v)
+		return nil
+	case oplog.FieldResult:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetResult(v)
+		return nil
+	case oplog.FieldFailReason:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFailReason(v)
+		return nil
+	case oplog.FieldElapsedMillisecs:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetElapsedMillisecs(v)
 		return nil
 	}
-	return fmt.Errorf("unknown Detail field %s", name)
+	return fmt.Errorf("unknown OpLog field %s", name)
 }
 
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
-func (m *DetailMutation) AddedFields() []string {
+func (m *OpLogMutation) AddedFields() []string {
 	var fields []string
 	if m.addcreated_at != nil {
-		fields = append(fields, detail.FieldCreatedAt)
+		fields = append(fields, oplog.FieldCreatedAt)
 	}
 	if m.addupdated_at != nil {
-		fields = append(fields, detail.FieldUpdatedAt)
+		fields = append(fields, oplog.FieldUpdatedAt)
 	}
 	if m.adddeleted_at != nil {
-		fields = append(fields, detail.FieldDeletedAt)
+		fields = append(fields, oplog.FieldDeletedAt)
 	}
 	if m.addauto_id != nil {
-		fields = append(fields, detail.FieldAutoID)
+		fields = append(fields, oplog.FieldAutoID)
+	}
+	if m.addelapsed_millisecs != nil {
+		fields = append(fields, oplog.FieldElapsedMillisecs)
 	}
 	return fields
 }
@@ -569,16 +1036,18 @@ func (m *DetailMutation) AddedFields() []string {
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
-func (m *DetailMutation) AddedField(name string) (ent.Value, bool) {
+func (m *OpLogMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case detail.FieldCreatedAt:
+	case oplog.FieldCreatedAt:
 		return m.AddedCreatedAt()
-	case detail.FieldUpdatedAt:
+	case oplog.FieldUpdatedAt:
 		return m.AddedUpdatedAt()
-	case detail.FieldDeletedAt:
+	case oplog.FieldDeletedAt:
 		return m.AddedDeletedAt()
-	case detail.FieldAutoID:
+	case oplog.FieldAutoID:
 		return m.AddedAutoID()
+	case oplog.FieldElapsedMillisecs:
+		return m.AddedElapsedMillisecs()
 	}
 	return nil, false
 }
@@ -586,137 +1055,207 @@ func (m *DetailMutation) AddedField(name string) (ent.Value, bool) {
 // AddField adds the value to the field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *DetailMutation) AddField(name string, value ent.Value) error {
+func (m *OpLogMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case detail.FieldCreatedAt:
+	case oplog.FieldCreatedAt:
 		v, ok := value.(int32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddCreatedAt(v)
 		return nil
-	case detail.FieldUpdatedAt:
+	case oplog.FieldUpdatedAt:
 		v, ok := value.(int32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddUpdatedAt(v)
 		return nil
-	case detail.FieldDeletedAt:
+	case oplog.FieldDeletedAt:
 		v, ok := value.(int32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddDeletedAt(v)
 		return nil
-	case detail.FieldAutoID:
+	case oplog.FieldAutoID:
 		v, ok := value.(int32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddAutoID(v)
 		return nil
+	case oplog.FieldElapsedMillisecs:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddElapsedMillisecs(v)
+		return nil
 	}
-	return fmt.Errorf("unknown Detail numeric field %s", name)
+	return fmt.Errorf("unknown OpLog numeric field %s", name)
 }
 
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
-func (m *DetailMutation) ClearedFields() []string {
+func (m *OpLogMutation) ClearedFields() []string {
 	var fields []string
-	if m.FieldCleared(detail.FieldSampleCol) {
-		fields = append(fields, detail.FieldSampleCol)
+	if m.FieldCleared(oplog.FieldAppID) {
+		fields = append(fields, oplog.FieldAppID)
+	}
+	if m.FieldCleared(oplog.FieldUserID) {
+		fields = append(fields, oplog.FieldUserID)
+	}
+	if m.FieldCleared(oplog.FieldMethod) {
+		fields = append(fields, oplog.FieldMethod)
+	}
+	if m.FieldCleared(oplog.FieldArguments) {
+		fields = append(fields, oplog.FieldArguments)
+	}
+	if m.FieldCleared(oplog.FieldHumanReadable) {
+		fields = append(fields, oplog.FieldHumanReadable)
+	}
+	if m.FieldCleared(oplog.FieldResult) {
+		fields = append(fields, oplog.FieldResult)
+	}
+	if m.FieldCleared(oplog.FieldFailReason) {
+		fields = append(fields, oplog.FieldFailReason)
+	}
+	if m.FieldCleared(oplog.FieldElapsedMillisecs) {
+		fields = append(fields, oplog.FieldElapsedMillisecs)
 	}
 	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
 // cleared in this mutation.
-func (m *DetailMutation) FieldCleared(name string) bool {
+func (m *OpLogMutation) FieldCleared(name string) bool {
 	_, ok := m.clearedFields[name]
 	return ok
 }
 
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
-func (m *DetailMutation) ClearField(name string) error {
+func (m *OpLogMutation) ClearField(name string) error {
 	switch name {
-	case detail.FieldSampleCol:
-		m.ClearSampleCol()
+	case oplog.FieldAppID:
+		m.ClearAppID()
+		return nil
+	case oplog.FieldUserID:
+		m.ClearUserID()
+		return nil
+	case oplog.FieldMethod:
+		m.ClearMethod()
+		return nil
+	case oplog.FieldArguments:
+		m.ClearArguments()
+		return nil
+	case oplog.FieldHumanReadable:
+		m.ClearHumanReadable()
+		return nil
+	case oplog.FieldResult:
+		m.ClearResult()
+		return nil
+	case oplog.FieldFailReason:
+		m.ClearFailReason()
+		return nil
+	case oplog.FieldElapsedMillisecs:
+		m.ClearElapsedMillisecs()
 		return nil
 	}
-	return fmt.Errorf("unknown Detail nullable field %s", name)
+	return fmt.Errorf("unknown OpLog nullable field %s", name)
 }
 
 // ResetField resets all changes in the mutation for the field with the given name.
 // It returns an error if the field is not defined in the schema.
-func (m *DetailMutation) ResetField(name string) error {
+func (m *OpLogMutation) ResetField(name string) error {
 	switch name {
-	case detail.FieldCreatedAt:
+	case oplog.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
-	case detail.FieldUpdatedAt:
+	case oplog.FieldUpdatedAt:
 		m.ResetUpdatedAt()
 		return nil
-	case detail.FieldDeletedAt:
+	case oplog.FieldDeletedAt:
 		m.ResetDeletedAt()
 		return nil
-	case detail.FieldAutoID:
+	case oplog.FieldAutoID:
 		m.ResetAutoID()
 		return nil
-	case detail.FieldSampleCol:
-		m.ResetSampleCol()
+	case oplog.FieldAppID:
+		m.ResetAppID()
+		return nil
+	case oplog.FieldUserID:
+		m.ResetUserID()
+		return nil
+	case oplog.FieldMethod:
+		m.ResetMethod()
+		return nil
+	case oplog.FieldArguments:
+		m.ResetArguments()
+		return nil
+	case oplog.FieldHumanReadable:
+		m.ResetHumanReadable()
+		return nil
+	case oplog.FieldResult:
+		m.ResetResult()
+		return nil
+	case oplog.FieldFailReason:
+		m.ResetFailReason()
+		return nil
+	case oplog.FieldElapsedMillisecs:
+		m.ResetElapsedMillisecs()
 		return nil
 	}
-	return fmt.Errorf("unknown Detail field %s", name)
+	return fmt.Errorf("unknown OpLog field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
-func (m *DetailMutation) AddedEdges() []string {
+func (m *OpLogMutation) AddedEdges() []string {
 	edges := make([]string, 0, 0)
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
-func (m *DetailMutation) AddedIDs(name string) []ent.Value {
+func (m *OpLogMutation) AddedIDs(name string) []ent.Value {
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
-func (m *DetailMutation) RemovedEdges() []string {
+func (m *OpLogMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 0)
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
-func (m *DetailMutation) RemovedIDs(name string) []ent.Value {
+func (m *OpLogMutation) RemovedIDs(name string) []ent.Value {
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *DetailMutation) ClearedEdges() []string {
+func (m *OpLogMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 0)
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
-func (m *DetailMutation) EdgeCleared(name string) bool {
+func (m *OpLogMutation) EdgeCleared(name string) bool {
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
-func (m *DetailMutation) ClearEdge(name string) error {
-	return fmt.Errorf("unknown Detail unique edge %s", name)
+func (m *OpLogMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown OpLog unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
-func (m *DetailMutation) ResetEdge(name string) error {
-	return fmt.Errorf("unknown Detail edge %s", name)
+func (m *OpLogMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown OpLog edge %s", name)
 }
 
 // PubsubMessageMutation represents an operation that mutates the PubsubMessage nodes in the graph.

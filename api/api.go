@@ -3,28 +3,28 @@ package api
 import (
 	"context"
 
-	servicetmpl "github.com/NpoolPlatform/message/npool/servicetmpl/mw/v1"
+	oplog "github.com/NpoolPlatform/message/npool/oplog/mw/v1"
 
-	"github.com/NpoolPlatform/service-template/api/detail"
+	"github.com/NpoolPlatform/oplog-middleware/api/oplog"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 )
 
 type Server struct {
-	servicetmpl.UnimplementedMiddlewareServer
+	oplog.UnimplementedMiddlewareServer
 }
 
 func Register(server grpc.ServiceRegistrar) {
-	servicetmpl.RegisterMiddlewareServer(server, &Server{})
-	detail.Register(server)
+	oplog.RegisterMiddlewareServer(server, &Server{})
+	oplog.Register(server)
 }
 
 func RegisterGateway(mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) error {
-	if err := servicetmpl.RegisterMiddlewareHandlerFromEndpoint(context.Background(), mux, endpoint, opts); err != nil {
+	if err := oplog.RegisterMiddlewareHandlerFromEndpoint(context.Background(), mux, endpoint, opts); err != nil {
 		return err
 	}
-	if err := detail.RegisterGateway(mux, endpoint, opts); err != nil {
+	if err := oplog.RegisterGateway(mux, endpoint, opts); err != nil {
 		return err
 	}
 	return nil

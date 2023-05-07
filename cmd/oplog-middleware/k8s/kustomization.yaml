@@ -1,0 +1,5 @@
+resources:
+  - 01-oplog-middleware.viper.yaml
+  - 02-oplog-middleware.yaml
+  - 03-strip-prefix.yaml
+  - 04-service-monitor.yaml

@@ -4,7 +4,7 @@ package pubsubmessage
 
 import (
 	"entgo.io/ent/dialect/sql"
-	"github.com/NpoolPlatform/service-template/pkg/db/ent/predicate"
+	"github.com/NpoolPlatform/oplog-middleware/pkg/db/ent/predicate"
 	"github.com/google/uuid"
 )
 

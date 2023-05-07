@@ -6,8 +6,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// Detail is the predicate function for detail builders.
-type Detail func(*sql.Selector)
+// OpLog is the predicate function for oplog builders.
+type OpLog func(*sql.Selector)
 
 // PubsubMessage is the predicate function for pubsubmessage builders.
 type PubsubMessage func(*sql.Selector)

@@ -1,6 +1,6 @@
 package servicename
 
 const (
-	ServiceName   = "Service Template"
-	ServiceDomain = "service-template.npool.top"
+	ServiceName   = "Oplog Middleware"
+	ServiceDomain = "oplog-middleware.npool.top"
 )

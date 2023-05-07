@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: oplog-middleware-config
+  namespace: kube-system
+data:
+  service-conf: |
+    config:
+      hostname: "oplog-middleware.npool.top"
+      http_port: 50780
+      grpc_port: 50781
+      healthz_port: 50782
+      prometheus_port: 50783
+      appid: "89089012783789789719823798127398"
+      serviceid: "d9051c14-ec83-11ed-92eb-4b9295018e33"
+      logdir: "./"
+      apolloAccessKey: "0147fb70b815403790e8634b899fac07"

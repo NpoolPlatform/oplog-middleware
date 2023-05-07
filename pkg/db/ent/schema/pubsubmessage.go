@@ -6,7 +6,7 @@ import (
 	"entgo.io/ent/schema/index"
 	crudermixin "github.com/NpoolPlatform/libent-cruder/pkg/mixin"
 	msgpb "github.com/NpoolPlatform/message/npool/basetypes/v1"
-	"github.com/NpoolPlatform/service-template/pkg/db/mixin"
+	"github.com/NpoolPlatform/oplog-middleware/pkg/db/mixin"
 	"github.com/google/uuid"
 )
 

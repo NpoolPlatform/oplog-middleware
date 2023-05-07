@@ -6,7 +6,7 @@ import (
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 
-	"github.com/NpoolPlatform/service-template/pkg/db/ent"
+	"github.com/NpoolPlatform/oplog-middleware/pkg/db/ent"
 
 	"ariga.io/atlas/sql/migrate"
 	"entgo.io/ent/dialect"
@@ -17,7 +17,7 @@ import (
 	crudermigrate "github.com/NpoolPlatform/libent-cruder/pkg/migrate"
 
 	// ent policy runtime
-	_ "github.com/NpoolPlatform/service-template/pkg/db/ent/runtime"
+	_ "github.com/NpoolPlatform/oplog-middleware/pkg/db/ent/runtime"
 )
 
 func client() (*ent.Client, error) {
@@ -37,7 +37,7 @@ func autoIncrementAutoID(next schema.Applier) schema.Applier {
 		return crudermigrate.AlterColumn(
 			ctx,
 			conn,
-			"service_template",
+			"oplog_manager",
 			"auto_id",
 			nil,
 			field.TypeInt.String(),

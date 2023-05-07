@@ -3,8 +3,8 @@
 package ent
 
 import (
-	"github.com/NpoolPlatform/service-template/pkg/db/ent/detail"
-	"github.com/NpoolPlatform/service-template/pkg/db/ent/pubsubmessage"
+	"github.com/NpoolPlatform/oplog-middleware/pkg/db/ent/oplog"
+	"github.com/NpoolPlatform/oplog-middleware/pkg/db/ent/pubsubmessage"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -17,20 +17,27 @@ var schemaGraph = func() *sqlgraph.Schema {
 	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 2)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
-			Table:   detail.Table,
-			Columns: detail.Columns,
+			Table:   oplog.Table,
+			Columns: oplog.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: detail.FieldID,
+				Type:   field.TypeInt,
+				Column: oplog.FieldID,
 			},
 		},
-		Type: "Detail",
+		Type: "OpLog",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			detail.FieldCreatedAt: {Type: field.TypeUint32, Column: detail.FieldCreatedAt},
-			detail.FieldUpdatedAt: {Type: field.TypeUint32, Column: detail.FieldUpdatedAt},
-			detail.FieldDeletedAt: {Type: field.TypeUint32, Column: detail.FieldDeletedAt},
-			detail.FieldAutoID:    {Type: field.TypeUint32, Column: detail.FieldAutoID},
-			detail.FieldSampleCol: {Type: field.TypeString, Column: detail.FieldSampleCol},
+			oplog.FieldCreatedAt:        {Type: field.TypeUint32, Column: oplog.FieldCreatedAt},
+			oplog.FieldUpdatedAt:        {Type: field.TypeUint32, Column: oplog.FieldUpdatedAt},
+			oplog.FieldDeletedAt:        {Type: field.TypeUint32, Column: oplog.FieldDeletedAt},
+			oplog.FieldAutoID:           {Type: field.TypeUint32, Column: oplog.FieldAutoID},
+			oplog.FieldAppID:            {Type: field.TypeUUID, Column: oplog.FieldAppID},
+			oplog.FieldUserID:           {Type: field.TypeUUID, Column: oplog.FieldUserID},
+			oplog.FieldMethod:           {Type: field.TypeString, Column: oplog.FieldMethod},
+			oplog.FieldArguments:        {Type: field.TypeString, Column: oplog.FieldArguments},
+			oplog.FieldHumanReadable:    {Type: field.TypeString, Column: oplog.FieldHumanReadable},
+			oplog.FieldResult:           {Type: field.TypeString, Column: oplog.FieldResult},
+			oplog.FieldFailReason:       {Type: field.TypeString, Column: oplog.FieldFailReason},
+			oplog.FieldElapsedMillisecs: {Type: field.TypeUint32, Column: oplog.FieldElapsedMillisecs},
 		},
 	}
 	graph.Nodes[1] = &sqlgraph.Node{
@@ -65,33 +72,33 @@ type predicateAdder interface {
 }
 
 // addPredicate implements the predicateAdder interface.
-func (dq *DetailQuery) addPredicate(pred func(s *sql.Selector)) {
-	dq.predicates = append(dq.predicates, pred)
+func (olq *OpLogQuery) addPredicate(pred func(s *sql.Selector)) {
+	olq.predicates = append(olq.predicates, pred)
 }
 
-// Filter returns a Filter implementation to apply filters on the DetailQuery builder.
-func (dq *DetailQuery) Filter() *DetailFilter {
-	return &DetailFilter{config: dq.config, predicateAdder: dq}
+// Filter returns a Filter implementation to apply filters on the OpLogQuery builder.
+func (olq *OpLogQuery) Filter() *OpLogFilter {
+	return &OpLogFilter{config: olq.config, predicateAdder: olq}
 }
 
 // addPredicate implements the predicateAdder interface.
-func (m *DetailMutation) addPredicate(pred func(s *sql.Selector)) {
+func (m *OpLogMutation) addPredicate(pred func(s *sql.Selector)) {
 	m.predicates = append(m.predicates, pred)
 }
 
-// Filter returns an entql.Where implementation to apply filters on the DetailMutation builder.
-func (m *DetailMutation) Filter() *DetailFilter {
-	return &DetailFilter{config: m.config, predicateAdder: m}
+// Filter returns an entql.Where implementation to apply filters on the OpLogMutation builder.
+func (m *OpLogMutation) Filter() *OpLogFilter {
+	return &OpLogFilter{config: m.config, predicateAdder: m}
 }
 
-// DetailFilter provides a generic filtering capability at runtime for DetailQuery.
-type DetailFilter struct {
+// OpLogFilter provides a generic filtering capability at runtime for OpLogQuery.
+type OpLogFilter struct {
 	predicateAdder
 	config
 }
 
 // Where applies the entql predicate on the query filter.
-func (f *DetailFilter) Where(p entql.P) {
+func (f *OpLogFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
 		if err := schemaGraph.EvalP(schemaGraph.Nodes[0].Type, p, s); err != nil {
 			s.AddError(err)
@@ -99,34 +106,69 @@ func (f *DetailFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql [16]byte predicate on the id field.
-func (f *DetailFilter) WhereID(p entql.ValueP) {
-	f.Where(p.Field(detail.FieldID))
+// WhereID applies the entql int predicate on the id field.
+func (f *OpLogFilter) WhereID(p entql.IntP) {
+	f.Where(p.Field(oplog.FieldID))
 }
 
 // WhereCreatedAt applies the entql uint32 predicate on the created_at field.
-func (f *DetailFilter) WhereCreatedAt(p entql.Uint32P) {
-	f.Where(p.Field(detail.FieldCreatedAt))
+func (f *OpLogFilter) WhereCreatedAt(p entql.Uint32P) {
+	f.Where(p.Field(oplog.FieldCreatedAt))
 }
 
 // WhereUpdatedAt applies the entql uint32 predicate on the updated_at field.
-func (f *DetailFilter) WhereUpdatedAt(p entql.Uint32P) {
-	f.Where(p.Field(detail.FieldUpdatedAt))
+func (f *OpLogFilter) WhereUpdatedAt(p entql.Uint32P) {
+	f.Where(p.Field(oplog.FieldUpdatedAt))
 }
 
 // WhereDeletedAt applies the entql uint32 predicate on the deleted_at field.
-func (f *DetailFilter) WhereDeletedAt(p entql.Uint32P) {
-	f.Where(p.Field(detail.FieldDeletedAt))
+func (f *OpLogFilter) WhereDeletedAt(p entql.Uint32P) {
+	f.Where(p.Field(oplog.FieldDeletedAt))
 }
 
 // WhereAutoID applies the entql uint32 predicate on the auto_id field.
-func (f *DetailFilter) WhereAutoID(p entql.Uint32P) {
-	f.Where(p.Field(detail.FieldAutoID))
+func (f *OpLogFilter) WhereAutoID(p entql.Uint32P) {
+	f.Where(p.Field(oplog.FieldAutoID))
 }
 
-// WhereSampleCol applies the entql string predicate on the sample_col field.
-func (f *DetailFilter) WhereSampleCol(p entql.StringP) {
-	f.Where(p.Field(detail.FieldSampleCol))
+// WhereAppID applies the entql [16]byte predicate on the app_id field.
+func (f *OpLogFilter) WhereAppID(p entql.ValueP) {
+	f.Where(p.Field(oplog.FieldAppID))
+}
+
+// WhereUserID applies the entql [16]byte predicate on the user_id field.
+func (f *OpLogFilter) WhereUserID(p entql.ValueP) {
+	f.Where(p.Field(oplog.FieldUserID))
+}
+
+// WhereMethod applies the entql string predicate on the method field.
+func (f *OpLogFilter) WhereMethod(p entql.StringP) {
+	f.Where(p.Field(oplog.FieldMethod))
+}
+
+// WhereArguments applies the entql string predicate on the arguments field.
+func (f *OpLogFilter) WhereArguments(p entql.StringP) {
+	f.Where(p.Field(oplog.FieldArguments))
+}
+
+// WhereHumanReadable applies the entql string predicate on the human_readable field.
+func (f *OpLogFilter) WhereHumanReadable(p entql.StringP) {
+	f.Where(p.Field(oplog.FieldHumanReadable))
+}
+
+// WhereResult applies the entql string predicate on the result field.
+func (f *OpLogFilter) WhereResult(p entql.StringP) {
+	f.Where(p.Field(oplog.FieldResult))
+}
+
+// WhereFailReason applies the entql string predicate on the fail_reason field.
+func (f *OpLogFilter) WhereFailReason(p entql.StringP) {
+	f.Where(p.Field(oplog.FieldFailReason))
+}
+
+// WhereElapsedMillisecs applies the entql uint32 predicate on the elapsed_millisecs field.
+func (f *OpLogFilter) WhereElapsedMillisecs(p entql.Uint32P) {
+	f.Where(p.Field(oplog.FieldElapsedMillisecs))
 }
 
 // addPredicate implements the predicateAdder interface.

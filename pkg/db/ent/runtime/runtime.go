@@ -5,9 +5,9 @@ package runtime
 import (
 	"context"
 
-	"github.com/NpoolPlatform/service-template/pkg/db/ent/detail"
-	"github.com/NpoolPlatform/service-template/pkg/db/ent/pubsubmessage"
-	"github.com/NpoolPlatform/service-template/pkg/db/ent/schema"
+	"github.com/NpoolPlatform/oplog-middleware/pkg/db/ent/oplog"
+	"github.com/NpoolPlatform/oplog-middleware/pkg/db/ent/pubsubmessage"
+	"github.com/NpoolPlatform/oplog-middleware/pkg/db/ent/schema"
 	"github.com/google/uuid"
 
 	"entgo.io/ent"
@@ -18,42 +18,66 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
-	detailMixin := schema.Detail{}.Mixin()
-	detail.Policy = privacy.NewPolicies(detailMixin[0], schema.Detail{})
-	detail.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+	oplogMixin := schema.OpLog{}.Mixin()
+	oplog.Policy = privacy.NewPolicies(oplogMixin[0], schema.OpLog{})
+	oplog.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-			if err := detail.Policy.EvalMutation(ctx, m); err != nil {
+			if err := oplog.Policy.EvalMutation(ctx, m); err != nil {
 				return nil, err
 			}
 			return next.Mutate(ctx, m)
 		})
 	}
-	detailMixinFields0 := detailMixin[0].Fields()
-	_ = detailMixinFields0
-	detailFields := schema.Detail{}.Fields()
-	_ = detailFields
-	// detailDescCreatedAt is the schema descriptor for created_at field.
-	detailDescCreatedAt := detailMixinFields0[0].Descriptor()
-	// detail.DefaultCreatedAt holds the default value on creation for the created_at field.
-	detail.DefaultCreatedAt = detailDescCreatedAt.Default.(func() uint32)
-	// detailDescUpdatedAt is the schema descriptor for updated_at field.
-	detailDescUpdatedAt := detailMixinFields0[1].Descriptor()
-	// detail.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	detail.DefaultUpdatedAt = detailDescUpdatedAt.Default.(func() uint32)
-	// detail.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	detail.UpdateDefaultUpdatedAt = detailDescUpdatedAt.UpdateDefault.(func() uint32)
-	// detailDescDeletedAt is the schema descriptor for deleted_at field.
-	detailDescDeletedAt := detailMixinFields0[2].Descriptor()
-	// detail.DefaultDeletedAt holds the default value on creation for the deleted_at field.
-	detail.DefaultDeletedAt = detailDescDeletedAt.Default.(func() uint32)
-	// detailDescSampleCol is the schema descriptor for sample_col field.
-	detailDescSampleCol := detailFields[1].Descriptor()
-	// detail.DefaultSampleCol holds the default value on creation for the sample_col field.
-	detail.DefaultSampleCol = detailDescSampleCol.Default.(string)
-	// detailDescID is the schema descriptor for id field.
-	detailDescID := detailFields[0].Descriptor()
-	// detail.DefaultID holds the default value on creation for the id field.
-	detail.DefaultID = detailDescID.Default.(func() uuid.UUID)
+	oplogMixinFields0 := oplogMixin[0].Fields()
+	_ = oplogMixinFields0
+	oplogFields := schema.OpLog{}.Fields()
+	_ = oplogFields
+	// oplogDescCreatedAt is the schema descriptor for created_at field.
+	oplogDescCreatedAt := oplogMixinFields0[0].Descriptor()
+	// oplog.DefaultCreatedAt holds the default value on creation for the created_at field.
+	oplog.DefaultCreatedAt = oplogDescCreatedAt.Default.(func() uint32)
+	// oplogDescUpdatedAt is the schema descriptor for updated_at field.
+	oplogDescUpdatedAt := oplogMixinFields0[1].Descriptor()
+	// oplog.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	oplog.DefaultUpdatedAt = oplogDescUpdatedAt.Default.(func() uint32)
+	// oplog.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	oplog.UpdateDefaultUpdatedAt = oplogDescUpdatedAt.UpdateDefault.(func() uint32)
+	// oplogDescDeletedAt is the schema descriptor for deleted_at field.
+	oplogDescDeletedAt := oplogMixinFields0[2].Descriptor()
+	// oplog.DefaultDeletedAt holds the default value on creation for the deleted_at field.
+	oplog.DefaultDeletedAt = oplogDescDeletedAt.Default.(func() uint32)
+	// oplogDescAppID is the schema descriptor for app_id field.
+	oplogDescAppID := oplogFields[0].Descriptor()
+	// oplog.DefaultAppID holds the default value on creation for the app_id field.
+	oplog.DefaultAppID = oplogDescAppID.Default.(func() uuid.UUID)
+	// oplogDescUserID is the schema descriptor for user_id field.
+	oplogDescUserID := oplogFields[1].Descriptor()
+	// oplog.DefaultUserID holds the default value on creation for the user_id field.
+	oplog.DefaultUserID = oplogDescUserID.Default.(func() uuid.UUID)
+	// oplogDescMethod is the schema descriptor for method field.
+	oplogDescMethod := oplogFields[2].Descriptor()
+	// oplog.DefaultMethod holds the default value on creation for the method field.
+	oplog.DefaultMethod = oplogDescMethod.Default.(string)
+	// oplogDescArguments is the schema descriptor for arguments field.
+	oplogDescArguments := oplogFields[3].Descriptor()
+	// oplog.DefaultArguments holds the default value on creation for the arguments field.
+	oplog.DefaultArguments = oplogDescArguments.Default.(string)
+	// oplogDescHumanReadable is the schema descriptor for human_readable field.
+	oplogDescHumanReadable := oplogFields[4].Descriptor()
+	// oplog.DefaultHumanReadable holds the default value on creation for the human_readable field.
+	oplog.DefaultHumanReadable = oplogDescHumanReadable.Default.(string)
+	// oplogDescResult is the schema descriptor for result field.
+	oplogDescResult := oplogFields[5].Descriptor()
+	// oplog.DefaultResult holds the default value on creation for the result field.
+	oplog.DefaultResult = oplogDescResult.Default.(string)
+	// oplogDescFailReason is the schema descriptor for fail_reason field.
+	oplogDescFailReason := oplogFields[6].Descriptor()
+	// oplog.DefaultFailReason holds the default value on creation for the fail_reason field.
+	oplog.DefaultFailReason = oplogDescFailReason.Default.(string)
+	// oplogDescElapsedMillisecs is the schema descriptor for elapsed_millisecs field.
+	oplogDescElapsedMillisecs := oplogFields[7].Descriptor()
+	// oplog.DefaultElapsedMillisecs holds the default value on creation for the elapsed_millisecs field.
+	oplog.DefaultElapsedMillisecs = oplogDescElapsedMillisecs.Default.(uint32)
 	pubsubmessageMixin := schema.PubsubMessage{}.Mixin()
 	pubsubmessage.Policy = privacy.NewPolicies(pubsubmessageMixin[0], schema.PubsubMessage{})
 	pubsubmessage.Hooks[0] = func(next ent.Mutator) ent.Mutator {
@@ -105,5 +129,5 @@ func init() {
 }
 
 const (
-	Version = "v0.11.2" // Version of ent codegen.
+	Version = "v0.12.0" // Version of ent codegen.
 )

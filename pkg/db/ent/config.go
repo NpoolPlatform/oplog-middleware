@@ -28,7 +28,7 @@ type config struct {
 
 // hooks per client, for fast access.
 type hooks struct {
-	Detail        []ent.Hook
+	OpLog         []ent.Hook
 	PubsubMessage []ent.Hook
 }
 
