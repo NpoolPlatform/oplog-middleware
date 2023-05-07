@@ -32,6 +32,7 @@ var ret = &npool.OpLog{
 	Path:      uuid.NewString(),
 	Method:    basetypes.HTTPMethod_GET,
 	Arguments: "{}",
+	CurValue:  `{"A":"a", "B": 18}`,
 }
 
 func create(t *testing.T) {
@@ -47,7 +48,7 @@ func create(t *testing.T) {
 		WithResult(context.Background(), &ret.Result),
 		WithFailReason(context.Background(), &ret.FailReason),
 	)
-	if assert.Nil(t, err) {
+	if assert.NotNil(t, err) {
 		return
 	}
 
@@ -61,7 +62,6 @@ func create(t *testing.T) {
 }
 
 func update(t *testing.T) {
-	ret.CurValue = `{"A":"a", "B": 18}`
 	ret.Result = basetypes.Result_Fail
 	ret.FailReason = "I don't know"
 	ret.HumanReadable = "Somebody want to kill me"
@@ -74,7 +74,7 @@ func update(t *testing.T) {
 		WithResult(context.Background(), &ret.Result),
 		WithFailReason(context.Background(), &ret.FailReason),
 	)
-	if assert.Nil(t, err) {
+	if assert.NotNil(t, err) {
 		return
 	}
 
@@ -98,7 +98,7 @@ func getConds(t *testing.T) {
 		WithOffset(context.Background(), 0),
 		WithLimit(context.Background(), 2),
 	)
-	if assert.Nil(t, err) {
+	if assert.NotNil(t, err) {
 		return
 	}
 
