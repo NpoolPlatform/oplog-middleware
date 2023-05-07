@@ -34,15 +34,14 @@ type OpLogMutation struct {
 	config
 	op                   Op
 	typ                  string
-	id                   *uuid.UUID
+	id                   *uint32
 	created_at           *uint32
 	addcreated_at        *int32
 	updated_at           *uint32
 	addupdated_at        *int32
 	deleted_at           *uint32
 	adddeleted_at        *int32
-	auto_id              *uint32
-	addauto_id           *int32
+	ent_id               *uuid.UUID
 	app_id               *uuid.UUID
 	user_id              *uuid.UUID
 	_path                *string
@@ -80,7 +79,7 @@ func newOpLogMutation(c config, op Op, opts ...oplogOption) *OpLogMutation {
 }
 
 // withOpLogID sets the ID field of the mutation.
-func withOpLogID(id uuid.UUID) oplogOption {
+func withOpLogID(id uint32) oplogOption {
 	return func(m *OpLogMutation) {
 		var (
 			err   error
@@ -132,13 +131,13 @@ func (m OpLogMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of OpLog entities.
-func (m *OpLogMutation) SetID(id uuid.UUID) {
+func (m *OpLogMutation) SetID(id uint32) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *OpLogMutation) ID() (id uuid.UUID, exists bool) {
+func (m *OpLogMutation) ID() (id uint32, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -149,12 +148,12 @@ func (m *OpLogMutation) ID() (id uuid.UUID, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *OpLogMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+func (m *OpLogMutation) IDs(ctx context.Context) ([]uint32, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []uuid.UUID{id}, nil
+			return []uint32{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -332,60 +331,40 @@ func (m *OpLogMutation) ResetDeletedAt() {
 	m.adddeleted_at = nil
 }
 
-// SetAutoID sets the "auto_id" field.
-func (m *OpLogMutation) SetAutoID(u uint32) {
-	m.auto_id = &u
-	m.addauto_id = nil
+// SetEntID sets the "ent_id" field.
+func (m *OpLogMutation) SetEntID(u uuid.UUID) {
+	m.ent_id = &u
 }
 
-// AutoID returns the value of the "auto_id" field in the mutation.
-func (m *OpLogMutation) AutoID() (r uint32, exists bool) {
-	v := m.auto_id
+// EntID returns the value of the "ent_id" field in the mutation.
+func (m *OpLogMutation) EntID() (r uuid.UUID, exists bool) {
+	v := m.ent_id
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldAutoID returns the old "auto_id" field's value of the OpLog entity.
+// OldEntID returns the old "ent_id" field's value of the OpLog entity.
 // If the OpLog object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *OpLogMutation) OldAutoID(ctx context.Context) (v uint32, err error) {
+func (m *OpLogMutation) OldEntID(ctx context.Context) (v uuid.UUID, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldAutoID is only allowed on UpdateOne operations")
+		return v, errors.New("OldEntID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldAutoID requires an ID field in the mutation")
+		return v, errors.New("OldEntID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldAutoID: %w", err)
+		return v, fmt.Errorf("querying old value for OldEntID: %w", err)
 	}
-	return oldValue.AutoID, nil
+	return oldValue.EntID, nil
 }
 
-// AddAutoID adds u to the "auto_id" field.
-func (m *OpLogMutation) AddAutoID(u int32) {
-	if m.addauto_id != nil {
-		*m.addauto_id += u
-	} else {
-		m.addauto_id = &u
-	}
-}
-
-// AddedAutoID returns the value that was added to the "auto_id" field in this mutation.
-func (m *OpLogMutation) AddedAutoID() (r int32, exists bool) {
-	v := m.addauto_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetAutoID resets all changes to the "auto_id" field.
-func (m *OpLogMutation) ResetAutoID() {
-	m.auto_id = nil
-	m.addauto_id = nil
+// ResetEntID resets all changes to the "ent_id" field.
+func (m *OpLogMutation) ResetEntID() {
+	m.ent_id = nil
 }
 
 // SetAppID sets the "app_id" field.
@@ -928,8 +907,8 @@ func (m *OpLogMutation) Fields() []string {
 	if m.deleted_at != nil {
 		fields = append(fields, oplog.FieldDeletedAt)
 	}
-	if m.auto_id != nil {
-		fields = append(fields, oplog.FieldAutoID)
+	if m.ent_id != nil {
+		fields = append(fields, oplog.FieldEntID)
 	}
 	if m.app_id != nil {
 		fields = append(fields, oplog.FieldAppID)
@@ -975,8 +954,8 @@ func (m *OpLogMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case oplog.FieldDeletedAt:
 		return m.DeletedAt()
-	case oplog.FieldAutoID:
-		return m.AutoID()
+	case oplog.FieldEntID:
+		return m.EntID()
 	case oplog.FieldAppID:
 		return m.AppID()
 	case oplog.FieldUserID:
@@ -1012,8 +991,8 @@ func (m *OpLogMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldUpdatedAt(ctx)
 	case oplog.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
-	case oplog.FieldAutoID:
-		return m.OldAutoID(ctx)
+	case oplog.FieldEntID:
+		return m.OldEntID(ctx)
 	case oplog.FieldAppID:
 		return m.OldAppID(ctx)
 	case oplog.FieldUserID:
@@ -1064,12 +1043,12 @@ func (m *OpLogMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDeletedAt(v)
 		return nil
-	case oplog.FieldAutoID:
-		v, ok := value.(uint32)
+	case oplog.FieldEntID:
+		v, ok := value.(uuid.UUID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetAutoID(v)
+		m.SetEntID(v)
 		return nil
 	case oplog.FieldAppID:
 		v, ok := value.(uuid.UUID)
@@ -1158,9 +1137,6 @@ func (m *OpLogMutation) AddedFields() []string {
 	if m.adddeleted_at != nil {
 		fields = append(fields, oplog.FieldDeletedAt)
 	}
-	if m.addauto_id != nil {
-		fields = append(fields, oplog.FieldAutoID)
-	}
 	if m.addelapsed_millisecs != nil {
 		fields = append(fields, oplog.FieldElapsedMillisecs)
 	}
@@ -1178,8 +1154,6 @@ func (m *OpLogMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedUpdatedAt()
 	case oplog.FieldDeletedAt:
 		return m.AddedDeletedAt()
-	case oplog.FieldAutoID:
-		return m.AddedAutoID()
 	case oplog.FieldElapsedMillisecs:
 		return m.AddedElapsedMillisecs()
 	}
@@ -1211,13 +1185,6 @@ func (m *OpLogMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddDeletedAt(v)
-		return nil
-	case oplog.FieldAutoID:
-		v, ok := value.(int32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddAutoID(v)
 		return nil
 	case oplog.FieldElapsedMillisecs:
 		v, ok := value.(int32)
@@ -1325,8 +1292,8 @@ func (m *OpLogMutation) ResetField(name string) error {
 	case oplog.FieldDeletedAt:
 		m.ResetDeletedAt()
 		return nil
-	case oplog.FieldAutoID:
-		m.ResetAutoID()
+	case oplog.FieldEntID:
+		m.ResetEntID()
 		return nil
 	case oplog.FieldAppID:
 		m.ResetAppID()
@@ -1415,15 +1382,14 @@ type PubsubMessageMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *uuid.UUID
+	id            *uint32
 	created_at    *uint32
 	addcreated_at *int32
 	updated_at    *uint32
 	addupdated_at *int32
 	deleted_at    *uint32
 	adddeleted_at *int32
-	auto_id       *uint32
-	addauto_id    *int32
+	ent_id        *uuid.UUID
 	message_id    *string
 	state         *string
 	resp_to_id    *uuid.UUID
@@ -1455,7 +1421,7 @@ func newPubsubMessageMutation(c config, op Op, opts ...pubsubmessageOption) *Pub
 }
 
 // withPubsubMessageID sets the ID field of the mutation.
-func withPubsubMessageID(id uuid.UUID) pubsubmessageOption {
+func withPubsubMessageID(id uint32) pubsubmessageOption {
 	return func(m *PubsubMessageMutation) {
 		var (
 			err   error
@@ -1507,13 +1473,13 @@ func (m PubsubMessageMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of PubsubMessage entities.
-func (m *PubsubMessageMutation) SetID(id uuid.UUID) {
+func (m *PubsubMessageMutation) SetID(id uint32) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *PubsubMessageMutation) ID() (id uuid.UUID, exists bool) {
+func (m *PubsubMessageMutation) ID() (id uint32, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -1524,12 +1490,12 @@ func (m *PubsubMessageMutation) ID() (id uuid.UUID, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *PubsubMessageMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+func (m *PubsubMessageMutation) IDs(ctx context.Context) ([]uint32, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []uuid.UUID{id}, nil
+			return []uint32{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -1707,60 +1673,40 @@ func (m *PubsubMessageMutation) ResetDeletedAt() {
 	m.adddeleted_at = nil
 }
 
-// SetAutoID sets the "auto_id" field.
-func (m *PubsubMessageMutation) SetAutoID(u uint32) {
-	m.auto_id = &u
-	m.addauto_id = nil
+// SetEntID sets the "ent_id" field.
+func (m *PubsubMessageMutation) SetEntID(u uuid.UUID) {
+	m.ent_id = &u
 }
 
-// AutoID returns the value of the "auto_id" field in the mutation.
-func (m *PubsubMessageMutation) AutoID() (r uint32, exists bool) {
-	v := m.auto_id
+// EntID returns the value of the "ent_id" field in the mutation.
+func (m *PubsubMessageMutation) EntID() (r uuid.UUID, exists bool) {
+	v := m.ent_id
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldAutoID returns the old "auto_id" field's value of the PubsubMessage entity.
+// OldEntID returns the old "ent_id" field's value of the PubsubMessage entity.
 // If the PubsubMessage object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PubsubMessageMutation) OldAutoID(ctx context.Context) (v uint32, err error) {
+func (m *PubsubMessageMutation) OldEntID(ctx context.Context) (v uuid.UUID, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldAutoID is only allowed on UpdateOne operations")
+		return v, errors.New("OldEntID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldAutoID requires an ID field in the mutation")
+		return v, errors.New("OldEntID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldAutoID: %w", err)
+		return v, fmt.Errorf("querying old value for OldEntID: %w", err)
 	}
-	return oldValue.AutoID, nil
+	return oldValue.EntID, nil
 }
 
-// AddAutoID adds u to the "auto_id" field.
-func (m *PubsubMessageMutation) AddAutoID(u int32) {
-	if m.addauto_id != nil {
-		*m.addauto_id += u
-	} else {
-		m.addauto_id = &u
-	}
-}
-
-// AddedAutoID returns the value that was added to the "auto_id" field in this mutation.
-func (m *PubsubMessageMutation) AddedAutoID() (r int32, exists bool) {
-	v := m.addauto_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetAutoID resets all changes to the "auto_id" field.
-func (m *PubsubMessageMutation) ResetAutoID() {
-	m.auto_id = nil
-	m.addauto_id = nil
+// ResetEntID resets all changes to the "ent_id" field.
+func (m *PubsubMessageMutation) ResetEntID() {
+	m.ent_id = nil
 }
 
 // SetMessageID sets the "message_id" field.
@@ -2037,8 +1983,8 @@ func (m *PubsubMessageMutation) Fields() []string {
 	if m.deleted_at != nil {
 		fields = append(fields, pubsubmessage.FieldDeletedAt)
 	}
-	if m.auto_id != nil {
-		fields = append(fields, pubsubmessage.FieldAutoID)
+	if m.ent_id != nil {
+		fields = append(fields, pubsubmessage.FieldEntID)
 	}
 	if m.message_id != nil {
 		fields = append(fields, pubsubmessage.FieldMessageID)
@@ -2069,8 +2015,8 @@ func (m *PubsubMessageMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case pubsubmessage.FieldDeletedAt:
 		return m.DeletedAt()
-	case pubsubmessage.FieldAutoID:
-		return m.AutoID()
+	case pubsubmessage.FieldEntID:
+		return m.EntID()
 	case pubsubmessage.FieldMessageID:
 		return m.MessageID()
 	case pubsubmessage.FieldState:
@@ -2096,8 +2042,8 @@ func (m *PubsubMessageMutation) OldField(ctx context.Context, name string) (ent.
 		return m.OldUpdatedAt(ctx)
 	case pubsubmessage.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
-	case pubsubmessage.FieldAutoID:
-		return m.OldAutoID(ctx)
+	case pubsubmessage.FieldEntID:
+		return m.OldEntID(ctx)
 	case pubsubmessage.FieldMessageID:
 		return m.OldMessageID(ctx)
 	case pubsubmessage.FieldState:
@@ -2138,12 +2084,12 @@ func (m *PubsubMessageMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDeletedAt(v)
 		return nil
-	case pubsubmessage.FieldAutoID:
-		v, ok := value.(uint32)
+	case pubsubmessage.FieldEntID:
+		v, ok := value.(uuid.UUID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetAutoID(v)
+		m.SetEntID(v)
 		return nil
 	case pubsubmessage.FieldMessageID:
 		v, ok := value.(string)
@@ -2197,9 +2143,6 @@ func (m *PubsubMessageMutation) AddedFields() []string {
 	if m.adddeleted_at != nil {
 		fields = append(fields, pubsubmessage.FieldDeletedAt)
 	}
-	if m.addauto_id != nil {
-		fields = append(fields, pubsubmessage.FieldAutoID)
-	}
 	return fields
 }
 
@@ -2214,8 +2157,6 @@ func (m *PubsubMessageMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedUpdatedAt()
 	case pubsubmessage.FieldDeletedAt:
 		return m.AddedDeletedAt()
-	case pubsubmessage.FieldAutoID:
-		return m.AddedAutoID()
 	}
 	return nil, false
 }
@@ -2245,13 +2186,6 @@ func (m *PubsubMessageMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddDeletedAt(v)
-		return nil
-	case pubsubmessage.FieldAutoID:
-		v, ok := value.(int32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddAutoID(v)
 		return nil
 	}
 	return fmt.Errorf("unknown PubsubMessage numeric field %s", name)
@@ -2322,8 +2256,8 @@ func (m *PubsubMessageMutation) ResetField(name string) error {
 	case pubsubmessage.FieldDeletedAt:
 		m.ResetDeletedAt()
 		return nil
-	case pubsubmessage.FieldAutoID:
-		m.ResetAutoID()
+	case pubsubmessage.FieldEntID:
+		m.ResetEntID()
 		return nil
 	case pubsubmessage.FieldMessageID:
 		m.ResetMessageID()

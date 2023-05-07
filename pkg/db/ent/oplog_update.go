@@ -84,16 +84,17 @@ func (olu *OpLogUpdate) AddDeletedAt(u int32) *OpLogUpdate {
 	return olu
 }
 
-// SetAutoID sets the "auto_id" field.
-func (olu *OpLogUpdate) SetAutoID(u uint32) *OpLogUpdate {
-	olu.mutation.ResetAutoID()
-	olu.mutation.SetAutoID(u)
+// SetEntID sets the "ent_id" field.
+func (olu *OpLogUpdate) SetEntID(u uuid.UUID) *OpLogUpdate {
+	olu.mutation.SetEntID(u)
 	return olu
 }
 
-// AddAutoID adds u to the "auto_id" field.
-func (olu *OpLogUpdate) AddAutoID(u int32) *OpLogUpdate {
-	olu.mutation.AddAutoID(u)
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (olu *OpLogUpdate) SetNillableEntID(u *uuid.UUID) *OpLogUpdate {
+	if u != nil {
+		olu.SetEntID(*u)
+	}
 	return olu
 }
 
@@ -390,7 +391,7 @@ func (olu *OpLogUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   oplog.Table,
 			Columns: oplog.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: oplog.FieldID,
 			},
 		},
@@ -444,18 +445,11 @@ func (olu *OpLogUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: oplog.FieldDeletedAt,
 		})
 	}
-	if value, ok := olu.mutation.AutoID(); ok {
+	if value, ok := olu.mutation.EntID(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint32,
+			Type:   field.TypeUUID,
 			Value:  value,
-			Column: oplog.FieldAutoID,
-		})
-	}
-	if value, ok := olu.mutation.AddedAutoID(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint32,
-			Value:  value,
-			Column: oplog.FieldAutoID,
+			Column: oplog.FieldEntID,
 		})
 	}
 	if value, ok := olu.mutation.AppID(); ok {
@@ -671,16 +665,17 @@ func (oluo *OpLogUpdateOne) AddDeletedAt(u int32) *OpLogUpdateOne {
 	return oluo
 }
 
-// SetAutoID sets the "auto_id" field.
-func (oluo *OpLogUpdateOne) SetAutoID(u uint32) *OpLogUpdateOne {
-	oluo.mutation.ResetAutoID()
-	oluo.mutation.SetAutoID(u)
+// SetEntID sets the "ent_id" field.
+func (oluo *OpLogUpdateOne) SetEntID(u uuid.UUID) *OpLogUpdateOne {
+	oluo.mutation.SetEntID(u)
 	return oluo
 }
 
-// AddAutoID adds u to the "auto_id" field.
-func (oluo *OpLogUpdateOne) AddAutoID(u int32) *OpLogUpdateOne {
-	oluo.mutation.AddAutoID(u)
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (oluo *OpLogUpdateOne) SetNillableEntID(u *uuid.UUID) *OpLogUpdateOne {
+	if u != nil {
+		oluo.SetEntID(*u)
+	}
 	return oluo
 }
 
@@ -990,7 +985,7 @@ func (oluo *OpLogUpdateOne) sqlSave(ctx context.Context) (_node *OpLog, err erro
 			Table:   oplog.Table,
 			Columns: oplog.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: oplog.FieldID,
 			},
 		},
@@ -1061,18 +1056,11 @@ func (oluo *OpLogUpdateOne) sqlSave(ctx context.Context) (_node *OpLog, err erro
 			Column: oplog.FieldDeletedAt,
 		})
 	}
-	if value, ok := oluo.mutation.AutoID(); ok {
+	if value, ok := oluo.mutation.EntID(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint32,
+			Type:   field.TypeUUID,
 			Value:  value,
-			Column: oplog.FieldAutoID,
-		})
-	}
-	if value, ok := oluo.mutation.AddedAutoID(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint32,
-			Value:  value,
-			Column: oplog.FieldAutoID,
+			Column: oplog.FieldEntID,
 		})
 	}
 	if value, ok := oluo.mutation.AppID(); ok {

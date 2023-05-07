@@ -20,7 +20,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   oplog.Table,
 			Columns: oplog.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: oplog.FieldID,
 			},
 		},
@@ -29,7 +29,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			oplog.FieldCreatedAt:        {Type: field.TypeUint32, Column: oplog.FieldCreatedAt},
 			oplog.FieldUpdatedAt:        {Type: field.TypeUint32, Column: oplog.FieldUpdatedAt},
 			oplog.FieldDeletedAt:        {Type: field.TypeUint32, Column: oplog.FieldDeletedAt},
-			oplog.FieldAutoID:           {Type: field.TypeUint32, Column: oplog.FieldAutoID},
+			oplog.FieldEntID:            {Type: field.TypeUUID, Column: oplog.FieldEntID},
 			oplog.FieldAppID:            {Type: field.TypeUUID, Column: oplog.FieldAppID},
 			oplog.FieldUserID:           {Type: field.TypeUUID, Column: oplog.FieldUserID},
 			oplog.FieldPath:             {Type: field.TypeString, Column: oplog.FieldPath},
@@ -47,7 +47,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   pubsubmessage.Table,
 			Columns: pubsubmessage.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: pubsubmessage.FieldID,
 			},
 		},
@@ -56,7 +56,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			pubsubmessage.FieldCreatedAt: {Type: field.TypeUint32, Column: pubsubmessage.FieldCreatedAt},
 			pubsubmessage.FieldUpdatedAt: {Type: field.TypeUint32, Column: pubsubmessage.FieldUpdatedAt},
 			pubsubmessage.FieldDeletedAt: {Type: field.TypeUint32, Column: pubsubmessage.FieldDeletedAt},
-			pubsubmessage.FieldAutoID:    {Type: field.TypeUint32, Column: pubsubmessage.FieldAutoID},
+			pubsubmessage.FieldEntID:     {Type: field.TypeUUID, Column: pubsubmessage.FieldEntID},
 			pubsubmessage.FieldMessageID: {Type: field.TypeString, Column: pubsubmessage.FieldMessageID},
 			pubsubmessage.FieldState:     {Type: field.TypeString, Column: pubsubmessage.FieldState},
 			pubsubmessage.FieldRespToID:  {Type: field.TypeUUID, Column: pubsubmessage.FieldRespToID},
@@ -108,8 +108,8 @@ func (f *OpLogFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql [16]byte predicate on the id field.
-func (f *OpLogFilter) WhereID(p entql.ValueP) {
+// WhereID applies the entql uint32 predicate on the id field.
+func (f *OpLogFilter) WhereID(p entql.Uint32P) {
 	f.Where(p.Field(oplog.FieldID))
 }
 
@@ -128,9 +128,9 @@ func (f *OpLogFilter) WhereDeletedAt(p entql.Uint32P) {
 	f.Where(p.Field(oplog.FieldDeletedAt))
 }
 
-// WhereAutoID applies the entql uint32 predicate on the auto_id field.
-func (f *OpLogFilter) WhereAutoID(p entql.Uint32P) {
-	f.Where(p.Field(oplog.FieldAutoID))
+// WhereEntID applies the entql [16]byte predicate on the ent_id field.
+func (f *OpLogFilter) WhereEntID(p entql.ValueP) {
+	f.Where(p.Field(oplog.FieldEntID))
 }
 
 // WhereAppID applies the entql [16]byte predicate on the app_id field.
@@ -218,8 +218,8 @@ func (f *PubsubMessageFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql [16]byte predicate on the id field.
-func (f *PubsubMessageFilter) WhereID(p entql.ValueP) {
+// WhereID applies the entql uint32 predicate on the id field.
+func (f *PubsubMessageFilter) WhereID(p entql.Uint32P) {
 	f.Where(p.Field(pubsubmessage.FieldID))
 }
 
@@ -238,9 +238,9 @@ func (f *PubsubMessageFilter) WhereDeletedAt(p entql.Uint32P) {
 	f.Where(p.Field(pubsubmessage.FieldDeletedAt))
 }
 
-// WhereAutoID applies the entql uint32 predicate on the auto_id field.
-func (f *PubsubMessageFilter) WhereAutoID(p entql.Uint32P) {
-	f.Where(p.Field(pubsubmessage.FieldAutoID))
+// WhereEntID applies the entql [16]byte predicate on the ent_id field.
+func (f *PubsubMessageFilter) WhereEntID(p entql.ValueP) {
+	f.Where(p.Field(pubsubmessage.FieldEntID))
 }
 
 // WhereMessageID applies the entql string predicate on the message_id field.

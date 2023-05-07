@@ -45,19 +45,30 @@ func create(t *testing.T) {
 		WithArguments(context.Background(), &ret.Arguments),
 		WithCurValue(context.Background(), &ret.CurValue),
 		WithHumanReadable(context.Background(), &ret.HumanReadable),
-		WithResult(context.Background(), &ret.Result),
-		WithFailReason(context.Background(), &ret.FailReason),
 	)
-	if assert.NotNil(t, err) {
-		return
-	}
-
-	info, err := handler.CreateOpLog(context.Background())
 	if assert.Nil(t, err) {
-		ret.CreatedAt = info.CreatedAt
-		ret.UpdatedAt = info.UpdatedAt
-		ret.AutoID = info.AutoID
-		assert.Equal(t, info, ret)
+		info, err := handler.CreateOpLog(context.Background())
+		if assert.Nil(t, err) && assert.NotNil(t, info) {
+			ret.CreatedAt = info.CreatedAt
+			ret.UpdatedAt = info.UpdatedAt
+			ret.EntID = info.EntID
+			ret.MethodStr = info.MethodStr
+			ret.ResultStr = info.ResultStr
+			assert.Equal(t, ret.String(), info.String())
+		}
+	}
+}
+
+func get(t *testing.T) {
+	handler, err := NewHandler(
+		context.Background(),
+		WithEntID(context.Background(), &ret.EntID),
+	)
+	if assert.Nil(t, err) {
+		info, err := handler.GetOpLog(context.Background())
+		if assert.Nil(t, err) && assert.NotNil(t, info) {
+			assert.Equal(t, ret.String(), info.String())
+		}
 	}
 }
 
@@ -68,21 +79,19 @@ func update(t *testing.T) {
 
 	handler, err := NewHandler(
 		context.Background(),
-		WithAutoID(context.Background(), ret.AutoID),
+		WithEntID(context.Background(), &ret.EntID),
 		WithCurValue(context.Background(), &ret.CurValue),
 		WithHumanReadable(context.Background(), &ret.HumanReadable),
 		WithResult(context.Background(), &ret.Result),
 		WithFailReason(context.Background(), &ret.FailReason),
 	)
-	if assert.NotNil(t, err) {
-		return
-	}
-
-	info, err := handler.UpdateOpLog(context.Background())
 	if assert.Nil(t, err) {
-		ret.UpdatedAt = info.UpdatedAt
-		ret.AutoID = info.AutoID
-		assert.Equal(t, info, ret)
+		info, err := handler.UpdateOpLog(context.Background())
+		if assert.Nil(t, err) && assert.NotNil(t, info) {
+			ret.UpdatedAt = info.UpdatedAt
+			ret.ResultStr = info.ResultStr
+			assert.Equal(t, ret.String(), info.String())
+		}
 	}
 }
 
@@ -90,7 +99,7 @@ func getConds(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
 		WithConds(context.Background(), &npool.Conds{
-			AutoID: &basetypes.Uint32Val{Op: cruder.EQ, Value: ret.AutoID},
+			EntID:  &basetypes.StringVal{Op: cruder.EQ, Value: ret.EntID},
 			AppID:  &basetypes.StringVal{Op: cruder.EQ, Value: ret.AppID},
 			UserID: &basetypes.StringVal{Op: cruder.EQ, Value: *ret.UserID},
 			Result: &basetypes.Uint32Val{Op: cruder.EQ, Value: uint32(ret.Result)},
@@ -98,15 +107,13 @@ func getConds(t *testing.T) {
 		WithOffset(context.Background(), 0),
 		WithLimit(context.Background(), 2),
 	)
-	if assert.NotNil(t, err) {
-		return
-	}
-
-	infos, total, err := handler.GetOpLogs(context.Background())
 	if assert.Nil(t, err) {
-		assert.Equal(t, 1, total)
-		if assert.Equal(t, 1, len(infos)) {
-			assert.Equal(t, ret, infos[0])
+		infos, total, err := handler.GetOpLogs(context.Background())
+		if assert.Nil(t, err) {
+			assert.Equal(t, uint32(1), total)
+			if assert.Equal(t, 1, len(infos)) {
+				assert.Equal(t, infos[0].String(), ret.String())
+			}
 		}
 	}
 }
@@ -116,6 +123,7 @@ func TestAPI(t *testing.T) {
 		return
 	}
 	t.Run("create", create)
+	t.Run("get", get)
 	t.Run("update", update)
 	t.Run("getConds", getConds)
 }

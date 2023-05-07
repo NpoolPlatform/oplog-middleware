@@ -28,7 +28,7 @@ func (h *Handler) CreateOpLog(ctx context.Context) (*npool.OpLog, error) {
 		if err != nil {
 			return err
 		}
-		h.AutoID = &info.AutoID
+		h.EntID = &info.EntID
 		return nil
 	})
 	if err != nil {

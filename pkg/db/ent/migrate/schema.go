@@ -10,11 +10,11 @@ import (
 var (
 	// OpLogsColumns holds the columns for the "op_logs" table.
 	OpLogsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUint32, Increment: true},
 		{Name: "created_at", Type: field.TypeUint32},
 		{Name: "updated_at", Type: field.TypeUint32},
 		{Name: "deleted_at", Type: field.TypeUint32},
-		{Name: "auto_id", Type: field.TypeUint32, Unique: true},
+		{Name: "ent_id", Type: field.TypeUUID, Unique: true},
 		{Name: "app_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "path", Type: field.TypeString, Nullable: true, Default: ""},
@@ -34,11 +34,11 @@ var (
 	}
 	// PubsubMessagesColumns holds the columns for the "pubsub_messages" table.
 	PubsubMessagesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUint32, Increment: true},
 		{Name: "created_at", Type: field.TypeUint32},
 		{Name: "updated_at", Type: field.TypeUint32},
 		{Name: "deleted_at", Type: field.TypeUint32},
-		{Name: "auto_id", Type: field.TypeUint32, Unique: true},
+		{Name: "ent_id", Type: field.TypeUUID, Unique: true},
 		{Name: "message_id", Type: field.TypeString, Nullable: true, Default: "DefaultMsgID"},
 		{Name: "state", Type: field.TypeString, Nullable: true, Default: "DefaultMsgState"},
 		{Name: "resp_to_id", Type: field.TypeUUID, Nullable: true},

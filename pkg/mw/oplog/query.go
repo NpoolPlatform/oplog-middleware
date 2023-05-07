@@ -5,22 +5,24 @@ import (
 	"fmt"
 
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/oplog/mw/v1/oplog"
 	oplogcrud "github.com/NpoolPlatform/oplog-middleware/pkg/crud/oplog"
 
 	"github.com/NpoolPlatform/oplog-middleware/pkg/db"
 	"github.com/NpoolPlatform/oplog-middleware/pkg/db/ent"
+	entoplog "github.com/NpoolPlatform/oplog-middleware/pkg/db/ent/oplog"
 )
 
 func (h *Handler) GetOpLog(ctx context.Context) (*npool.OpLog, error) {
-	if h.AutoID == nil {
+	if h.EntID == nil {
 		return nil, fmt.Errorf("invalid auto_id")
 	}
 
 	h.Offset = 0
 	h.Limit = 2
 	h.Conds = &oplogcrud.Conds{
-		AutoID: &cruder.Cond{Op: cruder.EQ, Val: *h.AutoID},
+		EntID: &cruder.Cond{Op: cruder.EQ, Val: *h.EntID},
 	}
 
 	infos, _, err := h.GetOpLogs(ctx)
@@ -57,11 +59,29 @@ func (h *Handler) GetOpLogs(ctx context.Context) ([]*npool.OpLog, uint32, error)
 
 		total = uint32(_total)
 		return stm.
-			Select().
+			Select(
+				entoplog.FieldEntID,
+				entoplog.FieldAppID,
+				entoplog.FieldUserID,
+				entoplog.FieldPath,
+				entoplog.FieldMethod,
+				entoplog.FieldArguments,
+				entoplog.FieldCurValue,
+				entoplog.FieldHumanReadable,
+				entoplog.FieldResult,
+				entoplog.FieldFailReason,
+				entoplog.FieldCreatedAt,
+				entoplog.FieldUpdatedAt,
+			).
 			Scan(ctx, &infos)
 	})
 	if err != nil {
 		return nil, 0, err
+	}
+
+	for _, info := range infos {
+		info.Method = basetypes.HTTPMethod(basetypes.HTTPMethod_value[info.MethodStr])
+		info.Result = basetypes.Result(basetypes.Result_value[info.ResultStr])
 	}
 
 	return infos, total, nil

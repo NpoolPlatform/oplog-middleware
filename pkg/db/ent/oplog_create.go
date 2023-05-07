@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 
-	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -65,9 +64,17 @@ func (olc *OpLogCreate) SetNillableDeletedAt(u *uint32) *OpLogCreate {
 	return olc
 }
 
-// SetAutoID sets the "auto_id" field.
-func (olc *OpLogCreate) SetAutoID(u uint32) *OpLogCreate {
-	olc.mutation.SetAutoID(u)
+// SetEntID sets the "ent_id" field.
+func (olc *OpLogCreate) SetEntID(u uuid.UUID) *OpLogCreate {
+	olc.mutation.SetEntID(u)
+	return olc
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (olc *OpLogCreate) SetNillableEntID(u *uuid.UUID) *OpLogCreate {
+	if u != nil {
+		olc.SetEntID(*u)
+	}
 	return olc
 }
 
@@ -212,16 +219,8 @@ func (olc *OpLogCreate) SetNillableElapsedMillisecs(u *uint32) *OpLogCreate {
 }
 
 // SetID sets the "id" field.
-func (olc *OpLogCreate) SetID(u uuid.UUID) *OpLogCreate {
+func (olc *OpLogCreate) SetID(u uint32) *OpLogCreate {
 	olc.mutation.SetID(u)
-	return olc
-}
-
-// SetNillableID sets the "id" field if the given value is not nil.
-func (olc *OpLogCreate) SetNillableID(u *uuid.UUID) *OpLogCreate {
-	if u != nil {
-		olc.SetID(*u)
-	}
 	return olc
 }
 
@@ -325,6 +324,13 @@ func (olc *OpLogCreate) defaults() error {
 		v := oplog.DefaultDeletedAt()
 		olc.mutation.SetDeletedAt(v)
 	}
+	if _, ok := olc.mutation.EntID(); !ok {
+		if oplog.DefaultEntID == nil {
+			return fmt.Errorf("ent: uninitialized oplog.DefaultEntID (forgotten import ent/runtime?)")
+		}
+		v := oplog.DefaultEntID()
+		olc.mutation.SetEntID(v)
+	}
 	if _, ok := olc.mutation.AppID(); !ok {
 		if oplog.DefaultAppID == nil {
 			return fmt.Errorf("ent: uninitialized oplog.DefaultAppID (forgotten import ent/runtime?)")
@@ -371,13 +377,6 @@ func (olc *OpLogCreate) defaults() error {
 		v := oplog.DefaultElapsedMillisecs
 		olc.mutation.SetElapsedMillisecs(v)
 	}
-	if _, ok := olc.mutation.ID(); !ok {
-		if oplog.DefaultID == nil {
-			return fmt.Errorf("ent: uninitialized oplog.DefaultID (forgotten import ent/runtime?)")
-		}
-		v := oplog.DefaultID()
-		olc.mutation.SetID(v)
-	}
 	return nil
 }
 
@@ -392,8 +391,8 @@ func (olc *OpLogCreate) check() error {
 	if _, ok := olc.mutation.DeletedAt(); !ok {
 		return &ValidationError{Name: "deleted_at", err: errors.New(`ent: missing required field "OpLog.deleted_at"`)}
 	}
-	if _, ok := olc.mutation.AutoID(); !ok {
-		return &ValidationError{Name: "auto_id", err: errors.New(`ent: missing required field "OpLog.auto_id"`)}
+	if _, ok := olc.mutation.EntID(); !ok {
+		return &ValidationError{Name: "ent_id", err: errors.New(`ent: missing required field "OpLog.ent_id"`)}
 	}
 	return nil
 }
@@ -406,12 +405,9 @@ func (olc *OpLogCreate) sqlSave(ctx context.Context) (*OpLog, error) {
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
-			_node.ID = *id
-		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
-			return nil, err
-		}
+	if _spec.ID.Value != _node.ID {
+		id := _spec.ID.Value.(int64)
+		_node.ID = uint32(id)
 	}
 	return _node, nil
 }
@@ -422,7 +418,7 @@ func (olc *OpLogCreate) createSpec() (*OpLog, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: oplog.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: oplog.FieldID,
 			},
 		}
@@ -430,7 +426,7 @@ func (olc *OpLogCreate) createSpec() (*OpLog, *sqlgraph.CreateSpec) {
 	_spec.OnConflict = olc.conflict
 	if id, ok := olc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = &id
+		_spec.ID.Value = id
 	}
 	if value, ok := olc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -456,13 +452,13 @@ func (olc *OpLogCreate) createSpec() (*OpLog, *sqlgraph.CreateSpec) {
 		})
 		_node.DeletedAt = value
 	}
-	if value, ok := olc.mutation.AutoID(); ok {
+	if value, ok := olc.mutation.EntID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint32,
+			Type:   field.TypeUUID,
 			Value:  value,
-			Column: oplog.FieldAutoID,
+			Column: oplog.FieldEntID,
 		})
-		_node.AutoID = value
+		_node.EntID = value
 	}
 	if value, ok := olc.mutation.AppID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -652,21 +648,15 @@ func (u *OpLogUpsert) AddDeletedAt(v uint32) *OpLogUpsert {
 	return u
 }
 
-// SetAutoID sets the "auto_id" field.
-func (u *OpLogUpsert) SetAutoID(v uint32) *OpLogUpsert {
-	u.Set(oplog.FieldAutoID, v)
+// SetEntID sets the "ent_id" field.
+func (u *OpLogUpsert) SetEntID(v uuid.UUID) *OpLogUpsert {
+	u.Set(oplog.FieldEntID, v)
 	return u
 }
 
-// UpdateAutoID sets the "auto_id" field to the value that was provided on create.
-func (u *OpLogUpsert) UpdateAutoID() *OpLogUpsert {
-	u.SetExcluded(oplog.FieldAutoID)
-	return u
-}
-
-// AddAutoID adds v to the "auto_id" field.
-func (u *OpLogUpsert) AddAutoID(v uint32) *OpLogUpsert {
-	u.Add(oplog.FieldAutoID, v)
+// UpdateEntID sets the "ent_id" field to the value that was provided on create.
+func (u *OpLogUpsert) UpdateEntID() *OpLogUpsert {
+	u.SetExcluded(oplog.FieldEntID)
 	return u
 }
 
@@ -969,24 +959,17 @@ func (u *OpLogUpsertOne) UpdateDeletedAt() *OpLogUpsertOne {
 	})
 }
 
-// SetAutoID sets the "auto_id" field.
-func (u *OpLogUpsertOne) SetAutoID(v uint32) *OpLogUpsertOne {
+// SetEntID sets the "ent_id" field.
+func (u *OpLogUpsertOne) SetEntID(v uuid.UUID) *OpLogUpsertOne {
 	return u.Update(func(s *OpLogUpsert) {
-		s.SetAutoID(v)
+		s.SetEntID(v)
 	})
 }
 
-// AddAutoID adds v to the "auto_id" field.
-func (u *OpLogUpsertOne) AddAutoID(v uint32) *OpLogUpsertOne {
+// UpdateEntID sets the "ent_id" field to the value that was provided on create.
+func (u *OpLogUpsertOne) UpdateEntID() *OpLogUpsertOne {
 	return u.Update(func(s *OpLogUpsert) {
-		s.AddAutoID(v)
-	})
-}
-
-// UpdateAutoID sets the "auto_id" field to the value that was provided on create.
-func (u *OpLogUpsertOne) UpdateAutoID() *OpLogUpsertOne {
-	return u.Update(func(s *OpLogUpsert) {
-		s.UpdateAutoID()
+		s.UpdateEntID()
 	})
 }
 
@@ -1223,12 +1206,7 @@ func (u *OpLogUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *OpLogUpsertOne) ID(ctx context.Context) (id uuid.UUID, err error) {
-	if u.create.driver.Dialect() == dialect.MySQL {
-		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
-		// fields from the database since MySQL does not support the RETURNING clause.
-		return id, errors.New("ent: OpLogUpsertOne.ID is not supported by MySQL driver. Use OpLogUpsertOne.Exec instead")
-	}
+func (u *OpLogUpsertOne) ID(ctx context.Context) (id uint32, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -1237,7 +1215,7 @@ func (u *OpLogUpsertOne) ID(ctx context.Context) (id uuid.UUID, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *OpLogUpsertOne) IDX(ctx context.Context) uuid.UUID {
+func (u *OpLogUpsertOne) IDX(ctx context.Context) uint32 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1288,6 +1266,10 @@ func (olcb *OpLogCreateBulk) Save(ctx context.Context) ([]*OpLog, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
+				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
+					id := specs[i].ID.Value.(int64)
+					nodes[i].ID = uint32(id)
+				}
 				mutation.done = true
 				return nodes[i], nil
 			})
@@ -1486,24 +1468,17 @@ func (u *OpLogUpsertBulk) UpdateDeletedAt() *OpLogUpsertBulk {
 	})
 }
 
-// SetAutoID sets the "auto_id" field.
-func (u *OpLogUpsertBulk) SetAutoID(v uint32) *OpLogUpsertBulk {
+// SetEntID sets the "ent_id" field.
+func (u *OpLogUpsertBulk) SetEntID(v uuid.UUID) *OpLogUpsertBulk {
 	return u.Update(func(s *OpLogUpsert) {
-		s.SetAutoID(v)
+		s.SetEntID(v)
 	})
 }
 
-// AddAutoID adds v to the "auto_id" field.
-func (u *OpLogUpsertBulk) AddAutoID(v uint32) *OpLogUpsertBulk {
+// UpdateEntID sets the "ent_id" field to the value that was provided on create.
+func (u *OpLogUpsertBulk) UpdateEntID() *OpLogUpsertBulk {
 	return u.Update(func(s *OpLogUpsert) {
-		s.AddAutoID(v)
-	})
-}
-
-// UpdateAutoID sets the "auto_id" field to the value that was provided on create.
-func (u *OpLogUpsertBulk) UpdateAutoID() *OpLogUpsertBulk {
-	return u.Update(func(s *OpLogUpsert) {
-		s.UpdateAutoID()
+		s.UpdateEntID()
 	})
 }
 

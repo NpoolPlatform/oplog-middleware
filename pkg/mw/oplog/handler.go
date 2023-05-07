@@ -16,7 +16,7 @@ import (
 )
 
 type Handler struct {
-	AutoID        *uint32
+	EntID         *uuid.UUID
 	AppID         *uuid.UUID
 	UserID        *uuid.UUID
 	Path          *string
@@ -41,9 +41,16 @@ func NewHandler(ctx context.Context, options ...func(context.Context, *Handler) 
 	return handler, nil
 }
 
-func WithAutoID(ctx context.Context, autoID uint32) func(context.Context, *Handler) error {
+func WithEntID(ctx context.Context, id *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		h.AutoID = &autoID
+		if id == nil {
+			return nil
+		}
+		_id, err := uuid.Parse(*id)
+		if err != nil {
+			return err
+		}
+		h.EntID = &_id
 		return nil
 	}
 }
@@ -167,10 +174,14 @@ func WithConds(ctx context.Context, conds *npool.Conds) func(context.Context, *H
 		if conds == nil {
 			return nil
 		}
-		if conds.AutoID != nil {
-			h.Conds.AutoID = &cruder.Cond{
-				Op:  conds.GetAutoID().GetOp(),
-				Val: conds.GetAutoID().GetValue(),
+		if conds.EntID != nil {
+			id, err := uuid.Parse(conds.GetEntID().GetValue())
+			if err != nil {
+				return err
+			}
+			h.Conds.EntID = &cruder.Cond{
+				Op:  conds.GetEntID().GetOp(),
+				Val: id,
 			}
 		}
 		if conds.AppID != nil {

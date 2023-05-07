@@ -44,6 +44,7 @@ func autoIncrementAutoID(next schema.Applier) schema.Applier {
 			true,
 			false,
 			true,
+			true,
 		)
 	})
 }

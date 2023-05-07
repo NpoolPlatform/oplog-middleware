@@ -11,7 +11,7 @@ import (
 )
 
 type Req struct {
-	AutoID           *uint32
+	EntID            *uuid.UUID
 	AppID            *uuid.UUID
 	UserID           *uuid.UUID
 	Path             *string
@@ -75,21 +75,21 @@ func UpdateSet(u *ent.OpLogUpdateOne, req *Req) *ent.OpLogUpdateOne {
 }
 
 type Conds struct {
-	AutoID *cruder.Cond
+	EntID  *cruder.Cond
 	AppID  *cruder.Cond
 	UserID *cruder.Cond
 	Result *cruder.Cond
 }
 
 func SetQueryConds(q *ent.OpLogQuery, conds *Conds) (*ent.OpLogQuery, error) {
-	if conds.AutoID != nil {
-		switch conds.AutoID.Op {
+	if conds.EntID != nil {
+		switch conds.EntID.Op {
 		case cruder.EQ:
-			id, ok := conds.AutoID.Val.(uint32)
+			id, ok := conds.EntID.Val.(uuid.UUID)
 			if !ok {
 				return nil, fmt.Errorf("invalid auto id")
 			}
-			q.Where(entoplog.AutoID(id))
+			q.Where(entoplog.EntID(id))
 		default:
 			return nil, fmt.Errorf("invalid oplog field")
 		}

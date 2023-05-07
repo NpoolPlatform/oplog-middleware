@@ -12,8 +12,8 @@ import (
 )
 
 func (h *Handler) UpdateOpLog(ctx context.Context) (*npool.OpLog, error) {
-	if h.AutoID == nil {
-		return nil, fmt.Errorf("invalid auto_id")
+	if h.EntID == nil {
+		return nil, fmt.Errorf("invalid ent_id")
 	}
 
 	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
@@ -21,7 +21,7 @@ func (h *Handler) UpdateOpLog(ctx context.Context) (*npool.OpLog, error) {
 			OpLog.
 			Query().
 			Where(
-				entoplog.AutoID(*h.AutoID),
+				entoplog.EntID(*h.EntID),
 			).
 			Only(_ctx)
 		if err != nil {
@@ -40,7 +40,7 @@ func (h *Handler) UpdateOpLog(ctx context.Context) (*npool.OpLog, error) {
 		if err != nil {
 			return err
 		}
-		h.AutoID = &info.AutoID
+		h.EntID = &info.EntID
 		return nil
 	})
 	if err != nil {

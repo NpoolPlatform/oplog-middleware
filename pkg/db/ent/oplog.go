@@ -15,15 +15,15 @@ import (
 type OpLog struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID uuid.UUID `json:"id,omitempty"`
+	ID uint32 `json:"id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt uint32 `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt uint32 `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt uint32 `json:"deleted_at,omitempty"`
-	// AutoID holds the value of the "auto_id" field.
-	AutoID uint32 `json:"auto_id,omitempty"`
+	// EntID holds the value of the "ent_id" field.
+	EntID uuid.UUID `json:"ent_id,omitempty"`
 	// AppID holds the value of the "app_id" field.
 	AppID uuid.UUID `json:"app_id,omitempty"`
 	// UserID holds the value of the "user_id" field.
@@ -51,11 +51,11 @@ func (*OpLog) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case oplog.FieldCreatedAt, oplog.FieldUpdatedAt, oplog.FieldDeletedAt, oplog.FieldAutoID, oplog.FieldElapsedMillisecs:
+		case oplog.FieldID, oplog.FieldCreatedAt, oplog.FieldUpdatedAt, oplog.FieldDeletedAt, oplog.FieldElapsedMillisecs:
 			values[i] = new(sql.NullInt64)
 		case oplog.FieldPath, oplog.FieldMethod, oplog.FieldArguments, oplog.FieldCurValue, oplog.FieldHumanReadable, oplog.FieldResult, oplog.FieldFailReason:
 			values[i] = new(sql.NullString)
-		case oplog.FieldID, oplog.FieldAppID, oplog.FieldUserID:
+		case oplog.FieldEntID, oplog.FieldAppID, oplog.FieldUserID:
 			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type OpLog", columns[i])
@@ -73,11 +73,11 @@ func (ol *OpLog) assignValues(columns []string, values []interface{}) error {
 	for i := range columns {
 		switch columns[i] {
 		case oplog.FieldID:
-			if value, ok := values[i].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field id", values[i])
-			} else if value != nil {
-				ol.ID = *value
+			value, ok := values[i].(*sql.NullInt64)
+			if !ok {
+				return fmt.Errorf("unexpected type %T for field id", value)
 			}
+			ol.ID = uint32(value.Int64)
 		case oplog.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -96,11 +96,11 @@ func (ol *OpLog) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				ol.DeletedAt = uint32(value.Int64)
 			}
-		case oplog.FieldAutoID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field auto_id", values[i])
-			} else if value.Valid {
-				ol.AutoID = uint32(value.Int64)
+		case oplog.FieldEntID:
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field ent_id", values[i])
+			} else if value != nil {
+				ol.EntID = *value
 			}
 		case oplog.FieldAppID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
@@ -199,8 +199,8 @@ func (ol *OpLog) String() string {
 	builder.WriteString("deleted_at=")
 	builder.WriteString(fmt.Sprintf("%v", ol.DeletedAt))
 	builder.WriteString(", ")
-	builder.WriteString("auto_id=")
-	builder.WriteString(fmt.Sprintf("%v", ol.AutoID))
+	builder.WriteString("ent_id=")
+	builder.WriteString(fmt.Sprintf("%v", ol.EntID))
 	builder.WriteString(", ")
 	builder.WriteString("app_id=")
 	builder.WriteString(fmt.Sprintf("%v", ol.AppID))
