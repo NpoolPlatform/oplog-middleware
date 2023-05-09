@@ -36,6 +36,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			oplog.FieldMethod:           {Type: field.TypeString, Column: oplog.FieldMethod},
 			oplog.FieldArguments:        {Type: field.TypeString, Column: oplog.FieldArguments},
 			oplog.FieldCurValue:         {Type: field.TypeString, Column: oplog.FieldCurValue},
+			oplog.FieldNewValue:         {Type: field.TypeString, Column: oplog.FieldNewValue},
 			oplog.FieldHumanReadable:    {Type: field.TypeString, Column: oplog.FieldHumanReadable},
 			oplog.FieldResult:           {Type: field.TypeString, Column: oplog.FieldResult},
 			oplog.FieldFailReason:       {Type: field.TypeString, Column: oplog.FieldFailReason},
@@ -161,6 +162,11 @@ func (f *OpLogFilter) WhereArguments(p entql.StringP) {
 // WhereCurValue applies the entql string predicate on the cur_value field.
 func (f *OpLogFilter) WhereCurValue(p entql.StringP) {
 	f.Where(p.Field(oplog.FieldCurValue))
+}
+
+// WhereNewValue applies the entql string predicate on the new_value field.
+func (f *OpLogFilter) WhereNewValue(p entql.StringP) {
+	f.Where(p.Field(oplog.FieldNewValue))
 }
 
 // WhereHumanReadable applies the entql string predicate on the human_readable field.

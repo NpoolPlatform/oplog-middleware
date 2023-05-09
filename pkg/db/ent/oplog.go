@@ -36,6 +36,8 @@ type OpLog struct {
 	Arguments string `json:"arguments,omitempty"`
 	// CurValue holds the value of the "cur_value" field.
 	CurValue string `json:"cur_value,omitempty"`
+	// NewValue holds the value of the "new_value" field.
+	NewValue string `json:"new_value,omitempty"`
 	// HumanReadable holds the value of the "human_readable" field.
 	HumanReadable string `json:"human_readable,omitempty"`
 	// Result holds the value of the "result" field.
@@ -53,7 +55,7 @@ func (*OpLog) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case oplog.FieldID, oplog.FieldCreatedAt, oplog.FieldUpdatedAt, oplog.FieldDeletedAt, oplog.FieldElapsedMillisecs:
 			values[i] = new(sql.NullInt64)
-		case oplog.FieldPath, oplog.FieldMethod, oplog.FieldArguments, oplog.FieldCurValue, oplog.FieldHumanReadable, oplog.FieldResult, oplog.FieldFailReason:
+		case oplog.FieldPath, oplog.FieldMethod, oplog.FieldArguments, oplog.FieldCurValue, oplog.FieldNewValue, oplog.FieldHumanReadable, oplog.FieldResult, oplog.FieldFailReason:
 			values[i] = new(sql.NullString)
 		case oplog.FieldEntID, oplog.FieldAppID, oplog.FieldUserID:
 			values[i] = new(uuid.UUID)
@@ -138,6 +140,12 @@ func (ol *OpLog) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				ol.CurValue = value.String
 			}
+		case oplog.FieldNewValue:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field new_value", values[i])
+			} else if value.Valid {
+				ol.NewValue = value.String
+			}
 		case oplog.FieldHumanReadable:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field human_readable", values[i])
@@ -219,6 +227,9 @@ func (ol *OpLog) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("cur_value=")
 	builder.WriteString(ol.CurValue)
+	builder.WriteString(", ")
+	builder.WriteString("new_value=")
+	builder.WriteString(ol.NewValue)
 	builder.WriteString(", ")
 	builder.WriteString("human_readable=")
 	builder.WriteString(ol.HumanReadable)

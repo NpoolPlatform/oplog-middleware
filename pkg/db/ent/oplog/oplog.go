@@ -32,6 +32,8 @@ const (
 	FieldArguments = "arguments"
 	// FieldCurValue holds the string denoting the cur_value field in the database.
 	FieldCurValue = "cur_value"
+	// FieldNewValue holds the string denoting the new_value field in the database.
+	FieldNewValue = "new_value"
 	// FieldHumanReadable holds the string denoting the human_readable field in the database.
 	FieldHumanReadable = "human_readable"
 	// FieldResult holds the string denoting the result field in the database.
@@ -57,6 +59,7 @@ var Columns = []string{
 	FieldMethod,
 	FieldArguments,
 	FieldCurValue,
+	FieldNewValue,
 	FieldHumanReadable,
 	FieldResult,
 	FieldFailReason,
@@ -104,6 +107,8 @@ var (
 	DefaultArguments string
 	// DefaultCurValue holds the default value on creation for the "cur_value" field.
 	DefaultCurValue string
+	// DefaultNewValue holds the default value on creation for the "new_value" field.
+	DefaultNewValue string
 	// DefaultHumanReadable holds the default value on creation for the "human_readable" field.
 	DefaultHumanReadable string
 	// DefaultResult holds the default value on creation for the "result" field.

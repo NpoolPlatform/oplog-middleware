@@ -45,15 +45,19 @@ func (OpLog) Fields() []ent.Field {
 			Optional().
 			Default(basetypes.HTTPMethod_DefaultMethod.String()),
 		field.
-			String("arguments").
+			Text("arguments").
 			Optional().
 			Default(""),
 		field.
-			String("cur_value").
+			Text("cur_value").
 			Optional().
 			Default(""),
 		field.
-			String("human_readable").
+			Text("new_value").
+			Optional().
+			Default(""),
+		field.
+			Text("human_readable").
 			Optional().
 			Default(""),
 		field.

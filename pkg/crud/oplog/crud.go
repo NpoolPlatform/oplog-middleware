@@ -18,6 +18,7 @@ type Req struct {
 	Method           *basetypes.HTTPMethod
 	Arguments        *string
 	CurValue         *string
+	NewValue         *string
 	HumanReadable    *string
 	Result           *basetypes.Result
 	FailReason       *string
@@ -61,6 +62,9 @@ func CreateSet(c *ent.OpLogCreate, req *Req) *ent.OpLogCreate {
 func UpdateSet(u *ent.OpLogUpdateOne, req *Req) *ent.OpLogUpdateOne {
 	if req.HumanReadable != nil {
 		u.SetHumanReadable(*req.HumanReadable)
+	}
+	if req.NewValue != nil {
+		u.SetNewValue(*req.NewValue)
 	}
 	if req.Result != nil {
 		u.SetResult(req.Result.String())

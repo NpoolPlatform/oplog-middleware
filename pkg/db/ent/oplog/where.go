@@ -149,6 +149,13 @@ func CurValue(v string) predicate.OpLog {
 	})
 }
 
+// NewValue applies equality check predicate on the "new_value" field. It's identical to NewValueEQ.
+func NewValue(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldNewValue), v))
+	})
+}
+
 // HumanReadable applies equality check predicate on the "human_readable" field. It's identical to HumanReadableEQ.
 func HumanReadable(v string) predicate.OpLog {
 	return predicate.OpLog(func(s *sql.Selector) {
@@ -1038,6 +1045,119 @@ func CurValueEqualFold(v string) predicate.OpLog {
 func CurValueContainsFold(v string) predicate.OpLog {
 	return predicate.OpLog(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldCurValue), v))
+	})
+}
+
+// NewValueEQ applies the EQ predicate on the "new_value" field.
+func NewValueEQ(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldNewValue), v))
+	})
+}
+
+// NewValueNEQ applies the NEQ predicate on the "new_value" field.
+func NewValueNEQ(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldNewValue), v))
+	})
+}
+
+// NewValueIn applies the In predicate on the "new_value" field.
+func NewValueIn(vs ...string) predicate.OpLog {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldNewValue), v...))
+	})
+}
+
+// NewValueNotIn applies the NotIn predicate on the "new_value" field.
+func NewValueNotIn(vs ...string) predicate.OpLog {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldNewValue), v...))
+	})
+}
+
+// NewValueGT applies the GT predicate on the "new_value" field.
+func NewValueGT(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldNewValue), v))
+	})
+}
+
+// NewValueGTE applies the GTE predicate on the "new_value" field.
+func NewValueGTE(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldNewValue), v))
+	})
+}
+
+// NewValueLT applies the LT predicate on the "new_value" field.
+func NewValueLT(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldNewValue), v))
+	})
+}
+
+// NewValueLTE applies the LTE predicate on the "new_value" field.
+func NewValueLTE(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldNewValue), v))
+	})
+}
+
+// NewValueContains applies the Contains predicate on the "new_value" field.
+func NewValueContains(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldNewValue), v))
+	})
+}
+
+// NewValueHasPrefix applies the HasPrefix predicate on the "new_value" field.
+func NewValueHasPrefix(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldNewValue), v))
+	})
+}
+
+// NewValueHasSuffix applies the HasSuffix predicate on the "new_value" field.
+func NewValueHasSuffix(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldNewValue), v))
+	})
+}
+
+// NewValueIsNil applies the IsNil predicate on the "new_value" field.
+func NewValueIsNil() predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldNewValue)))
+	})
+}
+
+// NewValueNotNil applies the NotNil predicate on the "new_value" field.
+func NewValueNotNil() predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldNewValue)))
+	})
+}
+
+// NewValueEqualFold applies the EqualFold predicate on the "new_value" field.
+func NewValueEqualFold(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldNewValue), v))
+	})
+}
+
+// NewValueContainsFold applies the ContainsFold predicate on the "new_value" field.
+func NewValueContainsFold(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldNewValue), v))
 	})
 }
 

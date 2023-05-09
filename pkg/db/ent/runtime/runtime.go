@@ -76,20 +76,24 @@ func init() {
 	oplogDescCurValue := oplogFields[5].Descriptor()
 	// oplog.DefaultCurValue holds the default value on creation for the cur_value field.
 	oplog.DefaultCurValue = oplogDescCurValue.Default.(string)
+	// oplogDescNewValue is the schema descriptor for new_value field.
+	oplogDescNewValue := oplogFields[6].Descriptor()
+	// oplog.DefaultNewValue holds the default value on creation for the new_value field.
+	oplog.DefaultNewValue = oplogDescNewValue.Default.(string)
 	// oplogDescHumanReadable is the schema descriptor for human_readable field.
-	oplogDescHumanReadable := oplogFields[6].Descriptor()
+	oplogDescHumanReadable := oplogFields[7].Descriptor()
 	// oplog.DefaultHumanReadable holds the default value on creation for the human_readable field.
 	oplog.DefaultHumanReadable = oplogDescHumanReadable.Default.(string)
 	// oplogDescResult is the schema descriptor for result field.
-	oplogDescResult := oplogFields[7].Descriptor()
+	oplogDescResult := oplogFields[8].Descriptor()
 	// oplog.DefaultResult holds the default value on creation for the result field.
 	oplog.DefaultResult = oplogDescResult.Default.(string)
 	// oplogDescFailReason is the schema descriptor for fail_reason field.
-	oplogDescFailReason := oplogFields[8].Descriptor()
+	oplogDescFailReason := oplogFields[9].Descriptor()
 	// oplog.DefaultFailReason holds the default value on creation for the fail_reason field.
 	oplog.DefaultFailReason = oplogDescFailReason.Default.(string)
 	// oplogDescElapsedMillisecs is the schema descriptor for elapsed_millisecs field.
-	oplogDescElapsedMillisecs := oplogFields[9].Descriptor()
+	oplogDescElapsedMillisecs := oplogFields[10].Descriptor()
 	// oplog.DefaultElapsedMillisecs holds the default value on creation for the elapsed_millisecs field.
 	oplog.DefaultElapsedMillisecs = oplogDescElapsedMillisecs.Default.(uint32)
 	pubsubmessageMixin := schema.PubsubMessage{}.Mixin()

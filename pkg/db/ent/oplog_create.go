@@ -162,6 +162,20 @@ func (olc *OpLogCreate) SetNillableCurValue(s *string) *OpLogCreate {
 	return olc
 }
 
+// SetNewValue sets the "new_value" field.
+func (olc *OpLogCreate) SetNewValue(s string) *OpLogCreate {
+	olc.mutation.SetNewValue(s)
+	return olc
+}
+
+// SetNillableNewValue sets the "new_value" field if the given value is not nil.
+func (olc *OpLogCreate) SetNillableNewValue(s *string) *OpLogCreate {
+	if s != nil {
+		olc.SetNewValue(*s)
+	}
+	return olc
+}
+
 // SetHumanReadable sets the "human_readable" field.
 func (olc *OpLogCreate) SetHumanReadable(s string) *OpLogCreate {
 	olc.mutation.SetHumanReadable(s)
@@ -361,6 +375,10 @@ func (olc *OpLogCreate) defaults() error {
 		v := oplog.DefaultCurValue
 		olc.mutation.SetCurValue(v)
 	}
+	if _, ok := olc.mutation.NewValue(); !ok {
+		v := oplog.DefaultNewValue
+		olc.mutation.SetNewValue(v)
+	}
 	if _, ok := olc.mutation.HumanReadable(); !ok {
 		v := oplog.DefaultHumanReadable
 		olc.mutation.SetHumanReadable(v)
@@ -507,6 +525,14 @@ func (olc *OpLogCreate) createSpec() (*OpLog, *sqlgraph.CreateSpec) {
 			Column: oplog.FieldCurValue,
 		})
 		_node.CurValue = value
+	}
+	if value, ok := olc.mutation.NewValue(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: oplog.FieldNewValue,
+		})
+		_node.NewValue = value
 	}
 	if value, ok := olc.mutation.HumanReadable(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -765,6 +791,24 @@ func (u *OpLogUpsert) UpdateCurValue() *OpLogUpsert {
 // ClearCurValue clears the value of the "cur_value" field.
 func (u *OpLogUpsert) ClearCurValue() *OpLogUpsert {
 	u.SetNull(oplog.FieldCurValue)
+	return u
+}
+
+// SetNewValue sets the "new_value" field.
+func (u *OpLogUpsert) SetNewValue(v string) *OpLogUpsert {
+	u.Set(oplog.FieldNewValue, v)
+	return u
+}
+
+// UpdateNewValue sets the "new_value" field to the value that was provided on create.
+func (u *OpLogUpsert) UpdateNewValue() *OpLogUpsert {
+	u.SetExcluded(oplog.FieldNewValue)
+	return u
+}
+
+// ClearNewValue clears the value of the "new_value" field.
+func (u *OpLogUpsert) ClearNewValue() *OpLogUpsert {
+	u.SetNull(oplog.FieldNewValue)
 	return u
 }
 
@@ -1096,6 +1140,27 @@ func (u *OpLogUpsertOne) UpdateCurValue() *OpLogUpsertOne {
 func (u *OpLogUpsertOne) ClearCurValue() *OpLogUpsertOne {
 	return u.Update(func(s *OpLogUpsert) {
 		s.ClearCurValue()
+	})
+}
+
+// SetNewValue sets the "new_value" field.
+func (u *OpLogUpsertOne) SetNewValue(v string) *OpLogUpsertOne {
+	return u.Update(func(s *OpLogUpsert) {
+		s.SetNewValue(v)
+	})
+}
+
+// UpdateNewValue sets the "new_value" field to the value that was provided on create.
+func (u *OpLogUpsertOne) UpdateNewValue() *OpLogUpsertOne {
+	return u.Update(func(s *OpLogUpsert) {
+		s.UpdateNewValue()
+	})
+}
+
+// ClearNewValue clears the value of the "new_value" field.
+func (u *OpLogUpsertOne) ClearNewValue() *OpLogUpsertOne {
+	return u.Update(func(s *OpLogUpsert) {
+		s.ClearNewValue()
 	})
 }
 
@@ -1605,6 +1670,27 @@ func (u *OpLogUpsertBulk) UpdateCurValue() *OpLogUpsertBulk {
 func (u *OpLogUpsertBulk) ClearCurValue() *OpLogUpsertBulk {
 	return u.Update(func(s *OpLogUpsert) {
 		s.ClearCurValue()
+	})
+}
+
+// SetNewValue sets the "new_value" field.
+func (u *OpLogUpsertBulk) SetNewValue(v string) *OpLogUpsertBulk {
+	return u.Update(func(s *OpLogUpsert) {
+		s.SetNewValue(v)
+	})
+}
+
+// UpdateNewValue sets the "new_value" field to the value that was provided on create.
+func (u *OpLogUpsertBulk) UpdateNewValue() *OpLogUpsertBulk {
+	return u.Update(func(s *OpLogUpsert) {
+		s.UpdateNewValue()
+	})
+}
+
+// ClearNewValue clears the value of the "new_value" field.
+func (u *OpLogUpsertBulk) ClearNewValue() *OpLogUpsertBulk {
+	return u.Update(func(s *OpLogUpsert) {
+		s.ClearNewValue()
 	})
 }
 

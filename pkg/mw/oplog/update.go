@@ -31,7 +31,7 @@ func (h *Handler) UpdateOpLog(ctx context.Context) (*npool.OpLog, error) {
 		info, err = oplogcrud.UpdateSet(
 			info.Update(),
 			&oplogcrud.Req{
-				CurValue:      h.CurValue,
+				NewValue:      h.NewValue,
 				HumanReadable: h.HumanReadable,
 				Result:        h.Result,
 				FailReason:    h.FailReason,

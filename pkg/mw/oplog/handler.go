@@ -23,6 +23,7 @@ type Handler struct {
 	Method        *basetypes.HTTPMethod
 	Arguments     *string
 	CurValue      *string
+	NewValue      *string
 	HumanReadable *string
 	Result        *basetypes.Result
 	FailReason    *string
@@ -134,6 +135,20 @@ func WithCurValue(ctx context.Context, value *string) func(context.Context, *Han
 			return err
 		}
 		h.CurValue = value
+		return nil
+	}
+}
+
+func WithNewValue(ctx context.Context, value *string) func(context.Context, *Handler) error {
+	return func(ctx context.Context, h *Handler) error {
+		if value == nil {
+			return nil
+		}
+		var _args map[string]interface{}
+		if err := json.Unmarshal([]byte(*value), &_args); err != nil {
+			return err
+		}
+		h.NewValue = value
 		return nil
 	}
 }

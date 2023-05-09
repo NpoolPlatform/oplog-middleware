@@ -218,6 +218,26 @@ func (olu *OpLogUpdate) ClearCurValue() *OpLogUpdate {
 	return olu
 }
 
+// SetNewValue sets the "new_value" field.
+func (olu *OpLogUpdate) SetNewValue(s string) *OpLogUpdate {
+	olu.mutation.SetNewValue(s)
+	return olu
+}
+
+// SetNillableNewValue sets the "new_value" field if the given value is not nil.
+func (olu *OpLogUpdate) SetNillableNewValue(s *string) *OpLogUpdate {
+	if s != nil {
+		olu.SetNewValue(*s)
+	}
+	return olu
+}
+
+// ClearNewValue clears the value of the "new_value" field.
+func (olu *OpLogUpdate) ClearNewValue() *OpLogUpdate {
+	olu.mutation.ClearNewValue()
+	return olu
+}
+
 // SetHumanReadable sets the "human_readable" field.
 func (olu *OpLogUpdate) SetHumanReadable(s string) *OpLogUpdate {
 	olu.mutation.SetHumanReadable(s)
@@ -530,6 +550,19 @@ func (olu *OpLogUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: oplog.FieldCurValue,
 		})
 	}
+	if value, ok := olu.mutation.NewValue(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: oplog.FieldNewValue,
+		})
+	}
+	if olu.mutation.NewValueCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: oplog.FieldNewValue,
+		})
+	}
 	if value, ok := olu.mutation.HumanReadable(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -796,6 +829,26 @@ func (oluo *OpLogUpdateOne) SetNillableCurValue(s *string) *OpLogUpdateOne {
 // ClearCurValue clears the value of the "cur_value" field.
 func (oluo *OpLogUpdateOne) ClearCurValue() *OpLogUpdateOne {
 	oluo.mutation.ClearCurValue()
+	return oluo
+}
+
+// SetNewValue sets the "new_value" field.
+func (oluo *OpLogUpdateOne) SetNewValue(s string) *OpLogUpdateOne {
+	oluo.mutation.SetNewValue(s)
+	return oluo
+}
+
+// SetNillableNewValue sets the "new_value" field if the given value is not nil.
+func (oluo *OpLogUpdateOne) SetNillableNewValue(s *string) *OpLogUpdateOne {
+	if s != nil {
+		oluo.SetNewValue(*s)
+	}
+	return oluo
+}
+
+// ClearNewValue clears the value of the "new_value" field.
+func (oluo *OpLogUpdateOne) ClearNewValue() *OpLogUpdateOne {
+	oluo.mutation.ClearNewValue()
 	return oluo
 }
 
@@ -1139,6 +1192,19 @@ func (oluo *OpLogUpdateOne) sqlSave(ctx context.Context) (_node *OpLog, err erro
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: oplog.FieldCurValue,
+		})
+	}
+	if value, ok := oluo.mutation.NewValue(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: oplog.FieldNewValue,
+		})
+	}
+	if oluo.mutation.NewValueCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: oplog.FieldNewValue,
 		})
 	}
 	if value, ok := oluo.mutation.HumanReadable(); ok {
