@@ -25,7 +25,7 @@ func (h *Handler) UpdateOpLog(ctx context.Context) (*npool.OpLog, error) {
 			).
 			Only(_ctx)
 		if err != nil {
-			return nil
+			return err
 		}
 
 		info, err = oplogcrud.UpdateSet(
