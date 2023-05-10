@@ -77,11 +77,11 @@ func (OpLog) Fields() []ent.Field {
 			Optional().
 			Default(0),
 		field.
-			String("req_headers").
+			Text("req_headers").
 			Optional().
 			Default("{}"),
 		field.
-			String("resp_headers").
+			Text("resp_headers").
 			Optional().
 			Default("{}"),
 	}

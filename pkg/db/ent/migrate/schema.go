@@ -27,8 +27,8 @@ var (
 		{Name: "fail_reason", Type: field.TypeString, Nullable: true, Default: ""},
 		{Name: "elapsed_millisecs", Type: field.TypeUint32, Nullable: true, Default: 0},
 		{Name: "status_code", Type: field.TypeInt32, Nullable: true, Default: 0},
-		{Name: "req_headers", Type: field.TypeString, Nullable: true, Default: "{}"},
-		{Name: "resp_headers", Type: field.TypeString, Nullable: true, Default: "{}"},
+		{Name: "req_headers", Type: field.TypeString, Nullable: true, Size: 2147483647, Default: "{}"},
+		{Name: "resp_headers", Type: field.TypeString, Nullable: true, Size: 2147483647, Default: "{}"},
 	}
 	// OpLogsTable holds the schema information for the "op_logs" table.
 	OpLogsTable = &schema.Table{
