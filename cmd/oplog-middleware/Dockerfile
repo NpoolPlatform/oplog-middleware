@@ -6,6 +6,6 @@ COPY oplog-middleware /app
 
 ENTRYPOINT ["/app/oplog-middleware"]
 
-EXPOSE 50330 50331 50332 50333
+EXPOSE 50780 50781 50782 50783
 
 CMD ["run"]
