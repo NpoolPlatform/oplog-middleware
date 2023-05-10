@@ -65,7 +65,7 @@ func (OpLog) Fields() []ent.Field {
 			Optional().
 			Default(basetypes.Result_DefaultResult.String()),
 		field.
-			String("fail_reason").
+			Text("fail_reason").
 			Optional().
 			Default(""),
 		field.

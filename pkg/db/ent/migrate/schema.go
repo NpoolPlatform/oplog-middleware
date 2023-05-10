@@ -24,7 +24,7 @@ var (
 		{Name: "new_value", Type: field.TypeString, Nullable: true, Size: 2147483647, Default: ""},
 		{Name: "human_readable", Type: field.TypeString, Nullable: true, Size: 2147483647, Default: ""},
 		{Name: "result", Type: field.TypeString, Nullable: true, Default: "DefaultResult"},
-		{Name: "fail_reason", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "fail_reason", Type: field.TypeString, Nullable: true, Size: 2147483647, Default: ""},
 		{Name: "elapsed_millisecs", Type: field.TypeUint32, Nullable: true, Default: 0},
 		{Name: "status_code", Type: field.TypeInt32, Nullable: true, Default: 0},
 		{Name: "req_headers", Type: field.TypeString, Nullable: true, Size: 2147483647, Default: "{}"},
