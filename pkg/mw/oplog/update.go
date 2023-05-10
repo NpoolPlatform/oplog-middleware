@@ -35,6 +35,9 @@ func (h *Handler) UpdateOpLog(ctx context.Context) (*npool.OpLog, error) {
 				HumanReadable: h.HumanReadable,
 				Result:        h.Result,
 				FailReason:    h.FailReason,
+				StatusCode:    h.StatusCode,
+				ReqHeaders:    h.ReqHeaders,
+				RespHeaders:   h.RespHeaders,
 			},
 		).Save(_ctx)
 		if err != nil {

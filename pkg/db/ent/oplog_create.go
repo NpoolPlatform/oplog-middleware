@@ -232,6 +232,48 @@ func (olc *OpLogCreate) SetNillableElapsedMillisecs(u *uint32) *OpLogCreate {
 	return olc
 }
 
+// SetStatusCode sets the "status_code" field.
+func (olc *OpLogCreate) SetStatusCode(i int32) *OpLogCreate {
+	olc.mutation.SetStatusCode(i)
+	return olc
+}
+
+// SetNillableStatusCode sets the "status_code" field if the given value is not nil.
+func (olc *OpLogCreate) SetNillableStatusCode(i *int32) *OpLogCreate {
+	if i != nil {
+		olc.SetStatusCode(*i)
+	}
+	return olc
+}
+
+// SetReqHeaders sets the "req_headers" field.
+func (olc *OpLogCreate) SetReqHeaders(s string) *OpLogCreate {
+	olc.mutation.SetReqHeaders(s)
+	return olc
+}
+
+// SetNillableReqHeaders sets the "req_headers" field if the given value is not nil.
+func (olc *OpLogCreate) SetNillableReqHeaders(s *string) *OpLogCreate {
+	if s != nil {
+		olc.SetReqHeaders(*s)
+	}
+	return olc
+}
+
+// SetRespHeaders sets the "resp_headers" field.
+func (olc *OpLogCreate) SetRespHeaders(s string) *OpLogCreate {
+	olc.mutation.SetRespHeaders(s)
+	return olc
+}
+
+// SetNillableRespHeaders sets the "resp_headers" field if the given value is not nil.
+func (olc *OpLogCreate) SetNillableRespHeaders(s *string) *OpLogCreate {
+	if s != nil {
+		olc.SetRespHeaders(*s)
+	}
+	return olc
+}
+
 // SetID sets the "id" field.
 func (olc *OpLogCreate) SetID(u uint32) *OpLogCreate {
 	olc.mutation.SetID(u)
@@ -394,6 +436,18 @@ func (olc *OpLogCreate) defaults() error {
 	if _, ok := olc.mutation.ElapsedMillisecs(); !ok {
 		v := oplog.DefaultElapsedMillisecs
 		olc.mutation.SetElapsedMillisecs(v)
+	}
+	if _, ok := olc.mutation.StatusCode(); !ok {
+		v := oplog.DefaultStatusCode
+		olc.mutation.SetStatusCode(v)
+	}
+	if _, ok := olc.mutation.ReqHeaders(); !ok {
+		v := oplog.DefaultReqHeaders
+		olc.mutation.SetReqHeaders(v)
+	}
+	if _, ok := olc.mutation.RespHeaders(); !ok {
+		v := oplog.DefaultRespHeaders
+		olc.mutation.SetRespHeaders(v)
 	}
 	return nil
 }
@@ -565,6 +619,30 @@ func (olc *OpLogCreate) createSpec() (*OpLog, *sqlgraph.CreateSpec) {
 			Column: oplog.FieldElapsedMillisecs,
 		})
 		_node.ElapsedMillisecs = value
+	}
+	if value, ok := olc.mutation.StatusCode(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt32,
+			Value:  value,
+			Column: oplog.FieldStatusCode,
+		})
+		_node.StatusCode = value
+	}
+	if value, ok := olc.mutation.ReqHeaders(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: oplog.FieldReqHeaders,
+		})
+		_node.ReqHeaders = value
+	}
+	if value, ok := olc.mutation.RespHeaders(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: oplog.FieldRespHeaders,
+		})
+		_node.RespHeaders = value
 	}
 	return _node, _spec
 }
@@ -887,6 +965,66 @@ func (u *OpLogUpsert) AddElapsedMillisecs(v uint32) *OpLogUpsert {
 // ClearElapsedMillisecs clears the value of the "elapsed_millisecs" field.
 func (u *OpLogUpsert) ClearElapsedMillisecs() *OpLogUpsert {
 	u.SetNull(oplog.FieldElapsedMillisecs)
+	return u
+}
+
+// SetStatusCode sets the "status_code" field.
+func (u *OpLogUpsert) SetStatusCode(v int32) *OpLogUpsert {
+	u.Set(oplog.FieldStatusCode, v)
+	return u
+}
+
+// UpdateStatusCode sets the "status_code" field to the value that was provided on create.
+func (u *OpLogUpsert) UpdateStatusCode() *OpLogUpsert {
+	u.SetExcluded(oplog.FieldStatusCode)
+	return u
+}
+
+// AddStatusCode adds v to the "status_code" field.
+func (u *OpLogUpsert) AddStatusCode(v int32) *OpLogUpsert {
+	u.Add(oplog.FieldStatusCode, v)
+	return u
+}
+
+// ClearStatusCode clears the value of the "status_code" field.
+func (u *OpLogUpsert) ClearStatusCode() *OpLogUpsert {
+	u.SetNull(oplog.FieldStatusCode)
+	return u
+}
+
+// SetReqHeaders sets the "req_headers" field.
+func (u *OpLogUpsert) SetReqHeaders(v string) *OpLogUpsert {
+	u.Set(oplog.FieldReqHeaders, v)
+	return u
+}
+
+// UpdateReqHeaders sets the "req_headers" field to the value that was provided on create.
+func (u *OpLogUpsert) UpdateReqHeaders() *OpLogUpsert {
+	u.SetExcluded(oplog.FieldReqHeaders)
+	return u
+}
+
+// ClearReqHeaders clears the value of the "req_headers" field.
+func (u *OpLogUpsert) ClearReqHeaders() *OpLogUpsert {
+	u.SetNull(oplog.FieldReqHeaders)
+	return u
+}
+
+// SetRespHeaders sets the "resp_headers" field.
+func (u *OpLogUpsert) SetRespHeaders(v string) *OpLogUpsert {
+	u.Set(oplog.FieldRespHeaders, v)
+	return u
+}
+
+// UpdateRespHeaders sets the "resp_headers" field to the value that was provided on create.
+func (u *OpLogUpsert) UpdateRespHeaders() *OpLogUpsert {
+	u.SetExcluded(oplog.FieldRespHeaders)
+	return u
+}
+
+// ClearRespHeaders clears the value of the "resp_headers" field.
+func (u *OpLogUpsert) ClearRespHeaders() *OpLogUpsert {
+	u.SetNull(oplog.FieldRespHeaders)
 	return u
 }
 
@@ -1252,6 +1390,76 @@ func (u *OpLogUpsertOne) UpdateElapsedMillisecs() *OpLogUpsertOne {
 func (u *OpLogUpsertOne) ClearElapsedMillisecs() *OpLogUpsertOne {
 	return u.Update(func(s *OpLogUpsert) {
 		s.ClearElapsedMillisecs()
+	})
+}
+
+// SetStatusCode sets the "status_code" field.
+func (u *OpLogUpsertOne) SetStatusCode(v int32) *OpLogUpsertOne {
+	return u.Update(func(s *OpLogUpsert) {
+		s.SetStatusCode(v)
+	})
+}
+
+// AddStatusCode adds v to the "status_code" field.
+func (u *OpLogUpsertOne) AddStatusCode(v int32) *OpLogUpsertOne {
+	return u.Update(func(s *OpLogUpsert) {
+		s.AddStatusCode(v)
+	})
+}
+
+// UpdateStatusCode sets the "status_code" field to the value that was provided on create.
+func (u *OpLogUpsertOne) UpdateStatusCode() *OpLogUpsertOne {
+	return u.Update(func(s *OpLogUpsert) {
+		s.UpdateStatusCode()
+	})
+}
+
+// ClearStatusCode clears the value of the "status_code" field.
+func (u *OpLogUpsertOne) ClearStatusCode() *OpLogUpsertOne {
+	return u.Update(func(s *OpLogUpsert) {
+		s.ClearStatusCode()
+	})
+}
+
+// SetReqHeaders sets the "req_headers" field.
+func (u *OpLogUpsertOne) SetReqHeaders(v string) *OpLogUpsertOne {
+	return u.Update(func(s *OpLogUpsert) {
+		s.SetReqHeaders(v)
+	})
+}
+
+// UpdateReqHeaders sets the "req_headers" field to the value that was provided on create.
+func (u *OpLogUpsertOne) UpdateReqHeaders() *OpLogUpsertOne {
+	return u.Update(func(s *OpLogUpsert) {
+		s.UpdateReqHeaders()
+	})
+}
+
+// ClearReqHeaders clears the value of the "req_headers" field.
+func (u *OpLogUpsertOne) ClearReqHeaders() *OpLogUpsertOne {
+	return u.Update(func(s *OpLogUpsert) {
+		s.ClearReqHeaders()
+	})
+}
+
+// SetRespHeaders sets the "resp_headers" field.
+func (u *OpLogUpsertOne) SetRespHeaders(v string) *OpLogUpsertOne {
+	return u.Update(func(s *OpLogUpsert) {
+		s.SetRespHeaders(v)
+	})
+}
+
+// UpdateRespHeaders sets the "resp_headers" field to the value that was provided on create.
+func (u *OpLogUpsertOne) UpdateRespHeaders() *OpLogUpsertOne {
+	return u.Update(func(s *OpLogUpsert) {
+		s.UpdateRespHeaders()
+	})
+}
+
+// ClearRespHeaders clears the value of the "resp_headers" field.
+func (u *OpLogUpsertOne) ClearRespHeaders() *OpLogUpsertOne {
+	return u.Update(func(s *OpLogUpsert) {
+		s.ClearRespHeaders()
 	})
 }
 
@@ -1782,6 +1990,76 @@ func (u *OpLogUpsertBulk) UpdateElapsedMillisecs() *OpLogUpsertBulk {
 func (u *OpLogUpsertBulk) ClearElapsedMillisecs() *OpLogUpsertBulk {
 	return u.Update(func(s *OpLogUpsert) {
 		s.ClearElapsedMillisecs()
+	})
+}
+
+// SetStatusCode sets the "status_code" field.
+func (u *OpLogUpsertBulk) SetStatusCode(v int32) *OpLogUpsertBulk {
+	return u.Update(func(s *OpLogUpsert) {
+		s.SetStatusCode(v)
+	})
+}
+
+// AddStatusCode adds v to the "status_code" field.
+func (u *OpLogUpsertBulk) AddStatusCode(v int32) *OpLogUpsertBulk {
+	return u.Update(func(s *OpLogUpsert) {
+		s.AddStatusCode(v)
+	})
+}
+
+// UpdateStatusCode sets the "status_code" field to the value that was provided on create.
+func (u *OpLogUpsertBulk) UpdateStatusCode() *OpLogUpsertBulk {
+	return u.Update(func(s *OpLogUpsert) {
+		s.UpdateStatusCode()
+	})
+}
+
+// ClearStatusCode clears the value of the "status_code" field.
+func (u *OpLogUpsertBulk) ClearStatusCode() *OpLogUpsertBulk {
+	return u.Update(func(s *OpLogUpsert) {
+		s.ClearStatusCode()
+	})
+}
+
+// SetReqHeaders sets the "req_headers" field.
+func (u *OpLogUpsertBulk) SetReqHeaders(v string) *OpLogUpsertBulk {
+	return u.Update(func(s *OpLogUpsert) {
+		s.SetReqHeaders(v)
+	})
+}
+
+// UpdateReqHeaders sets the "req_headers" field to the value that was provided on create.
+func (u *OpLogUpsertBulk) UpdateReqHeaders() *OpLogUpsertBulk {
+	return u.Update(func(s *OpLogUpsert) {
+		s.UpdateReqHeaders()
+	})
+}
+
+// ClearReqHeaders clears the value of the "req_headers" field.
+func (u *OpLogUpsertBulk) ClearReqHeaders() *OpLogUpsertBulk {
+	return u.Update(func(s *OpLogUpsert) {
+		s.ClearReqHeaders()
+	})
+}
+
+// SetRespHeaders sets the "resp_headers" field.
+func (u *OpLogUpsertBulk) SetRespHeaders(v string) *OpLogUpsertBulk {
+	return u.Update(func(s *OpLogUpsert) {
+		s.SetRespHeaders(v)
+	})
+}
+
+// UpdateRespHeaders sets the "resp_headers" field to the value that was provided on create.
+func (u *OpLogUpsertBulk) UpdateRespHeaders() *OpLogUpsertBulk {
+	return u.Update(func(s *OpLogUpsert) {
+		s.UpdateRespHeaders()
+	})
+}
+
+// ClearRespHeaders clears the value of the "resp_headers" field.
+func (u *OpLogUpsertBulk) ClearRespHeaders() *OpLogUpsertBulk {
+	return u.Update(func(s *OpLogUpsert) {
+		s.ClearRespHeaders()
 	})
 }
 

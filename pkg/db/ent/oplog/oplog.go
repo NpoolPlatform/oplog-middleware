@@ -42,6 +42,12 @@ const (
 	FieldFailReason = "fail_reason"
 	// FieldElapsedMillisecs holds the string denoting the elapsed_millisecs field in the database.
 	FieldElapsedMillisecs = "elapsed_millisecs"
+	// FieldStatusCode holds the string denoting the status_code field in the database.
+	FieldStatusCode = "status_code"
+	// FieldReqHeaders holds the string denoting the req_headers field in the database.
+	FieldReqHeaders = "req_headers"
+	// FieldRespHeaders holds the string denoting the resp_headers field in the database.
+	FieldRespHeaders = "resp_headers"
 	// Table holds the table name of the oplog in the database.
 	Table = "op_logs"
 )
@@ -64,6 +70,9 @@ var Columns = []string{
 	FieldResult,
 	FieldFailReason,
 	FieldElapsedMillisecs,
+	FieldStatusCode,
+	FieldReqHeaders,
+	FieldRespHeaders,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -117,4 +126,10 @@ var (
 	DefaultFailReason string
 	// DefaultElapsedMillisecs holds the default value on creation for the "elapsed_millisecs" field.
 	DefaultElapsedMillisecs uint32
+	// DefaultStatusCode holds the default value on creation for the "status_code" field.
+	DefaultStatusCode int32
+	// DefaultReqHeaders holds the default value on creation for the "req_headers" field.
+	DefaultReqHeaders string
+	// DefaultRespHeaders holds the default value on creation for the "resp_headers" field.
+	DefaultRespHeaders string
 )

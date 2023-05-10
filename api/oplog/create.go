@@ -22,8 +22,7 @@ func (s *Server) CreateOpLog(ctx context.Context, in *npool.CreateOpLogRequest) 
 		oplog1.WithArguments(ctx, req.Arguments),
 		oplog1.WithCurValue(ctx, req.CurValue),
 		oplog1.WithHumanReadable(ctx, req.HumanReadable),
-		oplog1.WithResult(ctx, req.Result),
-		oplog1.WithFailReason(ctx, req.FailReason),
+		oplog1.WithReqHeaders(ctx, req.ReqHeaders),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

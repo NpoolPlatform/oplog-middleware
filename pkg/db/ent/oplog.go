@@ -46,6 +46,12 @@ type OpLog struct {
 	FailReason string `json:"fail_reason,omitempty"`
 	// ElapsedMillisecs holds the value of the "elapsed_millisecs" field.
 	ElapsedMillisecs uint32 `json:"elapsed_millisecs,omitempty"`
+	// StatusCode holds the value of the "status_code" field.
+	StatusCode int32 `json:"status_code,omitempty"`
+	// ReqHeaders holds the value of the "req_headers" field.
+	ReqHeaders string `json:"req_headers,omitempty"`
+	// RespHeaders holds the value of the "resp_headers" field.
+	RespHeaders string `json:"resp_headers,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -53,9 +59,9 @@ func (*OpLog) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case oplog.FieldID, oplog.FieldCreatedAt, oplog.FieldUpdatedAt, oplog.FieldDeletedAt, oplog.FieldElapsedMillisecs:
+		case oplog.FieldID, oplog.FieldCreatedAt, oplog.FieldUpdatedAt, oplog.FieldDeletedAt, oplog.FieldElapsedMillisecs, oplog.FieldStatusCode:
 			values[i] = new(sql.NullInt64)
-		case oplog.FieldPath, oplog.FieldMethod, oplog.FieldArguments, oplog.FieldCurValue, oplog.FieldNewValue, oplog.FieldHumanReadable, oplog.FieldResult, oplog.FieldFailReason:
+		case oplog.FieldPath, oplog.FieldMethod, oplog.FieldArguments, oplog.FieldCurValue, oplog.FieldNewValue, oplog.FieldHumanReadable, oplog.FieldResult, oplog.FieldFailReason, oplog.FieldReqHeaders, oplog.FieldRespHeaders:
 			values[i] = new(sql.NullString)
 		case oplog.FieldEntID, oplog.FieldAppID, oplog.FieldUserID:
 			values[i] = new(uuid.UUID)
@@ -170,6 +176,24 @@ func (ol *OpLog) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				ol.ElapsedMillisecs = uint32(value.Int64)
 			}
+		case oplog.FieldStatusCode:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field status_code", values[i])
+			} else if value.Valid {
+				ol.StatusCode = int32(value.Int64)
+			}
+		case oplog.FieldReqHeaders:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field req_headers", values[i])
+			} else if value.Valid {
+				ol.ReqHeaders = value.String
+			}
+		case oplog.FieldRespHeaders:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field resp_headers", values[i])
+			} else if value.Valid {
+				ol.RespHeaders = value.String
+			}
 		}
 	}
 	return nil
@@ -242,6 +266,15 @@ func (ol *OpLog) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("elapsed_millisecs=")
 	builder.WriteString(fmt.Sprintf("%v", ol.ElapsedMillisecs))
+	builder.WriteString(", ")
+	builder.WriteString("status_code=")
+	builder.WriteString(fmt.Sprintf("%v", ol.StatusCode))
+	builder.WriteString(", ")
+	builder.WriteString("req_headers=")
+	builder.WriteString(ol.ReqHeaders)
+	builder.WriteString(", ")
+	builder.WriteString("resp_headers=")
+	builder.WriteString(ol.RespHeaders)
 	builder.WriteByte(')')
 	return builder.String()
 }

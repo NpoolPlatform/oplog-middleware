@@ -72,6 +72,18 @@ func (OpLog) Fields() []ent.Field {
 			Uint32("elapsed_millisecs").
 			Optional().
 			Default(0),
+		field.
+			Int32("status_code").
+			Optional().
+			Default(0),
+		field.
+			String("req_headers").
+			Optional().
+			Default("{}"),
+		field.
+			String("resp_headers").
+			Optional().
+			Default("{}"),
 	}
 }
 

@@ -184,6 +184,27 @@ func ElapsedMillisecs(v uint32) predicate.OpLog {
 	})
 }
 
+// StatusCode applies equality check predicate on the "status_code" field. It's identical to StatusCodeEQ.
+func StatusCode(v int32) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldStatusCode), v))
+	})
+}
+
+// ReqHeaders applies equality check predicate on the "req_headers" field. It's identical to ReqHeadersEQ.
+func ReqHeaders(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldReqHeaders), v))
+	})
+}
+
+// RespHeaders applies equality check predicate on the "resp_headers" field. It's identical to RespHeadersEQ.
+func RespHeaders(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRespHeaders), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v uint32) predicate.OpLog {
 	return predicate.OpLog(func(s *sql.Selector) {
@@ -1575,6 +1596,310 @@ func ElapsedMillisecsIsNil() predicate.OpLog {
 func ElapsedMillisecsNotNil() predicate.OpLog {
 	return predicate.OpLog(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldElapsedMillisecs)))
+	})
+}
+
+// StatusCodeEQ applies the EQ predicate on the "status_code" field.
+func StatusCodeEQ(v int32) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldStatusCode), v))
+	})
+}
+
+// StatusCodeNEQ applies the NEQ predicate on the "status_code" field.
+func StatusCodeNEQ(v int32) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldStatusCode), v))
+	})
+}
+
+// StatusCodeIn applies the In predicate on the "status_code" field.
+func StatusCodeIn(vs ...int32) predicate.OpLog {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldStatusCode), v...))
+	})
+}
+
+// StatusCodeNotIn applies the NotIn predicate on the "status_code" field.
+func StatusCodeNotIn(vs ...int32) predicate.OpLog {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldStatusCode), v...))
+	})
+}
+
+// StatusCodeGT applies the GT predicate on the "status_code" field.
+func StatusCodeGT(v int32) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldStatusCode), v))
+	})
+}
+
+// StatusCodeGTE applies the GTE predicate on the "status_code" field.
+func StatusCodeGTE(v int32) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldStatusCode), v))
+	})
+}
+
+// StatusCodeLT applies the LT predicate on the "status_code" field.
+func StatusCodeLT(v int32) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldStatusCode), v))
+	})
+}
+
+// StatusCodeLTE applies the LTE predicate on the "status_code" field.
+func StatusCodeLTE(v int32) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldStatusCode), v))
+	})
+}
+
+// StatusCodeIsNil applies the IsNil predicate on the "status_code" field.
+func StatusCodeIsNil() predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldStatusCode)))
+	})
+}
+
+// StatusCodeNotNil applies the NotNil predicate on the "status_code" field.
+func StatusCodeNotNil() predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldStatusCode)))
+	})
+}
+
+// ReqHeadersEQ applies the EQ predicate on the "req_headers" field.
+func ReqHeadersEQ(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldReqHeaders), v))
+	})
+}
+
+// ReqHeadersNEQ applies the NEQ predicate on the "req_headers" field.
+func ReqHeadersNEQ(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldReqHeaders), v))
+	})
+}
+
+// ReqHeadersIn applies the In predicate on the "req_headers" field.
+func ReqHeadersIn(vs ...string) predicate.OpLog {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldReqHeaders), v...))
+	})
+}
+
+// ReqHeadersNotIn applies the NotIn predicate on the "req_headers" field.
+func ReqHeadersNotIn(vs ...string) predicate.OpLog {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldReqHeaders), v...))
+	})
+}
+
+// ReqHeadersGT applies the GT predicate on the "req_headers" field.
+func ReqHeadersGT(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldReqHeaders), v))
+	})
+}
+
+// ReqHeadersGTE applies the GTE predicate on the "req_headers" field.
+func ReqHeadersGTE(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldReqHeaders), v))
+	})
+}
+
+// ReqHeadersLT applies the LT predicate on the "req_headers" field.
+func ReqHeadersLT(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldReqHeaders), v))
+	})
+}
+
+// ReqHeadersLTE applies the LTE predicate on the "req_headers" field.
+func ReqHeadersLTE(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldReqHeaders), v))
+	})
+}
+
+// ReqHeadersContains applies the Contains predicate on the "req_headers" field.
+func ReqHeadersContains(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldReqHeaders), v))
+	})
+}
+
+// ReqHeadersHasPrefix applies the HasPrefix predicate on the "req_headers" field.
+func ReqHeadersHasPrefix(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldReqHeaders), v))
+	})
+}
+
+// ReqHeadersHasSuffix applies the HasSuffix predicate on the "req_headers" field.
+func ReqHeadersHasSuffix(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldReqHeaders), v))
+	})
+}
+
+// ReqHeadersIsNil applies the IsNil predicate on the "req_headers" field.
+func ReqHeadersIsNil() predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldReqHeaders)))
+	})
+}
+
+// ReqHeadersNotNil applies the NotNil predicate on the "req_headers" field.
+func ReqHeadersNotNil() predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldReqHeaders)))
+	})
+}
+
+// ReqHeadersEqualFold applies the EqualFold predicate on the "req_headers" field.
+func ReqHeadersEqualFold(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldReqHeaders), v))
+	})
+}
+
+// ReqHeadersContainsFold applies the ContainsFold predicate on the "req_headers" field.
+func ReqHeadersContainsFold(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldReqHeaders), v))
+	})
+}
+
+// RespHeadersEQ applies the EQ predicate on the "resp_headers" field.
+func RespHeadersEQ(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRespHeaders), v))
+	})
+}
+
+// RespHeadersNEQ applies the NEQ predicate on the "resp_headers" field.
+func RespHeadersNEQ(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldRespHeaders), v))
+	})
+}
+
+// RespHeadersIn applies the In predicate on the "resp_headers" field.
+func RespHeadersIn(vs ...string) predicate.OpLog {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldRespHeaders), v...))
+	})
+}
+
+// RespHeadersNotIn applies the NotIn predicate on the "resp_headers" field.
+func RespHeadersNotIn(vs ...string) predicate.OpLog {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldRespHeaders), v...))
+	})
+}
+
+// RespHeadersGT applies the GT predicate on the "resp_headers" field.
+func RespHeadersGT(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldRespHeaders), v))
+	})
+}
+
+// RespHeadersGTE applies the GTE predicate on the "resp_headers" field.
+func RespHeadersGTE(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldRespHeaders), v))
+	})
+}
+
+// RespHeadersLT applies the LT predicate on the "resp_headers" field.
+func RespHeadersLT(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldRespHeaders), v))
+	})
+}
+
+// RespHeadersLTE applies the LTE predicate on the "resp_headers" field.
+func RespHeadersLTE(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldRespHeaders), v))
+	})
+}
+
+// RespHeadersContains applies the Contains predicate on the "resp_headers" field.
+func RespHeadersContains(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldRespHeaders), v))
+	})
+}
+
+// RespHeadersHasPrefix applies the HasPrefix predicate on the "resp_headers" field.
+func RespHeadersHasPrefix(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldRespHeaders), v))
+	})
+}
+
+// RespHeadersHasSuffix applies the HasSuffix predicate on the "resp_headers" field.
+func RespHeadersHasSuffix(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldRespHeaders), v))
+	})
+}
+
+// RespHeadersIsNil applies the IsNil predicate on the "resp_headers" field.
+func RespHeadersIsNil() predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldRespHeaders)))
+	})
+}
+
+// RespHeadersNotNil applies the NotNil predicate on the "resp_headers" field.
+func RespHeadersNotNil() predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldRespHeaders)))
+	})
+}
+
+// RespHeadersEqualFold applies the EqualFold predicate on the "resp_headers" field.
+func RespHeadersEqualFold(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldRespHeaders), v))
+	})
+}
+
+// RespHeadersContainsFold applies the ContainsFold predicate on the "resp_headers" field.
+func RespHeadersContainsFold(v string) predicate.OpLog {
+	return predicate.OpLog(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldRespHeaders), v))
 	})
 }
 

@@ -41,6 +41,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			oplog.FieldResult:           {Type: field.TypeString, Column: oplog.FieldResult},
 			oplog.FieldFailReason:       {Type: field.TypeString, Column: oplog.FieldFailReason},
 			oplog.FieldElapsedMillisecs: {Type: field.TypeUint32, Column: oplog.FieldElapsedMillisecs},
+			oplog.FieldStatusCode:       {Type: field.TypeInt32, Column: oplog.FieldStatusCode},
+			oplog.FieldReqHeaders:       {Type: field.TypeString, Column: oplog.FieldReqHeaders},
+			oplog.FieldRespHeaders:      {Type: field.TypeString, Column: oplog.FieldRespHeaders},
 		},
 	}
 	graph.Nodes[1] = &sqlgraph.Node{
@@ -187,6 +190,21 @@ func (f *OpLogFilter) WhereFailReason(p entql.StringP) {
 // WhereElapsedMillisecs applies the entql uint32 predicate on the elapsed_millisecs field.
 func (f *OpLogFilter) WhereElapsedMillisecs(p entql.Uint32P) {
 	f.Where(p.Field(oplog.FieldElapsedMillisecs))
+}
+
+// WhereStatusCode applies the entql int32 predicate on the status_code field.
+func (f *OpLogFilter) WhereStatusCode(p entql.Int32P) {
+	f.Where(p.Field(oplog.FieldStatusCode))
+}
+
+// WhereReqHeaders applies the entql string predicate on the req_headers field.
+func (f *OpLogFilter) WhereReqHeaders(p entql.StringP) {
+	f.Where(p.Field(oplog.FieldReqHeaders))
+}
+
+// WhereRespHeaders applies the entql string predicate on the resp_headers field.
+func (f *OpLogFilter) WhereRespHeaders(p entql.StringP) {
+	f.Where(p.Field(oplog.FieldRespHeaders))
 }
 
 // addPredicate implements the predicateAdder interface.

@@ -14,12 +14,13 @@ func (h *Handler) CreateOpLog(ctx context.Context) (*npool.OpLog, error) {
 		info, err := oplogcrud.CreateSet(
 			cli.OpLog.Create(),
 			&oplogcrud.Req{
-				AppID:     h.AppID,
-				UserID:    h.UserID,
-				Path:      h.Path,
-				Method:    h.Method,
-				Arguments: h.Arguments,
-				CurValue:  h.CurValue,
+				AppID:      h.AppID,
+				UserID:     h.UserID,
+				Path:       h.Path,
+				Method:     h.Method,
+				Arguments:  h.Arguments,
+				CurValue:   h.CurValue,
+				ReqHeaders: h.ReqHeaders,
 			},
 		).Save(_ctx)
 		if err != nil {

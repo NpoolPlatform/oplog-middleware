@@ -27,12 +27,14 @@ func init() {
 
 var userID = uuid.NewString()
 var ret = &npool.OpLog{
-	AppID:     uuid.NewString(),
-	UserID:    &userID,
-	Path:      uuid.NewString(),
-	Method:    basetypes.HTTPMethod_GET,
-	Arguments: "{}",
-	CurValue:  `{"A":"a", "B": 18}`,
+	AppID:       uuid.NewString(),
+	UserID:      &userID,
+	Path:        uuid.NewString(),
+	Method:      basetypes.HTTPMethod_GET,
+	Arguments:   "{}",
+	CurValue:    `{"A":"a", "B": 18}`,
+	ReqHeaders:  "{}",
+	RespHeaders: "{}",
 }
 
 func create(t *testing.T) {

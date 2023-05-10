@@ -20,6 +20,9 @@ func (s *Server) UpdateOpLog(ctx context.Context, in *npool.UpdateOpLogRequest) 
 		oplog1.WithHumanReadable(ctx, req.HumanReadable),
 		oplog1.WithResult(ctx, req.Result),
 		oplog1.WithFailReason(ctx, req.FailReason),
+		oplog1.WithStatusCode(ctx, req.StatusCode),
+		oplog1.WithReqHeaders(ctx, req.ReqHeaders),
+		oplog1.WithRespHeaders(ctx, req.RespHeaders),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

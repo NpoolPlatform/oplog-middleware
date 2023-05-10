@@ -54,6 +54,10 @@ type OpLogMutation struct {
 	fail_reason          *string
 	elapsed_millisecs    *uint32
 	addelapsed_millisecs *int32
+	status_code          *int32
+	addstatus_code       *int32
+	req_headers          *string
+	resp_headers         *string
 	clearedFields        map[string]struct{}
 	done                 bool
 	oldValue             func(context.Context) (*OpLog, error)
@@ -928,6 +932,174 @@ func (m *OpLogMutation) ResetElapsedMillisecs() {
 	delete(m.clearedFields, oplog.FieldElapsedMillisecs)
 }
 
+// SetStatusCode sets the "status_code" field.
+func (m *OpLogMutation) SetStatusCode(i int32) {
+	m.status_code = &i
+	m.addstatus_code = nil
+}
+
+// StatusCode returns the value of the "status_code" field in the mutation.
+func (m *OpLogMutation) StatusCode() (r int32, exists bool) {
+	v := m.status_code
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatusCode returns the old "status_code" field's value of the OpLog entity.
+// If the OpLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OpLogMutation) OldStatusCode(ctx context.Context) (v int32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatusCode is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatusCode requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatusCode: %w", err)
+	}
+	return oldValue.StatusCode, nil
+}
+
+// AddStatusCode adds i to the "status_code" field.
+func (m *OpLogMutation) AddStatusCode(i int32) {
+	if m.addstatus_code != nil {
+		*m.addstatus_code += i
+	} else {
+		m.addstatus_code = &i
+	}
+}
+
+// AddedStatusCode returns the value that was added to the "status_code" field in this mutation.
+func (m *OpLogMutation) AddedStatusCode() (r int32, exists bool) {
+	v := m.addstatus_code
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearStatusCode clears the value of the "status_code" field.
+func (m *OpLogMutation) ClearStatusCode() {
+	m.status_code = nil
+	m.addstatus_code = nil
+	m.clearedFields[oplog.FieldStatusCode] = struct{}{}
+}
+
+// StatusCodeCleared returns if the "status_code" field was cleared in this mutation.
+func (m *OpLogMutation) StatusCodeCleared() bool {
+	_, ok := m.clearedFields[oplog.FieldStatusCode]
+	return ok
+}
+
+// ResetStatusCode resets all changes to the "status_code" field.
+func (m *OpLogMutation) ResetStatusCode() {
+	m.status_code = nil
+	m.addstatus_code = nil
+	delete(m.clearedFields, oplog.FieldStatusCode)
+}
+
+// SetReqHeaders sets the "req_headers" field.
+func (m *OpLogMutation) SetReqHeaders(s string) {
+	m.req_headers = &s
+}
+
+// ReqHeaders returns the value of the "req_headers" field in the mutation.
+func (m *OpLogMutation) ReqHeaders() (r string, exists bool) {
+	v := m.req_headers
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldReqHeaders returns the old "req_headers" field's value of the OpLog entity.
+// If the OpLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OpLogMutation) OldReqHeaders(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldReqHeaders is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldReqHeaders requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldReqHeaders: %w", err)
+	}
+	return oldValue.ReqHeaders, nil
+}
+
+// ClearReqHeaders clears the value of the "req_headers" field.
+func (m *OpLogMutation) ClearReqHeaders() {
+	m.req_headers = nil
+	m.clearedFields[oplog.FieldReqHeaders] = struct{}{}
+}
+
+// ReqHeadersCleared returns if the "req_headers" field was cleared in this mutation.
+func (m *OpLogMutation) ReqHeadersCleared() bool {
+	_, ok := m.clearedFields[oplog.FieldReqHeaders]
+	return ok
+}
+
+// ResetReqHeaders resets all changes to the "req_headers" field.
+func (m *OpLogMutation) ResetReqHeaders() {
+	m.req_headers = nil
+	delete(m.clearedFields, oplog.FieldReqHeaders)
+}
+
+// SetRespHeaders sets the "resp_headers" field.
+func (m *OpLogMutation) SetRespHeaders(s string) {
+	m.resp_headers = &s
+}
+
+// RespHeaders returns the value of the "resp_headers" field in the mutation.
+func (m *OpLogMutation) RespHeaders() (r string, exists bool) {
+	v := m.resp_headers
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRespHeaders returns the old "resp_headers" field's value of the OpLog entity.
+// If the OpLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OpLogMutation) OldRespHeaders(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRespHeaders is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRespHeaders requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRespHeaders: %w", err)
+	}
+	return oldValue.RespHeaders, nil
+}
+
+// ClearRespHeaders clears the value of the "resp_headers" field.
+func (m *OpLogMutation) ClearRespHeaders() {
+	m.resp_headers = nil
+	m.clearedFields[oplog.FieldRespHeaders] = struct{}{}
+}
+
+// RespHeadersCleared returns if the "resp_headers" field was cleared in this mutation.
+func (m *OpLogMutation) RespHeadersCleared() bool {
+	_, ok := m.clearedFields[oplog.FieldRespHeaders]
+	return ok
+}
+
+// ResetRespHeaders resets all changes to the "resp_headers" field.
+func (m *OpLogMutation) ResetRespHeaders() {
+	m.resp_headers = nil
+	delete(m.clearedFields, oplog.FieldRespHeaders)
+}
+
 // Where appends a list predicates to the OpLogMutation builder.
 func (m *OpLogMutation) Where(ps ...predicate.OpLog) {
 	m.predicates = append(m.predicates, ps...)
@@ -947,7 +1119,7 @@ func (m *OpLogMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *OpLogMutation) Fields() []string {
-	fields := make([]string, 0, 15)
+	fields := make([]string, 0, 18)
 	if m.created_at != nil {
 		fields = append(fields, oplog.FieldCreatedAt)
 	}
@@ -993,6 +1165,15 @@ func (m *OpLogMutation) Fields() []string {
 	if m.elapsed_millisecs != nil {
 		fields = append(fields, oplog.FieldElapsedMillisecs)
 	}
+	if m.status_code != nil {
+		fields = append(fields, oplog.FieldStatusCode)
+	}
+	if m.req_headers != nil {
+		fields = append(fields, oplog.FieldReqHeaders)
+	}
+	if m.resp_headers != nil {
+		fields = append(fields, oplog.FieldRespHeaders)
+	}
 	return fields
 }
 
@@ -1031,6 +1212,12 @@ func (m *OpLogMutation) Field(name string) (ent.Value, bool) {
 		return m.FailReason()
 	case oplog.FieldElapsedMillisecs:
 		return m.ElapsedMillisecs()
+	case oplog.FieldStatusCode:
+		return m.StatusCode()
+	case oplog.FieldReqHeaders:
+		return m.ReqHeaders()
+	case oplog.FieldRespHeaders:
+		return m.RespHeaders()
 	}
 	return nil, false
 }
@@ -1070,6 +1257,12 @@ func (m *OpLogMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldFailReason(ctx)
 	case oplog.FieldElapsedMillisecs:
 		return m.OldElapsedMillisecs(ctx)
+	case oplog.FieldStatusCode:
+		return m.OldStatusCode(ctx)
+	case oplog.FieldReqHeaders:
+		return m.OldReqHeaders(ctx)
+	case oplog.FieldRespHeaders:
+		return m.OldRespHeaders(ctx)
 	}
 	return nil, fmt.Errorf("unknown OpLog field %s", name)
 }
@@ -1184,6 +1377,27 @@ func (m *OpLogMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetElapsedMillisecs(v)
 		return nil
+	case oplog.FieldStatusCode:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatusCode(v)
+		return nil
+	case oplog.FieldReqHeaders:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetReqHeaders(v)
+		return nil
+	case oplog.FieldRespHeaders:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRespHeaders(v)
+		return nil
 	}
 	return fmt.Errorf("unknown OpLog field %s", name)
 }
@@ -1204,6 +1418,9 @@ func (m *OpLogMutation) AddedFields() []string {
 	if m.addelapsed_millisecs != nil {
 		fields = append(fields, oplog.FieldElapsedMillisecs)
 	}
+	if m.addstatus_code != nil {
+		fields = append(fields, oplog.FieldStatusCode)
+	}
 	return fields
 }
 
@@ -1220,6 +1437,8 @@ func (m *OpLogMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedDeletedAt()
 	case oplog.FieldElapsedMillisecs:
 		return m.AddedElapsedMillisecs()
+	case oplog.FieldStatusCode:
+		return m.AddedStatusCode()
 	}
 	return nil, false
 }
@@ -1256,6 +1475,13 @@ func (m *OpLogMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddElapsedMillisecs(v)
+		return nil
+	case oplog.FieldStatusCode:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddStatusCode(v)
 		return nil
 	}
 	return fmt.Errorf("unknown OpLog numeric field %s", name)
@@ -1297,6 +1523,15 @@ func (m *OpLogMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(oplog.FieldElapsedMillisecs) {
 		fields = append(fields, oplog.FieldElapsedMillisecs)
+	}
+	if m.FieldCleared(oplog.FieldStatusCode) {
+		fields = append(fields, oplog.FieldStatusCode)
+	}
+	if m.FieldCleared(oplog.FieldReqHeaders) {
+		fields = append(fields, oplog.FieldReqHeaders)
+	}
+	if m.FieldCleared(oplog.FieldRespHeaders) {
+		fields = append(fields, oplog.FieldRespHeaders)
 	}
 	return fields
 }
@@ -1344,6 +1579,15 @@ func (m *OpLogMutation) ClearField(name string) error {
 		return nil
 	case oplog.FieldElapsedMillisecs:
 		m.ClearElapsedMillisecs()
+		return nil
+	case oplog.FieldStatusCode:
+		m.ClearStatusCode()
+		return nil
+	case oplog.FieldReqHeaders:
+		m.ClearReqHeaders()
+		return nil
+	case oplog.FieldRespHeaders:
+		m.ClearRespHeaders()
 		return nil
 	}
 	return fmt.Errorf("unknown OpLog nullable field %s", name)
@@ -1397,6 +1641,15 @@ func (m *OpLogMutation) ResetField(name string) error {
 		return nil
 	case oplog.FieldElapsedMillisecs:
 		m.ResetElapsedMillisecs()
+		return nil
+	case oplog.FieldStatusCode:
+		m.ResetStatusCode()
+		return nil
+	case oplog.FieldReqHeaders:
+		m.ResetReqHeaders()
+		return nil
+	case oplog.FieldRespHeaders:
+		m.ResetRespHeaders()
 		return nil
 	}
 	return fmt.Errorf("unknown OpLog field %s", name)

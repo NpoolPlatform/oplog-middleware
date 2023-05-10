@@ -27,6 +27,9 @@ type Handler struct {
 	HumanReadable *string
 	Result        *basetypes.Result
 	FailReason    *string
+	StatusCode    *int32
+	ReqHeaders    *string
+	RespHeaders   *string
 	Conds         *oplogcrud.Conds
 	Offset        int32
 	Limit         int32
@@ -179,6 +182,27 @@ func WithResult(ctx context.Context, result *basetypes.Result) func(context.Cont
 func WithFailReason(ctx context.Context, reason *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.FailReason = reason
+		return nil
+	}
+}
+
+func WithStatusCode(ctx context.Context, statusCode *int32) func(context.Context, *Handler) error {
+	return func(ctx context.Context, h *Handler) error {
+		h.StatusCode = statusCode
+		return nil
+	}
+}
+
+func WithReqHeaders(ctx context.Context, headers *string) func(context.Context, *Handler) error {
+	return func(ctx context.Context, h *Handler) error {
+		h.ReqHeaders = headers
+		return nil
+	}
+}
+
+func WithRespHeaders(ctx context.Context, headers *string) func(context.Context, *Handler) error {
+	return func(ctx context.Context, h *Handler) error {
+		h.RespHeaders = headers
 		return nil
 	}
 }

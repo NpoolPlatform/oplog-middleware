@@ -96,6 +96,18 @@ func init() {
 	oplogDescElapsedMillisecs := oplogFields[10].Descriptor()
 	// oplog.DefaultElapsedMillisecs holds the default value on creation for the elapsed_millisecs field.
 	oplog.DefaultElapsedMillisecs = oplogDescElapsedMillisecs.Default.(uint32)
+	// oplogDescStatusCode is the schema descriptor for status_code field.
+	oplogDescStatusCode := oplogFields[11].Descriptor()
+	// oplog.DefaultStatusCode holds the default value on creation for the status_code field.
+	oplog.DefaultStatusCode = oplogDescStatusCode.Default.(int32)
+	// oplogDescReqHeaders is the schema descriptor for req_headers field.
+	oplogDescReqHeaders := oplogFields[12].Descriptor()
+	// oplog.DefaultReqHeaders holds the default value on creation for the req_headers field.
+	oplog.DefaultReqHeaders = oplogDescReqHeaders.Default.(string)
+	// oplogDescRespHeaders is the schema descriptor for resp_headers field.
+	oplogDescRespHeaders := oplogFields[13].Descriptor()
+	// oplog.DefaultRespHeaders holds the default value on creation for the resp_headers field.
+	oplog.DefaultRespHeaders = oplogDescRespHeaders.Default.(string)
 	pubsubmessageMixin := schema.PubsubMessage{}.Mixin()
 	pubsubmessage.Policy = privacy.NewPolicies(pubsubmessageMixin[0], schema.PubsubMessage{})
 	pubsubmessage.Hooks[0] = func(next ent.Mutator) ent.Mutator {

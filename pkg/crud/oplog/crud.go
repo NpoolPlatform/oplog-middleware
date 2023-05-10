@@ -23,6 +23,9 @@ type Req struct {
 	Result           *basetypes.Result
 	FailReason       *string
 	ElapsedMillisecs *uint32
+	StatusCode       *int32
+	ReqHeaders       *string
+	RespHeaders      *string
 }
 
 func CreateSet(c *ent.OpLogCreate, req *Req) *ent.OpLogCreate {
@@ -56,6 +59,15 @@ func CreateSet(c *ent.OpLogCreate, req *Req) *ent.OpLogCreate {
 	if req.ElapsedMillisecs != nil {
 		c.SetElapsedMillisecs(*req.ElapsedMillisecs)
 	}
+	if req.StatusCode != nil {
+		c.SetStatusCode(*req.StatusCode)
+	}
+	if req.ReqHeaders != nil {
+		c.SetReqHeaders(*req.ReqHeaders)
+	}
+	if req.RespHeaders != nil {
+		c.SetRespHeaders(*req.RespHeaders)
+	}
 	return c
 }
 
@@ -74,6 +86,15 @@ func UpdateSet(u *ent.OpLogUpdateOne, req *Req) *ent.OpLogUpdateOne {
 	}
 	if req.ElapsedMillisecs != nil {
 		u.SetElapsedMillisecs(*req.ElapsedMillisecs)
+	}
+	if req.StatusCode != nil {
+		u.SetStatusCode(*req.StatusCode)
+	}
+	if req.ReqHeaders != nil {
+		u.SetReqHeaders(*req.ReqHeaders)
+	}
+	if req.RespHeaders != nil {
+		u.SetRespHeaders(*req.RespHeaders)
 	}
 	return u
 }

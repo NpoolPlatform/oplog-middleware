@@ -325,6 +325,73 @@ func (olu *OpLogUpdate) ClearElapsedMillisecs() *OpLogUpdate {
 	return olu
 }
 
+// SetStatusCode sets the "status_code" field.
+func (olu *OpLogUpdate) SetStatusCode(i int32) *OpLogUpdate {
+	olu.mutation.ResetStatusCode()
+	olu.mutation.SetStatusCode(i)
+	return olu
+}
+
+// SetNillableStatusCode sets the "status_code" field if the given value is not nil.
+func (olu *OpLogUpdate) SetNillableStatusCode(i *int32) *OpLogUpdate {
+	if i != nil {
+		olu.SetStatusCode(*i)
+	}
+	return olu
+}
+
+// AddStatusCode adds i to the "status_code" field.
+func (olu *OpLogUpdate) AddStatusCode(i int32) *OpLogUpdate {
+	olu.mutation.AddStatusCode(i)
+	return olu
+}
+
+// ClearStatusCode clears the value of the "status_code" field.
+func (olu *OpLogUpdate) ClearStatusCode() *OpLogUpdate {
+	olu.mutation.ClearStatusCode()
+	return olu
+}
+
+// SetReqHeaders sets the "req_headers" field.
+func (olu *OpLogUpdate) SetReqHeaders(s string) *OpLogUpdate {
+	olu.mutation.SetReqHeaders(s)
+	return olu
+}
+
+// SetNillableReqHeaders sets the "req_headers" field if the given value is not nil.
+func (olu *OpLogUpdate) SetNillableReqHeaders(s *string) *OpLogUpdate {
+	if s != nil {
+		olu.SetReqHeaders(*s)
+	}
+	return olu
+}
+
+// ClearReqHeaders clears the value of the "req_headers" field.
+func (olu *OpLogUpdate) ClearReqHeaders() *OpLogUpdate {
+	olu.mutation.ClearReqHeaders()
+	return olu
+}
+
+// SetRespHeaders sets the "resp_headers" field.
+func (olu *OpLogUpdate) SetRespHeaders(s string) *OpLogUpdate {
+	olu.mutation.SetRespHeaders(s)
+	return olu
+}
+
+// SetNillableRespHeaders sets the "resp_headers" field if the given value is not nil.
+func (olu *OpLogUpdate) SetNillableRespHeaders(s *string) *OpLogUpdate {
+	if s != nil {
+		olu.SetRespHeaders(*s)
+	}
+	return olu
+}
+
+// ClearRespHeaders clears the value of the "resp_headers" field.
+func (olu *OpLogUpdate) ClearRespHeaders() *OpLogUpdate {
+	olu.mutation.ClearRespHeaders()
+	return olu
+}
+
 // Mutation returns the OpLogMutation object of the builder.
 func (olu *OpLogUpdate) Mutation() *OpLogMutation {
 	return olu.mutation
@@ -620,6 +687,52 @@ func (olu *OpLogUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeUint32,
 			Column: oplog.FieldElapsedMillisecs,
+		})
+	}
+	if value, ok := olu.mutation.StatusCode(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt32,
+			Value:  value,
+			Column: oplog.FieldStatusCode,
+		})
+	}
+	if value, ok := olu.mutation.AddedStatusCode(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt32,
+			Value:  value,
+			Column: oplog.FieldStatusCode,
+		})
+	}
+	if olu.mutation.StatusCodeCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt32,
+			Column: oplog.FieldStatusCode,
+		})
+	}
+	if value, ok := olu.mutation.ReqHeaders(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: oplog.FieldReqHeaders,
+		})
+	}
+	if olu.mutation.ReqHeadersCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: oplog.FieldReqHeaders,
+		})
+	}
+	if value, ok := olu.mutation.RespHeaders(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: oplog.FieldRespHeaders,
+		})
+	}
+	if olu.mutation.RespHeadersCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: oplog.FieldRespHeaders,
 		})
 	}
 	_spec.Modifiers = olu.modifiers
@@ -936,6 +1049,73 @@ func (oluo *OpLogUpdateOne) AddElapsedMillisecs(u int32) *OpLogUpdateOne {
 // ClearElapsedMillisecs clears the value of the "elapsed_millisecs" field.
 func (oluo *OpLogUpdateOne) ClearElapsedMillisecs() *OpLogUpdateOne {
 	oluo.mutation.ClearElapsedMillisecs()
+	return oluo
+}
+
+// SetStatusCode sets the "status_code" field.
+func (oluo *OpLogUpdateOne) SetStatusCode(i int32) *OpLogUpdateOne {
+	oluo.mutation.ResetStatusCode()
+	oluo.mutation.SetStatusCode(i)
+	return oluo
+}
+
+// SetNillableStatusCode sets the "status_code" field if the given value is not nil.
+func (oluo *OpLogUpdateOne) SetNillableStatusCode(i *int32) *OpLogUpdateOne {
+	if i != nil {
+		oluo.SetStatusCode(*i)
+	}
+	return oluo
+}
+
+// AddStatusCode adds i to the "status_code" field.
+func (oluo *OpLogUpdateOne) AddStatusCode(i int32) *OpLogUpdateOne {
+	oluo.mutation.AddStatusCode(i)
+	return oluo
+}
+
+// ClearStatusCode clears the value of the "status_code" field.
+func (oluo *OpLogUpdateOne) ClearStatusCode() *OpLogUpdateOne {
+	oluo.mutation.ClearStatusCode()
+	return oluo
+}
+
+// SetReqHeaders sets the "req_headers" field.
+func (oluo *OpLogUpdateOne) SetReqHeaders(s string) *OpLogUpdateOne {
+	oluo.mutation.SetReqHeaders(s)
+	return oluo
+}
+
+// SetNillableReqHeaders sets the "req_headers" field if the given value is not nil.
+func (oluo *OpLogUpdateOne) SetNillableReqHeaders(s *string) *OpLogUpdateOne {
+	if s != nil {
+		oluo.SetReqHeaders(*s)
+	}
+	return oluo
+}
+
+// ClearReqHeaders clears the value of the "req_headers" field.
+func (oluo *OpLogUpdateOne) ClearReqHeaders() *OpLogUpdateOne {
+	oluo.mutation.ClearReqHeaders()
+	return oluo
+}
+
+// SetRespHeaders sets the "resp_headers" field.
+func (oluo *OpLogUpdateOne) SetRespHeaders(s string) *OpLogUpdateOne {
+	oluo.mutation.SetRespHeaders(s)
+	return oluo
+}
+
+// SetNillableRespHeaders sets the "resp_headers" field if the given value is not nil.
+func (oluo *OpLogUpdateOne) SetNillableRespHeaders(s *string) *OpLogUpdateOne {
+	if s != nil {
+		oluo.SetRespHeaders(*s)
+	}
+	return oluo
+}
+
+// ClearRespHeaders clears the value of the "resp_headers" field.
+func (oluo *OpLogUpdateOne) ClearRespHeaders() *OpLogUpdateOne {
+	oluo.mutation.ClearRespHeaders()
 	return oluo
 }
 
@@ -1264,6 +1444,52 @@ func (oluo *OpLogUpdateOne) sqlSave(ctx context.Context) (_node *OpLog, err erro
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeUint32,
 			Column: oplog.FieldElapsedMillisecs,
+		})
+	}
+	if value, ok := oluo.mutation.StatusCode(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt32,
+			Value:  value,
+			Column: oplog.FieldStatusCode,
+		})
+	}
+	if value, ok := oluo.mutation.AddedStatusCode(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt32,
+			Value:  value,
+			Column: oplog.FieldStatusCode,
+		})
+	}
+	if oluo.mutation.StatusCodeCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt32,
+			Column: oplog.FieldStatusCode,
+		})
+	}
+	if value, ok := oluo.mutation.ReqHeaders(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: oplog.FieldReqHeaders,
+		})
+	}
+	if oluo.mutation.ReqHeadersCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: oplog.FieldReqHeaders,
+		})
+	}
+	if value, ok := oluo.mutation.RespHeaders(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: oplog.FieldRespHeaders,
+		})
+	}
+	if oluo.mutation.RespHeadersCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: oplog.FieldRespHeaders,
 		})
 	}
 	_spec.Modifiers = oluo.modifiers

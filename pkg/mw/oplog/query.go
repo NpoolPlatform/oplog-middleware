@@ -71,6 +71,9 @@ func (h *Handler) GetOpLogs(ctx context.Context) ([]*npool.OpLog, uint32, error)
 				entoplog.FieldHumanReadable,
 				entoplog.FieldResult,
 				entoplog.FieldFailReason,
+				entoplog.FieldStatusCode,
+				entoplog.FieldReqHeaders,
+				entoplog.FieldRespHeaders,
 				entoplog.FieldCreatedAt,
 				entoplog.FieldUpdatedAt,
 			).
