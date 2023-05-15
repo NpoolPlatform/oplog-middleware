@@ -1,4 +1,4 @@
-package sample
+package oplog
 
 import (
 	"context"

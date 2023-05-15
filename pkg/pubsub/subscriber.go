@@ -9,7 +9,7 @@ import (
 	entpubsubmsg "github.com/NpoolPlatform/oplog-middleware/pkg/db/ent/pubsubmessage"
 
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
-	sample "github.com/NpoolPlatform/oplog-middleware/pkg/pubsub/sample"
+	oplog "github.com/NpoolPlatform/oplog-middleware/pkg/pubsub/oplog"
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 	"github.com/NpoolPlatform/go-service-framework/pkg/pubsub"
@@ -47,8 +47,8 @@ func finish(ctx context.Context, msg *pubsub.Msg, err error) error {
 
 func prepare(mid, body string) (req interface{}, err error) {
 	switch mid {
-	case basetypes.MsgID_CreateSampleMsgReq.String():
-		req, err = sample.Prepare(body)
+	case basetypes.MsgID_UpdateOpLogHumanReadableReq.String():
+		req, err = oplog.Prepare(body)
 	default:
 		return nil, nil
 	}
@@ -107,7 +107,7 @@ func statReq(ctx context.Context, mid string, uid uuid.UUID) (bool, error) {
 //   error   error message
 func statMsg(ctx context.Context, mid string, uid uuid.UUID, rid *uuid.UUID) (bool, error) { //nolint
 	switch mid {
-	case basetypes.MsgID_CreateSampleMsgReq.String():
+	case basetypes.MsgID_UpdateOpLogHumanReadableReq.String():
 		return statReq(ctx, mid, uid)
 	default:
 		return false, fmt.Errorf("invalid message")
@@ -139,8 +139,8 @@ func process(ctx context.Context, mid string, uid uuid.UUID, req interface{}) (e
 	}()
 
 	switch mid {
-	case basetypes.MsgID_CreateSampleMsgReq.String():
-		err = sample.Apply(ctx, req)
+	case basetypes.MsgID_UpdateOpLogHumanReadableReq.String():
+		err = oplog.Apply(ctx, req)
 	default:
 		return nil
 	}
