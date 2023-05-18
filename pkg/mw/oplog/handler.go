@@ -16,23 +16,24 @@ import (
 )
 
 type Handler struct {
-	EntID         *uuid.UUID
-	AppID         *uuid.UUID
-	UserID        *uuid.UUID
-	Path          *string
-	Method        *basetypes.HTTPMethod
-	Arguments     *string
-	CurValue      *string
-	NewValue      *string
-	HumanReadable *string
-	Result        *basetypes.Result
-	FailReason    *string
-	StatusCode    *int32
-	ReqHeaders    *string
-	RespHeaders   *string
-	Conds         *oplogcrud.Conds
-	Offset        int32
-	Limit         int32
+	EntID            *uuid.UUID
+	AppID            *uuid.UUID
+	UserID           *uuid.UUID
+	Path             *string
+	Method           *basetypes.HTTPMethod
+	Arguments        *string
+	CurValue         *string
+	NewValue         *string
+	HumanReadable    *string
+	Result           *basetypes.Result
+	FailReason       *string
+	StatusCode       *int32
+	ReqHeaders       *string
+	RespHeaders      *string
+	ElapsedMillisecs *uint32
+	Conds            *oplogcrud.Conds
+	Offset           int32
+	Limit            int32
 }
 
 func NewHandler(ctx context.Context, options ...func(context.Context, *Handler) error) (*Handler, error) {
@@ -203,6 +204,13 @@ func WithReqHeaders(ctx context.Context, headers *string) func(context.Context, 
 func WithRespHeaders(ctx context.Context, headers *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.RespHeaders = headers
+		return nil
+	}
+}
+
+func WithElapsedMillisecs(ctx context.Context, millisecs uint32) func(context.Context, *Handler) error {
+	return func(ctx context.Context, h *Handler) error {
+		h.ElapsedMillisecs = &millisecs
 		return nil
 	}
 }

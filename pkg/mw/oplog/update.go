@@ -31,13 +31,14 @@ func (h *Handler) UpdateOpLog(ctx context.Context) (*npool.OpLog, error) {
 		info, err = oplogcrud.UpdateSet(
 			info.Update(),
 			&oplogcrud.Req{
-				NewValue:      h.NewValue,
-				HumanReadable: h.HumanReadable,
-				Result:        h.Result,
-				FailReason:    h.FailReason,
-				StatusCode:    h.StatusCode,
-				ReqHeaders:    h.ReqHeaders,
-				RespHeaders:   h.RespHeaders,
+				NewValue:         h.NewValue,
+				HumanReadable:    h.HumanReadable,
+				Result:           h.Result,
+				FailReason:       h.FailReason,
+				StatusCode:       h.StatusCode,
+				ReqHeaders:       h.ReqHeaders,
+				RespHeaders:      h.RespHeaders,
+				ElapsedMillisecs: h.ElapsedMillisecs,
 			},
 		).Save(_ctx)
 		if err != nil {
