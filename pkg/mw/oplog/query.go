@@ -59,6 +59,8 @@ func (h *Handler) GetOpLogs(ctx context.Context) ([]*npool.OpLog, uint32, error)
 
 		total = uint32(_total)
 		return stm.
+			Offset(int(h.Offset)).
+			Limit(int(h.Limit)).
 			Select(
 				entoplog.FieldEntID,
 				entoplog.FieldAppID,
