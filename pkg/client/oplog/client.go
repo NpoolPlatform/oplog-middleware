@@ -66,7 +66,7 @@ func UpdateOpLog(ctx context.Context, in *npool.OpLogReq) (*npool.OpLog, error) 
 	return info.(*npool.OpLog), nil
 }
 
-func GetOpLogs(ctx context.Context, conds *npool.Conds, limit, offset int32) ([]*npool.OpLog, uint32, error) {
+func GetOpLogs(ctx context.Context, conds *npool.Conds, offset, limit int32) ([]*npool.OpLog, uint32, error) {
 	var total uint32
 	infos, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.GetOpLogs(ctx, &npool.GetOpLogsRequest{
