@@ -267,7 +267,7 @@ pipeline {
           revlist=`git rev-list --tags --max-count=1`
           rc=$?
           set -e
-          if [ 0 -eq $rc ]; then
+          if [ ! 0 -eq $rc ]; then
             exit 0
           fi
           tag=`git describe --tags $revlist`
@@ -276,7 +276,7 @@ pipeline {
           docker images | grep oplog-middleware | grep $tag
           rc=$?
           set -e
-          if [ 0 -eq $rc ]; then
+          if [ ! 0 -eq $rc ]; then
             TAG=$tag DOCKER_REGISTRY=$DOCKER_REGISTRY make release-docker-images
           fi
         '''.stripIndent())
@@ -293,7 +293,7 @@ pipeline {
           revlist=`git rev-list --tags --max-count=1`
           rc=$?
           set -e
-          if [ 0 -eq $rc ]; then
+          if [ ! 0 -eq $rc ]; then
             exit 0
           fi
           tag=`git describe --tags $revlist`
@@ -309,7 +309,7 @@ pipeline {
           docker images | grep oplog-middleware | grep $tag
           rc=$?
           set -e
-          if [ 0 -eq $rc ]; then
+          if [ ! 0 -eq $rc ]; then
             TAG=$tag DOCKER_REGISTRY=$DOCKER_REGISTRY make release-docker-images
           fi
         '''.stripIndent())
