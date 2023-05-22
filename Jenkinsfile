@@ -267,7 +267,7 @@ pipeline {
           revlist=`git rev-list --tags --max-count=1`
           rc=$?
           set -e
-          if [ 0 -eq $rc ]; then
+          if [ ! 0 -eq $rc ]; then
             exit 0
           fi
           tag=`git describe --tags $revlist`
@@ -293,7 +293,7 @@ pipeline {
           revlist=`git rev-list --tags --max-count=1`
           rc=$?
           set -e
-          if [ 0 -eq $rc ]; then
+          if [ ! 0 -eq $rc ]; then
             exit 0
           fi
           tag=`git describe --tags $revlist`
@@ -338,7 +338,7 @@ pipeline {
           revlist=`git rev-list --tags --max-count=1`
           rc=$?
           set -e
-          if [ 0 -eq $rc ]; then
+          if [ ! 0 -eq $rc ]; then
             exit 0
           fi
           tag=`git describe --tags $revlist`
@@ -363,7 +363,7 @@ pipeline {
           revlist=`git rev-list --tags --max-count=1`
           rc=$?
           set -e
-          if [ 0 -eq $rc ]; then
+          if [ ! 0 -eq $rc ]; then
             exit 0
           fi
           tag=`git describe --tags $revlist`
