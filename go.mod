@@ -5,10 +5,10 @@ go 1.17
 require (
 	bou.ke/monkey v1.0.2
 	entgo.io/ent v0.12.0
-	github.com/NpoolPlatform/basal-middleware v0.0.0-20230421085555-165e4722a9ba
-	github.com/NpoolPlatform/go-service-framework v0.0.0-20230507024845-c15be37b4e7a
+	github.com/NpoolPlatform/basal-middleware v0.0.0-20230518061816-62bd589c0f63
+	github.com/NpoolPlatform/go-service-framework v0.0.0-20230509081417-267df92cab6d
 	github.com/NpoolPlatform/libent-cruder v0.0.0-20230507074148-02539caf4422
-	github.com/NpoolPlatform/message v0.0.0-20230515032219-d89d5bae37aa
+	github.com/NpoolPlatform/message v0.0.0-20230522022347-1bf5712602f9
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/google/uuid v1.3.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.11.3
@@ -20,7 +20,7 @@ require (
 
 require (
 	ariga.io/atlas v0.10.0 // indirect
-	cloud.google.com/go/compute/metadata v0.2.3 // indirect
+	cloud.google.com/go/compute v1.14.0 // indirect
 	github.com/Shonminh/apollo-client v0.4.0 // indirect
 	github.com/ThreeDotsLabs/watermill v1.2.0 // indirect
 	github.com/ThreeDotsLabs/watermill-amqp/v2 v2.0.7 // indirect
