@@ -15,7 +15,7 @@ import (
 )
 
 var timeout = 10 * time.Second
-var msgBytes = 20 * 1024 * 1024 // 20MiB
+var msgBytes = 40 * 1024 * 1024 // 20MiB
 
 type handler func(context.Context, npool.MiddlewareClient) (cruder.Any, error)
 
