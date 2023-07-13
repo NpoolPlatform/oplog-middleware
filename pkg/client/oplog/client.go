@@ -15,6 +15,7 @@ import (
 )
 
 var timeout = 10 * time.Second
+var msgBytes = 20 * 1024 * 1024 // 20MiB
 
 type handler func(context.Context, npool.MiddlewareClient) (cruder.Any, error)
 
@@ -22,7 +23,7 @@ func withCRUD(ctx context.Context, handler handler) (cruder.Any, error) {
 	_ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
-	conn, err := grpc2.GetGRPCConn(servicename.ServiceDomain, grpc2.GRPCTAG)
+	conn, err := grpc2.GetGRPCConnV1(servicename.ServiceDomain, msgBytes, grpc2.GRPCTAG)
 	if err != nil {
 		return nil, fmt.Errorf("fail get oplog connection: %v", err)
 	}
