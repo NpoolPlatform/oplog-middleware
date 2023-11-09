@@ -13,16 +13,23 @@ import (
 
 func (s *Server) CreateOpLog(ctx context.Context, in *npool.CreateOpLogRequest) (*npool.CreateOpLogResponse, error) {
 	req := in.GetInfo()
+	if req == nil {
+		logger.Sugar().Errorw(
+			"CreateOpLog",
+			"In", in,
+		)
+		return &npool.CreateOpLogResponse{}, status.Error(codes.InvalidArgument, "Info is empty")
+	}
 	handler, err := oplog1.NewHandler(
 		ctx,
-		oplog1.WithAppID(ctx, req.GetAppID()),
-		oplog1.WithUserID(ctx, req.UserID),
-		oplog1.WithPath(ctx, req.Path),
-		oplog1.WithMethod(ctx, req.Method),
-		oplog1.WithArguments(ctx, req.Arguments),
-		oplog1.WithCurValue(ctx, req.CurValue),
-		oplog1.WithHumanReadable(ctx, req.HumanReadable),
-		oplog1.WithReqHeaders(ctx, req.ReqHeaders),
+		oplog1.WithAppID(req.GetAppID(), true),
+		oplog1.WithUserID(req.UserID, false),
+		oplog1.WithPath(req.Path, true),
+		oplog1.WithMethod(req.Method, false),
+		oplog1.WithArguments(req.Arguments, false),
+		oplog1.WithCurValue(req.CurValue, false),
+		oplog1.WithHumanReadable(req.HumanReadable, false),
+		oplog1.WithReqHeaders(req.ReqHeaders, false),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

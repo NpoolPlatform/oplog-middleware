@@ -86,3 +86,28 @@ func GetOpLogs(ctx context.Context, conds *npool.Conds, offset, limit int32) ([]
 	}
 	return infos.([]*npool.OpLog), total, nil
 }
+
+func GetOpLogOnly(ctx context.Context, conds *npool.Conds) (*npool.OpLog, error) {
+	const limit = 2
+	infos, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.GetOpLogs(ctx, &npool.GetOpLogsRequest{
+			Conds:  conds,
+			Offset: 0,
+			Limit:  limit,
+		})
+		if err != nil {
+			return nil, err
+		}
+		return resp.Infos, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	if len(infos.([]*npool.OpLog)) == 0 {
+		return nil, nil
+	}
+	if len(infos.([]*npool.OpLog)) > 1 {
+		return nil, fmt.Errorf("too many records")
+	}
+	return infos.([]*npool.OpLog)[0], nil
+}

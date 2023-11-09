@@ -15,14 +15,20 @@ import (
 )
 
 func (h *Handler) GetOpLog(ctx context.Context) (*npool.OpLog, error) {
-	if h.EntID == nil {
-		return nil, fmt.Errorf("invalid auto_id")
+	if h.ID == nil && h.EntID == nil {
+		return nil, fmt.Errorf("invalid id")
 	}
 
 	h.Offset = 0
 	h.Limit = 2
 	h.Conds = &oplogcrud.Conds{
 		EntID: &cruder.Cond{Op: cruder.EQ, Val: *h.EntID},
+	}
+	if h.ID != nil {
+		h.Conds.ID = &cruder.Cond{Op: cruder.EQ, Val: *h.ID}
+	}
+	if h.EntID != nil {
+		h.Conds.EntID = &cruder.Cond{Op: cruder.EQ, Val: *h.EntID}
 	}
 
 	infos, _, err := h.GetOpLogs(ctx)
@@ -62,6 +68,7 @@ func (h *Handler) GetOpLogs(ctx context.Context) ([]*npool.OpLog, uint32, error)
 			Offset(int(h.Offset)).
 			Limit(int(h.Limit)).
 			Select(
+				entoplog.FieldID,
 				entoplog.FieldEntID,
 				entoplog.FieldAppID,
 				entoplog.FieldUserID,
