@@ -100,13 +100,27 @@ func UpdateSet(u *ent.OpLogUpdateOne, req *Req) *ent.OpLogUpdateOne {
 }
 
 type Conds struct {
+	ID     *cruder.Cond
 	EntID  *cruder.Cond
 	AppID  *cruder.Cond
 	UserID *cruder.Cond
 	Result *cruder.Cond
 }
 
+//nolint:gocyclo
 func SetQueryConds(q *ent.OpLogQuery, conds *Conds) (*ent.OpLogQuery, error) {
+	if conds.ID != nil {
+		id, ok := conds.ID.Val.(uint32)
+		if !ok {
+			return nil, fmt.Errorf("invalid auto id")
+		}
+		switch conds.ID.Op {
+		case cruder.EQ:
+			q.Where(entoplog.ID(id))
+		default:
+			return nil, fmt.Errorf("invalid oplog field")
+		}
+	}
 	if conds.EntID != nil {
 		switch conds.EntID.Op {
 		case cruder.EQ:

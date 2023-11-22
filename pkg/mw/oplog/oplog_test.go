@@ -29,7 +29,7 @@ var userID = uuid.NewString()
 var ret = &npool.OpLog{
 	AppID:       uuid.NewString(),
 	UserID:      &userID,
-	Path:        uuid.NewString(),
+	Path:        "api/aaa/v1/" + uuid.NewString(),
 	Method:      basetypes.HTTPMethod_GET,
 	Arguments:   "{}",
 	CurValue:    `{"A":"a", "B": 18}`,
@@ -40,13 +40,13 @@ var ret = &npool.OpLog{
 func create(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		WithAppID(context.Background(), ret.AppID),
-		WithUserID(context.Background(), ret.UserID),
-		WithPath(context.Background(), &ret.Path),
-		WithMethod(context.Background(), &ret.Method),
-		WithArguments(context.Background(), &ret.Arguments),
-		WithCurValue(context.Background(), &ret.CurValue),
-		WithHumanReadable(context.Background(), &ret.HumanReadable),
+		WithAppID(ret.AppID, true),
+		WithUserID(ret.UserID, false),
+		WithPath(&ret.Path, false),
+		WithMethod(&ret.Method, false),
+		WithArguments(&ret.Arguments, false),
+		WithCurValue(&ret.CurValue, false),
+		WithHumanReadable(&ret.HumanReadable, false),
 	)
 	if assert.Nil(t, err) {
 		info, err := handler.CreateOpLog(context.Background())
@@ -54,6 +54,7 @@ func create(t *testing.T) {
 			ret.CreatedAt = info.CreatedAt
 			ret.UpdatedAt = info.UpdatedAt
 			ret.EntID = info.EntID
+			ret.ID = info.ID
 			ret.MethodStr = info.MethodStr
 			ret.ResultStr = info.ResultStr
 			assert.Equal(t, ret.String(), info.String())
@@ -64,7 +65,7 @@ func create(t *testing.T) {
 func get(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		WithEntID(context.Background(), &ret.EntID),
+		WithEntID(&ret.EntID, true),
 	)
 	if assert.Nil(t, err) {
 		info, err := handler.GetOpLog(context.Background())
@@ -81,11 +82,11 @@ func update(t *testing.T) {
 
 	handler, err := NewHandler(
 		context.Background(),
-		WithEntID(context.Background(), &ret.EntID),
-		WithCurValue(context.Background(), &ret.CurValue),
-		WithHumanReadable(context.Background(), &ret.HumanReadable),
-		WithResult(context.Background(), &ret.Result),
-		WithFailReason(context.Background(), &ret.FailReason),
+		WithID(&ret.ID, true),
+		WithCurValue(&ret.CurValue, false),
+		WithHumanReadable(&ret.HumanReadable, false),
+		WithResult(&ret.Result, false),
+		WithFailReason(&ret.FailReason, false),
 	)
 	if assert.Nil(t, err) {
 		info, err := handler.UpdateOpLog(context.Background())
@@ -100,14 +101,14 @@ func update(t *testing.T) {
 func getConds(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		WithConds(context.Background(), &npool.Conds{
+		WithConds(&npool.Conds{
 			EntID:  &basetypes.StringVal{Op: cruder.EQ, Value: ret.EntID},
 			AppID:  &basetypes.StringVal{Op: cruder.EQ, Value: ret.AppID},
 			UserID: &basetypes.StringVal{Op: cruder.EQ, Value: *ret.UserID},
 			Result: &basetypes.Uint32Val{Op: cruder.EQ, Value: uint32(ret.Result)},
 		}),
-		WithOffset(context.Background(), 0),
-		WithLimit(context.Background(), 2),
+		WithOffset(0),
+		WithLimit(2),
 	)
 	if assert.Nil(t, err) {
 		infos, total, err := handler.GetOpLogs(context.Background())

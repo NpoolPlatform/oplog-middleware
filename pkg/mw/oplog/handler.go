@@ -16,6 +16,7 @@ import (
 )
 
 type Handler struct {
+	ID               *uint32
 	EntID            *uuid.UUID
 	AppID            *uuid.UUID
 	UserID           *uuid.UUID
@@ -46,9 +47,25 @@ func NewHandler(ctx context.Context, options ...func(context.Context, *Handler) 
 	return handler, nil
 }
 
-func WithEntID(ctx context.Context, id *string) func(context.Context, *Handler) error {
+func WithID(u *uint32, must bool) func(context.Context, *Handler) error {
+	return func(ctx context.Context, h *Handler) error {
+		if u == nil {
+			if must {
+				return fmt.Errorf("invalid id")
+			}
+			return nil
+		}
+		h.ID = u
+		return nil
+	}
+}
+
+func WithEntID(id *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if id == nil {
+			if must {
+				return fmt.Errorf("invalid entid")
+			}
 			return nil
 		}
 		_id, err := uuid.Parse(*id)
@@ -60,7 +77,7 @@ func WithEntID(ctx context.Context, id *string) func(context.Context, *Handler) 
 	}
 }
 
-func WithAppID(ctx context.Context, id string) func(context.Context, *Handler) error {
+func WithAppID(id string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		_id, err := uuid.Parse(id)
 		if err != nil {
@@ -71,9 +88,12 @@ func WithAppID(ctx context.Context, id string) func(context.Context, *Handler) e
 	}
 }
 
-func WithUserID(ctx context.Context, id *string) func(context.Context, *Handler) error {
+func WithUserID(id *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if id == nil {
+			if must {
+				return fmt.Errorf("invalid userid")
+			}
 			return nil
 		}
 		_id, err := uuid.Parse(*id)
@@ -85,16 +105,19 @@ func WithUserID(ctx context.Context, id *string) func(context.Context, *Handler)
 	}
 }
 
-func WithPath(ctx context.Context, path *string) func(context.Context, *Handler) error {
+func WithPath(path *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.Path = path
 		return nil
 	}
 }
 
-func WithMethod(ctx context.Context, method *basetypes.HTTPMethod) func(context.Context, *Handler) error {
+func WithMethod(method *basetypes.HTTPMethod, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if method == nil {
+			if must {
+				return fmt.Errorf("invalid method")
+			}
 			return nil
 		}
 		switch *method {
@@ -115,9 +138,12 @@ func WithMethod(ctx context.Context, method *basetypes.HTTPMethod) func(context.
 	}
 }
 
-func WithArguments(ctx context.Context, args *string) func(context.Context, *Handler) error {
+func WithArguments(args *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if args == nil {
+			if must {
+				return fmt.Errorf("invalid arguments")
+			}
 			return nil
 		}
 		var _args map[string]interface{}
@@ -129,9 +155,12 @@ func WithArguments(ctx context.Context, args *string) func(context.Context, *Han
 	}
 }
 
-func WithCurValue(ctx context.Context, value *string) func(context.Context, *Handler) error {
+func WithCurValue(value *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if value == nil {
+			if must {
+				return fmt.Errorf("invalid curvalue")
+			}
 			return nil
 		}
 		var _args map[string]interface{}
@@ -143,9 +172,12 @@ func WithCurValue(ctx context.Context, value *string) func(context.Context, *Han
 	}
 }
 
-func WithNewValue(ctx context.Context, value *string) func(context.Context, *Handler) error {
+func WithNewValue(value *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if value == nil {
+			if must {
+				return fmt.Errorf("invalid newvalue")
+			}
 			return nil
 		}
 		var _args map[string]interface{}
@@ -157,16 +189,19 @@ func WithNewValue(ctx context.Context, value *string) func(context.Context, *Han
 	}
 }
 
-func WithHumanReadable(ctx context.Context, value *string) func(context.Context, *Handler) error {
+func WithHumanReadable(value *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.HumanReadable = value
 		return nil
 	}
 }
 
-func WithResult(ctx context.Context, result *basetypes.Result) func(context.Context, *Handler) error {
+func WithResult(result *basetypes.Result, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if result == nil {
+			if must {
+				return fmt.Errorf("invalid result")
+			}
 			return nil
 		}
 		switch *result {
@@ -180,46 +215,49 @@ func WithResult(ctx context.Context, result *basetypes.Result) func(context.Cont
 	}
 }
 
-func WithFailReason(ctx context.Context, reason *string) func(context.Context, *Handler) error {
+func WithFailReason(reason *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.FailReason = reason
 		return nil
 	}
 }
 
-func WithStatusCode(ctx context.Context, statusCode *int32) func(context.Context, *Handler) error {
+func WithStatusCode(statusCode *int32, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.StatusCode = statusCode
 		return nil
 	}
 }
 
-func WithReqHeaders(ctx context.Context, headers *string) func(context.Context, *Handler) error {
+func WithReqHeaders(headers *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.ReqHeaders = headers
 		return nil
 	}
 }
 
-func WithRespHeaders(ctx context.Context, headers *string) func(context.Context, *Handler) error {
+func WithRespHeaders(headers *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.RespHeaders = headers
 		return nil
 	}
 }
 
-func WithElapsedMillisecs(ctx context.Context, millisecs uint32) func(context.Context, *Handler) error {
+func WithElapsedMillisecs(millisecs uint32, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.ElapsedMillisecs = &millisecs
 		return nil
 	}
 }
 
-func WithConds(ctx context.Context, conds *npool.Conds) func(context.Context, *Handler) error {
+func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.Conds = &oplogcrud.Conds{}
 		if conds == nil {
 			return nil
+		}
+		if conds.ID != nil {
+			h.Conds.ID = &cruder.Cond{Op: conds.GetID().GetOp(), Val: conds.GetID().GetValue()}
 		}
 		if conds.EntID != nil {
 			id, err := uuid.Parse(conds.GetEntID().GetValue())
@@ -261,14 +299,14 @@ func WithConds(ctx context.Context, conds *npool.Conds) func(context.Context, *H
 	}
 }
 
-func WithOffset(ctx context.Context, offset int32) func(context.Context, *Handler) error {
+func WithOffset(offset int32) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.Offset = offset
 		return nil
 	}
 }
 
-func WithLimit(ctx context.Context, limit int32) func(context.Context, *Handler) error {
+func WithLimit(limit int32) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if limit == 0 {
 			limit = constant.DefaultRowLimit

@@ -14,9 +14,9 @@ import (
 func (s *Server) GetOpLogs(ctx context.Context, in *npool.GetOpLogsRequest) (*npool.GetOpLogsResponse, error) {
 	handler, err := oplog1.NewHandler(
 		ctx,
-		oplog1.WithConds(ctx, in.GetConds()),
-		oplog1.WithOffset(ctx, in.GetOffset()),
-		oplog1.WithLimit(ctx, in.GetLimit()),
+		oplog1.WithConds(in.GetConds()),
+		oplog1.WithOffset(in.GetOffset()),
+		oplog1.WithLimit(in.GetLimit()),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

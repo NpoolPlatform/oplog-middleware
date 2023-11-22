@@ -12,8 +12,8 @@ import (
 )
 
 func (h *Handler) UpdateOpLog(ctx context.Context) (*npool.OpLog, error) {
-	if h.EntID == nil {
-		return nil, fmt.Errorf("invalid ent_id")
+	if h.ID == nil {
+		return nil, fmt.Errorf("invalid id")
 	}
 
 	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
@@ -21,7 +21,7 @@ func (h *Handler) UpdateOpLog(ctx context.Context) (*npool.OpLog, error) {
 			OpLog.
 			Query().
 			Where(
-				entoplog.EntID(*h.EntID),
+				entoplog.ID(*h.ID),
 			).
 			Only(_ctx)
 		if err != nil {

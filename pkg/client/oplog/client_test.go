@@ -36,7 +36,7 @@ var userID = uuid.NewString()
 var ret = &npool.OpLog{
 	AppID:       uuid.NewString(),
 	UserID:      &userID,
-	Path:        uuid.NewString(),
+	Path:        "api/aaa/v1/" + uuid.NewString(),
 	Method:      basetypes.HTTPMethod_GET,
 	Arguments:   "{}",
 	CurValue:    `{"A":"a", "B": 18}`,
@@ -59,6 +59,7 @@ func create(t *testing.T) {
 		ret.CreatedAt = info.CreatedAt
 		ret.UpdatedAt = info.UpdatedAt
 		ret.EntID = info.EntID
+		ret.ID = info.ID
 		ret.MethodStr = info.MethodStr
 		ret.ResultStr = info.ResultStr
 		assert.Equal(t, ret.String(), info.String())
@@ -74,6 +75,7 @@ func update(t *testing.T) {
 	req.FailReason = &ret.FailReason
 	req.HumanReadable = &ret.HumanReadable
 	req.EntID = &ret.EntID
+	req.ID = &ret.ID
 
 	info, err := UpdateOpLog(context.Background(), req)
 	if assert.Nil(t, err) && assert.NotNil(t, info) {
